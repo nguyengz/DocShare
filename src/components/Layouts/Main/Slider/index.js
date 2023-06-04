@@ -1,37 +1,34 @@
 import { Box, Grid, Paper, Typography } from "@mui/material";
 import Todo from "./TodoT";
 import { useEffect, useState } from "react";
-import axios from "axios";
+
+import { fetchfile } from "~/slices/file";
+
+import { useDispatch, useSelector } from "react-redux";
 
 function Slider() {
-  const [posts, setPosts] = useState([]);
-
-  const baseURL = "https://clothesshop.herokuapp.com/api/auth/products";
-  // const baseURL = 'https://clothes-shopvn.herokuapp.com/api/auth/products';
+  const dispatch = useDispatch();
+  const fileData = useSelector((state) => state.file.data);
 
   useEffect(() => {
-    const getPost = async () => {
-      const { data: res } = await axios.get(baseURL);
-      setPosts(res);
-    };
-    getPost();
+    dispatch(fetchfile());
   }, []);
 
-  if (!posts) return null;
 
   const getAlldata = () => {
     let datas = [];
     // eslint-disable-next-line array-callback-return
-    posts.map((value) => {
+    fileData.map((file) => {
       const data = {
-        id: value.product_id,
-        name: value.product_name,
-        price: value.price,
-        image: value.image_url,
+        id: file.id,
+        name: file.fileName,
+        price: file.descriptio,
+        image: file.link,
       };
       datas = [...datas, data];
-    });
+    });console.log(datas);
     return datas;
+    
   };
 
   let todoList = getAlldata();
@@ -86,7 +83,7 @@ function Slider() {
               //   fontFamily: "inherit",
               //   padding: "20px 0 0 0",
             }}
-          >
+          > 
             Today’s Top SlideShares
           </Typography>
         </Grid>
