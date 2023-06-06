@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import TodoTop from "../TodoTop";
+import TodoListTop from "../TodoTop";
 import { Padding } from "@mui/icons-material";
 
 function Todo({ ...props }) {
@@ -18,7 +18,7 @@ function Todo({ ...props }) {
           alignContent: "center",
         }}
       >
-        <TodoTop todoList={todoList} number={number} />
+        <TodoListTop todoList={todoList} number={number} />
       </Box>
     </>
   );
