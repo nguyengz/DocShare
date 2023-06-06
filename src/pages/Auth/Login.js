@@ -55,10 +55,10 @@ const Login = () => {
       await dispatch(login({ username, password }));
       navigate("/login");
       window.location.reload();
-      toast.success("Invalid username or password");
+      // toast.success("Invalid username or password");
     } catch (error) {
       setLoading(false);
-      if (error.response && error.response.status === 401) {
+      if (error.response && error.response.status === 400) {
         toast.error("Invalid username or password");
       } else {
         toast.error("An error occurred. Please try again.");

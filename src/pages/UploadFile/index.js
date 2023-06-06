@@ -32,7 +32,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 // };
 
 function UploadFile() {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState("");
   const [isFilePicked, setIsFilePicked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [pdf, setPdf] = useState(null);
@@ -49,6 +49,7 @@ function UploadFile() {
       setIsLoading(false);
       setFileUrl(uri);
       console.log(fileUrl);
+      console.log(selectedFile.type);
     } catch (error) {
       alert(error.message);
     }

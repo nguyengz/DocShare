@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-function TodoList({ ...props }) {
+function TodoListTop({ ...props }) {
   const { todoList, number } = props;
 
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ function TodoList({ ...props }) {
 
   const handleClickProduct = (todo) => {
     console.log(todo);
-    navigate(`/chitietsanpham/${todo.id}`);
+    navigate(`/fileDetail/${todo.id}`);
   };
 
   const handleListProducts = () => {
@@ -89,4 +89,4 @@ function TodoList({ ...props }) {
   );
 }
 
-export default TodoList;
+export default TodoListTop;

@@ -28,6 +28,7 @@ import * as Yup from "yup";
 import { styled } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import { useEffect } from "react";
+import { TagsInput } from "react-tag-input-component";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import {
@@ -47,7 +48,7 @@ import "./styles.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategory } from "~/slices/category";
-
+import { uploadfile } from "~/slices/file";
 const Item = styled(Grid)(({ theme }) => ({
   ...theme.typography.body2,
   margin: 1,
@@ -58,7 +59,7 @@ const Item = styled(Grid)(({ theme }) => ({
 }));
 const useStyles = makeStyles({
   input: {
-    with: "250px",
+    with: "300px",
     height: "40px",
   },
   TextareaAutosize: {
@@ -83,6 +84,8 @@ const useStyles = makeStyles({
       backgroundColor: "#3f51b5",
     },
   },
+});
+const styles = {
   wrapper: {
     display: "flex",
     flexDirection: "column",
@@ -91,50 +94,38 @@ const useStyles = makeStyles({
     gap: "1px",
   },
   imageWrapper: {
-    width: "400px",
-    height: "400px",
+    display: "block",
+    width: "100%",
+    height: "100%",
     border: "1px solid rgba(0,0,0,0.15)",
-    borderRadius: "3px",
+    borderRadius: "1px",
     boxShadow: "0 2px 5px 0 rgba(0,0,0,0.25)",
     padding: "0",
+    overflowX: "hidden",
   },
-});
-// const styles = {
-//   wrapper: {
-//     display: "flex",
-//     flexDirection: "column",
-//     justifyContent: "center",
-//     alignItems: "center",
-//     gap: "1px",
-//   },
-//   imageWrapper: {
-//     width: "300px",
-//     height: "350px",
-//     border: "1px solid rgba(0,0,0,0.15)",
-//     borderRadius: "3px",
-//     boxShadow: "0 2px 5px 0 rgba(0,0,0,0.25)",
-//     padding: "0",
-//   },
-// };
-const category = [
-  { id: "1", value: "Apple" },
-  { id: "2", value: "Samsung" },
-  { id: "3", value: "Apple" },
-];
+};
+
 // const tags = ["React", "JavaScript", "Material-UI", "Web Development"];
 function InfomationUpload(props) {
   const dispatch = useDispatch();
+  // const MAX_CHARACTERS_PER_LINE = 30;
+  // let nameFileWithBreaks = "";
+
   const { user: currentUser } = useSelector((state) => state.auth);
   const categoryData = useSelector((state) => state.category.data);
+  const fileType = props.selectedFile
+    ? props.selectedFile.type.split("/").pop()
+    : "";
+  const fileSize = props.selectedFile ? props.selectedFile.size : 0;
   const classes = useStyles();
 
   const [selectedCategory, setSelectedCategory] = useState("Select a Category");
   const [selectedTags, setSelectedTags] = useState([]);
   const [alignment, setAlignment] = useState("true");
-  const [title, setTitle] = useState("Public");
+  const [title, setTitle] = useState(props.nameFile);
   const [description, setDescription] = useState("");
 
-  const [numPages, setNumPages] = useState(null);
+  // const [numPages, setNumPages] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [width, setWidth] = React.useState(0);
   const [height, setHeight] = React.useState(0);
@@ -145,7 +136,18 @@ function InfomationUpload(props) {
   const canvasRef = useRef(null);
 
   const pdf = props.pdf;
+  // Check if the nameFile is longer than the maximum number of characters per line
+  // if (props.nameFile && props.nameFile.length > MAX_CHARACTERS_PER_LINE) {
+  //   // Split the nameFile into an array of substrings with a maximum length of MAX_CHARACTERS_PER_LINE
+  //   const nameFileParts = props.nameFile.match(
+  //     new RegExp(`.{1,${MAX_CHARACTERS_PER_LINE}}`, "g")
+  //   );
 
+  //   // Join the nameFileParts array into a string with "<br>" between each substring
+  //   nameFileWithBreaks = nameFileParts.join("<br>");
+  // } else {
+  //   nameFileWithBreaks = props.nameFile || "";
+  // }
   const handleDelete = (tag) => {
     const newTags = selectedTags.filter((t) => t !== tag);
     setSelectedTags(newTags);
@@ -162,7 +164,7 @@ function InfomationUpload(props) {
 
     for (let i = 1; i <= pdf.numPages; i++) {
       var page = await pdf.getPage(i);
-      var viewport = page.getViewport({ scale: 1 });
+      var viewport = page.getViewport({ scale: 0.5 });
       canvas.height = viewport.height;
       canvas.width = viewport.width;
       var render_context = {
@@ -181,6 +183,7 @@ function InfomationUpload(props) {
   }
 
   useEffect(() => {
+    // console.log(selectedTags);
     dispatch(fetchCategory());
     // alert(currentUser.id);
     pdf && renderPage();
@@ -209,18 +212,27 @@ function InfomationUpload(props) {
     formData.append("category", data.category);
     formData.append("tags", data.tags);
     formData.append("iduser", data.iduser);
-    console.log(data);
-    try {
-      const response = await axios.post("/upload/file", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-    }
+    // console.log(data);
+    // console.log(data.tags);
+    dispatch(uploadfile(formData));
+    // try {
+    //   const response = await axios.post("/upload/file", formData, {
+    //     headers: {
+    //       "Content-Type": "multipart/form-data",
+    //     },
+    //   });
+    //   console.log(response.data);
+    // } catch (error) {
+    //   console.error(error);
+    // }
   };
+  function formatBytes(bytes) {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  }
   return (
     <Container>
       <Box
@@ -289,8 +301,8 @@ function InfomationUpload(props) {
                   <Grid item xs={12}>
                     <Stack
                       direction={{ xs: "row" }}
-                      spacing={1}
-                      justifyContent="space-between"
+                      spacing={3}
+                      justifyContent=""
                     >
                       <Item>
                         <Swiper
@@ -300,39 +312,54 @@ function InfomationUpload(props) {
                           navigation={true}
                           modules={[Pagination, Navigation]}
                           className="mySwiper"
-                          style={useStyles.wrapper}
+                          style={styles.wrapper}
                         >
                           {images.map((image, idx) => (
                             <SwiperSlide
                               key={idx}
-                              style={useStyles.imageWrapper}
-                              scrollbar={true}
-                              direction={"vertical"}
-                              slidesPerView={"auto"}
+                              style={styles.imageWrapper}
+                              // direction={"vertical"}
+                              // slidesPerView={"auto"}
                             >
                               <img
                                 id="image-generated"
                                 src={image}
                                 alt="pdfImage"
                                 style={{
-                                  width: "90%",
-                                  height: "90%",
-                                  margin: "0",
+                                  width: width,
+                                  height: height,
                                 }}
                               />
+
                               {/* </div> */}
                             </SwiperSlide>
                           ))}
                         </Swiper>
                       </Item>
                       <Item>
+                        {/* <p style={{fontSize: "20px", display: "block"}}> {props.nameFile}<br/></p> */}
                         <Typography
-                          variant="h4"
+                          variant="caption"
                           color="initial"
                           wordBreak="break-all"
                           whiteSpace="pre-line"
+                          style={{
+                            fontSize: "20px",
+                            overflowWrap: "break-word",
+                          }}
                         >
                           {props.nameFile}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          style={{
+                            fontSize: "15px",
+                            marginLeft: "5px",
+                          }}
+                        >
+                          Type: {fileType}
+                          <br />
+                          Size: {formatBytes(fileSize)}
                         </Typography>
                       </Item>
                     </Stack>
@@ -341,7 +368,7 @@ function InfomationUpload(props) {
                   <Grid item xs={12} direction="row">
                     <Stack
                       direction={{ xs: "column", sm: "row" }}
-                      spacing={2}
+                      spacing={1}
                       justifyContent="space-between"
                     >
                       <Stack direction="column" spacing={4}>
@@ -351,7 +378,11 @@ function InfomationUpload(props) {
                             className={classes.input}
                             type="text"
                             fullWidth
-                            value={props.nameFile}
+                            value={title}
+                            onChange={(e) => {
+                              // handleChange(e);
+                              setTitle(e.target.value);
+                            }}
                           />
                         </Item>
                         <Item>
@@ -362,7 +393,7 @@ function InfomationUpload(props) {
                             style={{ height: "100px", width: "100%" }}
                             value={description}
                             onChange={(e) => {
-                              handleChange(e);
+                              // handleChange(e);
                               setDescription(e.target.value);
                             }}
                           />
@@ -375,7 +406,6 @@ function InfomationUpload(props) {
                             className={classes.input}
                             value={selectedCategory}
                             onChange={(e) => {
-                              handleChange(e);
                               setSelectedCategory(e.target.value);
                             }}
                             sx={{ width: "100%" }}
@@ -387,9 +417,7 @@ function InfomationUpload(props) {
                             </MenuItem>
                             {categoryData.map((category) => (
                               <MenuItem
-                                sx={{
-                                  
-                                }}
+                                sx={{}}
                                 key={category.id}
                                 value={category.categoryName}
                               >
@@ -400,7 +428,17 @@ function InfomationUpload(props) {
                         </Item>
                         <Item>
                           <InputLabel htmlFor="Title-login">Tags</InputLabel>
-                          <OutlinedInput
+                          <TagsInput
+                            className={classes.input}
+                            value={selectedTags}
+                            onChange={
+                              // handleChange(e);
+                              setSelectedTags
+                            }
+                            name="Tags"
+                            placeHolder="enter tags"
+                          />
+                          {/* <OutlinedInput
                             sx={useStyles.input}
                             className={classes.input}
                             type="text"
@@ -410,7 +448,7 @@ function InfomationUpload(props) {
                               setSelectedTags(e.target.value);
                             }}
                             fullWidth
-                          ></OutlinedInput>
+                          ></OutlinedInput> */}
                         </Item>
                         <Item>
                           <InputLabel htmlFor="Privacy">Privacy</InputLabel>
