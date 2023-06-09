@@ -44,7 +44,7 @@ import "swiper/css/pagination";
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
 
-import "./styles.css";
+import "./styles1.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategory } from "~/slices/category";

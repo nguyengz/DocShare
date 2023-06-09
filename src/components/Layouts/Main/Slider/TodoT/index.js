@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 import TodoListTop from "../TodoTop";
 import { Padding } from "@mui/icons-material";
 
-function Todo({ ...props }) {
+function TodoT({ ...props }) {
   const { todoList, number } = props;
 
   return (
@@ -24,4 +24,4 @@ function Todo({ ...props }) {
   );
 }
 
-export default Todo;
+export default TodoT;

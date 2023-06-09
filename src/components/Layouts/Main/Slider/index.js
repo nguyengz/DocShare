@@ -1,5 +1,5 @@
 import { Box, Grid, Paper, Typography } from "@mui/material";
-import Todo from "./TodoT";
+import TodoT from "./TodoT";
 import { useEffect, useState } from "react";
 
 import { fetchfile } from "~/slices/file";
@@ -9,29 +9,38 @@ import { useDispatch, useSelector } from "react-redux";
 function Slider() {
   const dispatch = useDispatch();
   const fileData = useSelector((state) => state.file.data);
+  let [todoList, setTodoList] = useState([]);
 
   useEffect(() => {
     dispatch(fetchfile());
+    getAlldata();
+    setTodoList(getAlldata());
   }, []);
-
 
   const getAlldata = () => {
     let datas = [];
-    // eslint-disable-next-line array-callback-return
-    fileData.map((file) => {
-      const data = {
-        id: file.id,
-        name: file.fileName,
-        price: file.descriptio,
-        image: file.link,
-      };
-      datas = [...datas, data];
-    });console.log(datas);
+    fileData &&
+      fileData.map((file) => {
+        const data = {
+          id: file.id,
+          name: file.fileName,
+          price: file.description,
+          image: file.linkImg,
+          // link: file.link
+        };
+        datas = [...datas, data];
+      });
+    console.log(datas);
     return datas;
-    
   };
+  useEffect(() => {
+    async function fetchData() {
+      let data = await getAlldata();
+      setTodoList(data);
+    }
+    fetchData();
+  }, []);
 
-  let todoList = getAlldata();
   // const titleProduct = 'Những sản phẩm nổi bật';
   const numberProduct = [4, 12, 3];
   return (
@@ -83,11 +92,11 @@ function Slider() {
               //   fontFamily: "inherit",
               //   padding: "20px 0 0 0",
             }}
-          > 
+          >
             Today’s Top SlideShares
           </Typography>
         </Grid>
-        <Todo todoList={todoList} number={numberProduct} />
+        <TodoT todoList={todoList} number={numberProduct} />
       </Box>
     </>
   );

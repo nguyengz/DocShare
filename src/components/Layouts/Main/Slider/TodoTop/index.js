@@ -25,7 +25,11 @@ function TodoListTop({ ...props }) {
   const matches = useMediaQuery(theme.breakpoints.up("sm"));
 
   const handleClickProduct = (todo) => {
-    console.log(todo);
+    // console.log(todo.link);
+    // const state = { link: todo.link };
+    // const title = "";
+    // const url = `/fileDetail/${todo.link}`;
+    // window.history.pushState(state, title, url);
     navigate(`/fileDetail/${todo.id}`);
   };
 

@@ -1,5 +1,6 @@
+/* eslint-disable no-template-curly-in-string */
 /* eslint-disable jsx-a11y/iframe-has-title */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Card,
@@ -8,13 +9,118 @@ import {
   Typography,
   Button,
   Avatar,
+  Chip,
 } from "@mui/material";
+import "./styles.css";
+import { saveAs } from 'file-saver';
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Navigation } from "swiper";
+import "swiper/swiper.css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/free-mode";
+import "swiper/css/scrollbar";
 
 import DownloadIcon from "@mui/icons-material/Download";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShareRoundedIcon from "@mui/icons-material/ShareRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
+
+import { downLoadFile, fetchFileDetail } from "~/slices/file";
+import { pdfjs } from "react-pdf";
+import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { downloadFile } from "~/slices/download";
+pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+
+const styles = {
+  wrapper: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "1px",
+  },
+  imageWrapper: {
+    display: "block",
+    width: "100%",
+    height: "100%",
+    border: "1px solid rgba(0,0,0,0.15)",
+    borderRadius: "1px",
+    boxShadow: "0 2px 5px 0 rgba(0,0,0,0.25)",
+    padding: "0",
+    overflowX: "hidden",
+  },
+};
 function FileDetail() {
+  const dispatch = useDispatch();
+  const { id } = useParams();
+  // const { state } = window.history;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
+  const [images, setImages] = useState([]);
+  const [pdf, setPdf] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [pdfRendering, setPdfRendering] = React.useState("");
+  const [pageRendering, setPageRendering] = React.useState("");
+  const fileDetail = useSelector((state) => state.file.data);
+  const uploadDate = new Date(fileDetail.uploadDate);
+  const options = { year: "numeric", month: "short", day: "numeric" };
+  const formattedDate = uploadDate.toLocaleDateString("en-US", options);
+
+  const tags = fileDetail.tags;
+  // const link = state.link;
+  // const file_id = id;
+  const pdfUrl = "http://localhost:8080/file/download/file/" + fileDetail.link;
+  async function renderPage(pdfUrl, pageNumber) {
+    setPageRendering(true);
+    const _pdf = await pdfjs.getDocument(pdfUrl).promise;
+    setPdf(_pdf);
+    const imagesList = [];
+    const canvas = document.createElement("canvas");
+    canvas.className = "canv";
+    const context = canvas.getContext("2d");
+
+    for (let i = 1; i <= _pdf.numPages; i++) {
+      const page = await _pdf.getPage(i);
+      const viewport = page.getViewport({ scale: 1 });
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      setWidth(viewport.width);
+      setHeight(viewport.height);
+      const renderContext = { canvasContext: context, viewport };
+      await page.render(renderContext).promise;
+      const img = canvas.toDataURL("image/png");
+      imagesList.push(img);
+    }
+    setImages(imagesList);
+    setPageRendering(false);
+  }
+  const handleDownload = () => {
+    const fileUrl = fileDetail.link;
+  const fileName = fileDetail.fileName;
+    dispatch(downloadFile({fileUrl,fileName}));
+  };
+  useEffect(() => {
+    // const data = {
+    //   "file_id": id
+    // };
+    const pdfUrl = "http://localhost:8080/file/download/file/" + fileDetail.link;
+    dispatch(fetchFileDetail(id));
+    console.log("link" +fileDetail.link);
+    // const { state } = window.history;
+    // if (state && state.link) {
+    //   const link = state.link;
+    //   const pdfUrl = "http://localhost:8080/file/download/file/" + link;
+    // }
+    console.log(pdfUrl);
+    if (pdfUrl && currentPage) {
+      renderPage(pdfUrl);
+    }
+  }, [pdfUrl, currentPage]);
   return (
     <>
       <Box container sx={{ minHeight: "1000px" }}>
@@ -24,19 +130,51 @@ function FileDetail() {
           }}
         >
           <Grid container direction="row">
-            <Grid xs={12} sm={9} direction="column">
+            <Grid xs={12} sm={8} direction="column">
               <Grid
                 item
                 sx={{
                   height: 400,
                 }}
               >
-                <iframe
-                  src="https://drive.google.com/file/d/1HUm563Yi1ifK0UyIQX6X_r5ms8DUFF9f/preview  "
+                {images && images ? (
+                  <Swiper
+                    pagination={{
+                      type: "progressbar",
+                    }}
+                    navigation={true}
+                    modules={[Pagination, Navigation]}
+                    className="mySwiper"
+                    style={styles.wrapper}
+                  >
+                    {images.map((image, idx) => (
+                      <SwiperSlide key={idx} style={styles.imageWrapper}>
+                        <img
+                          id="image-generated"
+                          src={image}
+                          alt="pdfImage"
+                          style={{
+                            width: width,
+                            height: height,
+                          }}
+                        />
+
+                        {/* </div> */}
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                ) : (
+                  <Typography variant="h1" color="initial">
+                    None
+                  </Typography>
+                )}
+
+                {/* <iframe
+                  src="https://drive.google.com/file/d/1xdJ419aG8M_OZEhQksy0Ne3G1O_A1NJb/preview  "
                   allow="autoplay"
                   width="100%"
                   height="100%"
-                ></iframe>
+                ></iframe> */}
               </Grid>
               <Grid
                 item
@@ -55,16 +193,17 @@ function FileDetail() {
                       variant="h1"
                       sx={{ fontSize: "26px", fontWeight: 600 }}
                     >
-                      4 Strategies to Renew Your Career Passion
+                      {fileDetail.fileName}
                     </Typography>
                     <Typography variant="caption" sx={{ fontSize: "10px" }}>
-                      Jul. 21, 2015 • 273 likes • 82.708 views
+                      {formattedDate} • {fileDetail.likeFile} likes •{" "}
+                      {fileDetail.view} views
                     </Typography>
                   </Stack>
                   <Stack item>
-                    <Button variant="contained" color="primary">
+                    <Button variant="contained" color="primary" onClick={handleDownload}>
                       <DownloadIcon />
-                      Upload Now
+                      Download Now
                     </Button>
                     <Typography variant="caption" sx={{ fontSize: "10px" }}>
                       Download to read offline
@@ -77,7 +216,20 @@ function FileDetail() {
                   <MoreHorizRoundedIcon />
                 </Stack>
                 <Stack direction="row" spacing={2}>
-                  <Typography>Tag</Typography>
+                  {tags &&
+                    tags.map((tag, index) => (
+                      <Chip
+                        key={index}
+                        sx={{
+                          border: "1px solid",
+                          borderRadius: "56px",
+                          background: "",
+                          padding: "0 16px",
+                          lineHeight: "24px",
+                        }}
+                        label={tag.tagName}
+                      />
+                    ))}
                 </Stack>
                 <Stack direction="row" spacing={2}>
                   <Typography>
@@ -100,7 +252,7 @@ function FileDetail() {
             <Grid>bb</Grid>
           </Grid>
         </Card>
-        <Grid container spacing={2} sx={{ margin: "5px 5px" }}>
+        <Grid container spacing={2} >
           <Grid
             item
             xs={12}

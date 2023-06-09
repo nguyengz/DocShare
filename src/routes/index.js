@@ -5,7 +5,7 @@ import Expole from "~/pages/Expole";
 import Login from "~/pages/Auth/Login";
 import Register from "~/pages/Auth/Register";
 import UploadFile from "~/pages/UploadFile";
-import InfomationUpload from "~/pages/UploadFile/InfomationUpload";
+import InfomationUpload from "~/pages/UploadFile";
 import FileDetail from "~/pages/FileDetail";
 import Verify from "~/pages/Auth/Verify";
 // import ProductDetail from "~/pages/ProductDetail";
@@ -23,7 +23,7 @@ const publicRoutes = [
     component: InfomationUpload,
     layout: "onlylayout",
   },
-  { path: "/fileDetail", component: FileDetail, layout: "onlylayout" },
+  { path: "/fileDetail/:id", component: FileDetail, layout: "onlylayout" },
 ];
 
 const privateRoutes = [
