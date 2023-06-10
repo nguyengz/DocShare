@@ -53,17 +53,17 @@ function TodoListTop({ ...props }) {
               onClick={() => handleClickProduct(todo)}
               sx={{ height: "100%" }}
             >
-              <CardActionArea sx={{ height: "90%" }}>
+              <CardActionArea sx={{ height: "400px" }}>
                 <CardMedia
                   component="img"
                   image={todo.image}
                   // alt="green iguana"
                   // sx={{ height: "100%" }}
-                  height={250}
+                  height="300px"
                 />
                 <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    Lizard
+                  <Typography gutterBottom variant="h6" component="div">
+                  {todo.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     {todo.name}

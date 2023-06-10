@@ -1,5 +1,5 @@
 import { Box, Grid, Paper, Typography } from "@mui/material";
-import TodoT from "./TodoT";
+import Todo from "./TodoT";
 import { useEffect, useState } from "react";
 
 import { fetchfile } from "~/slices/file";
@@ -9,40 +9,31 @@ import { useDispatch, useSelector } from "react-redux";
 function Slider() {
   const dispatch = useDispatch();
   const fileData = useSelector((state) => state.file.data);
-  let [todoList, setTodoList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(fetchfile());
-    getAlldata();
-    setTodoList(getAlldata());
+    dispatch(fetchfile())
+      .then(() => setIsLoading(false))
+      .catch((error) => console.log(error));
   }, []);
 
   const getAlldata = () => {
     let datas = [];
-    fileData &&
-      fileData.map((file) => {
-        const data = {
-          id: file.id,
-          name: file.fileName,
-          price: file.description,
-          image: file.linkImg,
-          // link: file.link
-        };
-        datas = [...datas, data];
-      });
-    console.log(datas);
+    fileData.map((file) => {
+      const data = {
+        id: file.id,
+        name: file.fileName,
+        price: file.description,
+        image: file.linkImg,
+      };
+      datas = [...datas, data];
+    });
     return datas;
   };
-  useEffect(() => {
-    async function fetchData() {
-      let data = await getAlldata();
-      setTodoList(data);
-    }
-    fetchData();
-  }, []);
 
-  // const titleProduct = 'Những sản phẩm nổi bật';
+  const todoList = isLoading ? [] : getAlldata();
   const numberProduct = [4, 12, 3];
+  
   return (
     <>
       <Box
@@ -96,7 +87,7 @@ function Slider() {
             Today’s Top SlideShares
           </Typography>
         </Grid>
-        <TodoT todoList={todoList} number={numberProduct} />
+        <Todo todoList={todoList} number={numberProduct} />
       </Box>
     </>
   );

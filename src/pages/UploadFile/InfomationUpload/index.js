@@ -4,17 +4,11 @@ import {
   Box,
   Button,
   Card,
-  Chip,
   Container,
-  FormControlLabel,
-  FormHelperText,
   Grid,
-  IconButton,
-  InputAdornment,
   InputLabel,
   MenuItem,
   OutlinedInput,
-  Paper,
   Select,
   Stack,
   TextareaAutosize,
@@ -31,13 +25,7 @@ import { useEffect } from "react";
 import { TagsInput } from "react-tag-input-component";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import {
-  Pagination,
-  Navigation,
-  FreeMode,
-  Scrollbar,
-  Mousewheel,
-} from "swiper";
+import { Pagination, Navigation } from "swiper";
 import "swiper/swiper.css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";

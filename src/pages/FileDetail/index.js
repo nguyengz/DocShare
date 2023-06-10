@@ -12,7 +12,7 @@ import {
   Chip,
 } from "@mui/material";
 import "./styles.css";
-import { saveAs } from 'file-saver';
+import { saveAs } from "file-saver";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper";
@@ -52,6 +52,7 @@ const styles = {
     boxShadow: "0 2px 5px 0 rgba(0,0,0,0.25)",
     padding: "0",
     overflowX: "hidden",
+    background: "aliceblue",
   },
 };
 function FileDetail() {
@@ -101,16 +102,15 @@ function FileDetail() {
   }
   const handleDownload = () => {
     const fileUrl = fileDetail.link;
-  const fileName = fileDetail.fileName;
-    dispatch(downloadFile({fileUrl,fileName}));
+    const fileName = fileDetail.fileName;
+    dispatch(downloadFile({ fileUrl, fileName }));
   };
   useEffect(() => {
     // const data = {
     //   "file_id": id
     // };
-    const pdfUrl = "http://localhost:8080/file/download/file/" + fileDetail.link;
     dispatch(fetchFileDetail(id));
-    console.log("link" +fileDetail.link);
+    console.log("link" + fileDetail.link);
     // const { state } = window.history;
     // if (state && state.link) {
     //   const link = state.link;
@@ -120,7 +120,7 @@ function FileDetail() {
     if (pdfUrl && currentPage) {
       renderPage(pdfUrl);
     }
-  }, [pdfUrl, currentPage]);
+  }, []);
   return (
     <>
       <Box container sx={{ minHeight: "1000px" }}>
@@ -156,6 +156,8 @@ function FileDetail() {
                           style={{
                             width: width,
                             height: height,
+                            border: "2px ridge  ",
+                            margin: "5px auto",
                           }}
                         />
 
@@ -201,7 +203,11 @@ function FileDetail() {
                     </Typography>
                   </Stack>
                   <Stack item>
-                    <Button variant="contained" color="primary" onClick={handleDownload}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleDownload}
+                    >
                       <DownloadIcon />
                       Download Now
                     </Button>
@@ -252,7 +258,7 @@ function FileDetail() {
             <Grid>bb</Grid>
           </Grid>
         </Card>
-        <Grid container spacing={2} >
+        <Grid container spacing={2}>
           <Grid
             item
             xs={12}
