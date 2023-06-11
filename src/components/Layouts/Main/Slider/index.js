@@ -22,9 +22,13 @@ function Slider() {
     fileData.map((file) => {
       const data = {
         id: file.id,
+        userId: file.userId,
         name: file.fileName,
         price: file.description,
-        image: file.linkImg,
+        // image: file.linkImg,
+        link: file.link,
+        view: file.view,
+        userName: file.userName
       };
       datas = [...datas, data];
     });
@@ -39,7 +43,7 @@ function Slider() {
       <Box
         sx={{
           width: "auto",
-          height: 300,
+          height: "300px",
           backgroundImage:
             "url(https://public.slidesharecdn.com/v2/images/hp_desktop_header.jpg?cb=fc6a75b2c177cfad98518da43d3b385f38976fb4)",
           backgroundRepeat: "no-repeat",

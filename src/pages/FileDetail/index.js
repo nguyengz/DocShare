@@ -10,6 +10,7 @@ import {
   Button,
   Avatar,
   Chip,
+  CircularProgress,
 } from "@mui/material";
 import "./styles.css";
 import { saveAs } from "file-saver";
@@ -48,8 +49,8 @@ const styles = {
     width: "100%",
     height: "100%",
     border: "1px solid rgba(0,0,0,0.15)",
-    borderRadius: "1px",
-    boxShadow: "0 2px 5px 0 rgba(0,0,0,0.25)",
+    // borderRadius: "1px",
+    // boxShadow: "5px 5px 5px 5px rgba(0,0,0,0.25)",
     padding: "0",
     overflowX: "hidden",
     background: "aliceblue",
@@ -75,9 +76,10 @@ function FileDetail() {
   const tags = fileDetail.tags;
   // const link = state.link;
   // const file_id = id;
-  const pdfUrl = "http://localhost:8080/file/download/file/" + fileDetail.link;
+
   async function renderPage(pdfUrl, pageNumber) {
     setPageRendering(true);
+    setIsLoading(true);
     const _pdf = await pdfjs.getDocument(pdfUrl).promise;
     setPdf(_pdf);
     const imagesList = [];
@@ -99,28 +101,46 @@ function FileDetail() {
     }
     setImages(imagesList);
     setPageRendering(false);
+    setIsLoading(false); // set isLoading to false when pages are rendered
   }
   const handleDownload = () => {
     const fileUrl = fileDetail.link;
     const fileName = fileDetail.fileName;
     dispatch(downloadFile({ fileUrl, fileName }));
   };
+  // useEffect(() => {
+  //   dispatch(fetchFileDetail(id));
+  //   console.log("link" + fileDetail.link);
+  //   const pdfUrl =
+  //     "http://localhost:8080/file/download/" +
+  //     fileDetail.link +
+  //     "/" +
+  //     fileDetail.userId +
+  //     "/" +
+  //     fileDetail.id;
+  //   console.log(pdfUrl);
+  //   if (pdfUrl && currentPage) {
+  //     renderPage(pdfUrl, currentPage); // pass currentPage to renderPage function
+  //   }
+  // }, [id, currentPage, fileDetail.link, dispatch, fileDetail.userId, fileDetail.id]);
   useEffect(() => {
-    // const data = {
-    //   "file_id": id
-    // };
     dispatch(fetchFileDetail(id));
+  }, [id, dispatch]);
+
+  useEffect(() => {
     console.log("link" + fileDetail.link);
-    // const { state } = window.history;
-    // if (state && state.link) {
-    //   const link = state.link;
-    //   const pdfUrl = "http://localhost:8080/file/download/file/" + link;
-    // }
+    const pdfUrl =
+      "http://localhost:8080/file/download/" +
+      fileDetail.link +
+      "/" +
+      fileDetail.userId +
+      "/" +
+      fileDetail.id;
     console.log(pdfUrl);
     if (pdfUrl && currentPage) {
-      renderPage(pdfUrl);
+      renderPage(pdfUrl, currentPage); // pass currentPage to renderPage function
     }
-  }, []);
+  }, [currentPage, fileDetail.link, fileDetail.userId, fileDetail.id]);
   return (
     <>
       <Box container sx={{ minHeight: "1000px" }}>
@@ -137,7 +157,9 @@ function FileDetail() {
                   height: 400,
                 }}
               >
-                {images && images ? (
+                {isLoading ? (
+                  <CircularProgress /> // show CircularProgress when isLoading is true
+                ) : images && images ? (
                   <Swiper
                     pagination={{
                       type: "progressbar",
@@ -249,7 +271,7 @@ function FileDetail() {
                     <Avatar></Avatar>
                   </Stack>
                   <Stack item>
-                    <Typography>Nguyên </Typography>
+                    <Typography> {fileDetail.userName} </Typography>
                     <Typography>About</Typography>
                   </Stack>
                 </Stack>

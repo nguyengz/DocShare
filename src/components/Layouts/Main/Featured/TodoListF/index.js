@@ -12,7 +12,18 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+
 import { useNavigate } from "react-router-dom";
+import PdfToImage from "../../pdftoimage";
+
+const styles = {
+  todoName: {
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    maxWidth: "300px",
+  },
+};
 
 function TodoList({ ...props }) {
   const { todoList, number } = props;
@@ -49,24 +60,36 @@ function TodoList({ ...props }) {
               onClick={() => handleClickProduct(todo)}
               sx={{ height: "100%", boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)" }}
             >
-              <CardActionArea sx={{ height: "90%" }}>
-                <CardMedia
-                  component="img"
-                  image={todo.image}
-                  // alt="green iguana"
-                  // sx={{ height: "100%" }}
-                  height={250}
+              <CardActionArea>
+                <PdfToImage
+                  link={todo.link}
+                  userId={todo.userId}
+                  id={todo.id}
                 />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    Lizard
+                <CardContent sx={{ height: "100px" }}>
+                  <Typography style={styles.todoName} gutterBottom variant="h6">
+                    {todo.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {todo.name}
+                    <Typography>
+                      {todo.name.length > 50
+                        ? todo.name.slice(0, 50) + "..."
+                        : todo.name}
+                    </Typography>
                   </Typography>
                 </CardContent>
               </CardActionArea>
-              <CardActions>
+              <CardActions
+                style={{
+                  display: "flex",
+                  margin: "0px 1px",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography style={{ marginRight: "auto" }}>
+                  {todo.userName}
+                </Typography>
+                <Typography variant="caption">{todo.view} views</Typography>
                 <Button size="small" color="primary">
                   Share
                 </Button>
