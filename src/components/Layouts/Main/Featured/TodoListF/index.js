@@ -8,6 +8,7 @@ import {
   CardContent,
   CardMedia,
   Grid,
+  Link,
   Typography,
   useMediaQuery,
   useTheme,
@@ -86,7 +87,26 @@ function TodoList({ ...props }) {
                   justifyContent: "space-between",
                 }}
               >
-                <Typography style={{ marginRight: "auto" }}>
+                <Typography
+                  component={Link}
+                  style={{
+                    marginRight: "auto",
+                    textDecoration: "none",
+                    color: "#1976d2",
+                  }}
+                  onClick={() => {
+                    // setidlink(page.id);
+                    // alert(page.title);
+                  }}
+                  href={`/${todo.id}`}
+                  key={index}
+                  onMouseEnter={(e) => {
+                    e.target.style.color = "blue";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.color = "1976d2";
+                  }}
+                >
                   {todo.userName}
                 </Typography>
                 <Typography variant="caption">{todo.view} views</Typography>

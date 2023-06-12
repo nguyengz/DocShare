@@ -58,53 +58,52 @@ const fileSlice = createSlice({
       state.error = action.payload;
     },
   },
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchfile.pending, (state) => {
+  extraReducers: {
+      [fetchfile.pending]: (state) => {
         state.status = "loading";
-      })
-      .addCase(fetchfile.fulfilled, (state, action) => {
+      },
+      [fetchfile.fulfilled]: (state, action) => {
         state.status = "succeeded";
         state.data = action.payload;
-      })
-      .addCase(fetchfile.rejected, (state, action) => {
+      },
+      [fetchfile.rejected]: (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
-      })
-      .addCase(fetchFileDetail.pending, (state) => {
+      },
+      [fetchFileDetail.pending]: (state) => {
         state.status = "loading";
-      })
-      .addCase(fetchFileDetail.fulfilled, (state, action) => {
+      },
+      [fetchFileDetail.fulfilled]: (state, action) => {
         state.status = "succeeded";
         state.data = action.payload;
-      })
-      .addCase(fetchFileDetail.rejected, (state, action) => {
+      },
+      [fetchFileDetail.rejected]: (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
-      })
-      .addCase(downLoadFile.pending, (state) => {
+      },
+      [downLoadFile.pending]: (state) => {
         state.status = "loading";
-      })
-      .addCase(downLoadFile.fulfilled, (state, action) => {
+      },
+      [downLoadFile.fulfilled]: (state, action) => {
         state.status = "succeeded";
         state.data = action.payload;
-      })
-      .addCase(downLoadFile.rejected, (state, action) => {
+      },
+      [downLoadFile.rejected]: (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
-      })
+      },
       
-      .addCase(uploadfile.pending, (state) => {
+      [uploadfile.pending]: (state) => {
         state.status = "loading";
-      })
-      .addCase(uploadfile.fulfilled, (state, action) => {
+      },
+      [uploadfile.fulfilled]: (state, action) => {
         state.status = "succeeded";
         state.data = action.payload;
-      })
-      .addCase(uploadfile.rejected, (state, action) => {
+      },
+      [uploadfile.rejected]: (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
-      });
+      }
   },
 });
 

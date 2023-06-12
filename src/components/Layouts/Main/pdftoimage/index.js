@@ -30,19 +30,17 @@ const PdfToImage = (props) => {
     canvas.className = "canv";
     const context = canvas.getContext("2d");
 
-    for (let i = 1; i <= _pdf.numPages; i++) {
-      const page = await _pdf.getPage(i);
-      const viewport = page.getViewport({ scale: 1 });
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-      setWidth(viewport.width);
-      setHeight(viewport.height);
-      const renderContext = { canvasContext: context, viewport };
-      await page.render(renderContext).promise;
-      const img = canvas.toDataURL("image/png");
-      imagesList.push(img);
-      setCurrentPage(_pdf.numPages);
-    }
+    const page = await _pdf.getPage(pageNumber);
+    const viewport = page.getViewport({ scale: 1 });
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+    setWidth(viewport.width);
+    setHeight(viewport.height);
+    const renderContext = { canvasContext: context, viewport };
+    await page.render(renderContext).promise;
+    const img = canvas.toDataURL("image/png");
+    imagesList.push(img);
+    setCurrentPage(pageNumber);
 
     setImages([...imagesList]);
     setIsLoading(false);
@@ -70,7 +68,7 @@ const PdfToImage = (props) => {
       } else if (!isLoading && images.length === 0) {
         setIsError(true);
       }
-    }, 5000);
+    }, 10000);
 
     return () => {
       clearTimeout(timeoutId);

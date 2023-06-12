@@ -1,4 +1,5 @@
 import React from "react";
+import { Link as RouterLink } from 'react-router-dom';
 import {
   Avatar,
   Box,
@@ -9,11 +10,12 @@ import {
   CardContent,
   CardMedia,
   Grid,
+
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PdfToImage from "../../pdftoimage";
 
 const styles = {
@@ -88,12 +90,30 @@ function TodoListTop({ ...props }) {
                   justifyContent: "space-between",
                 }}
               >
-                <Typography style={{ marginRight: "auto" }}>
+                <Typography
+                  component={RouterLink}
+                  style={{
+                    marginRight: "auto",
+                    textDecoration: "none",
+                    color: "#1976d2",
+                  }}
+                  onClick={() => {
+                    // setidlink(page.id);
+                    // alert(page.title);
+                  }}
+                  // href={`/About/${todo.userId}`}
+                  to={`/About/${todo.userId}`}
+                  key={index}
+                  onMouseEnter={(e) => {
+                    e.target.style.color = "blue";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.color = "1976d2";
+                  }}
+                >
                   {todo.userName}
                 </Typography>
-                <Typography variant="caption" >
-                  {todo.view} views
-                </Typography>
+                <Typography variant="caption">{todo.view} views</Typography>
                 <Button size="small" color="primary">
                   Share
                 </Button>

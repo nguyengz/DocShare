@@ -4,6 +4,7 @@ import Expole from "~/pages/Expole";
 // import Found404 from "~/pages/Found404";
 import Login from "~/pages/Auth/Login";
 import Register from "~/pages/Auth/Register";
+import AboutUser from "~/pages/Auth/User";
 import UploadFile from "~/pages/UploadFile";
 import InfomationUpload from "~/pages/UploadFile";
 import FileDetail from "~/pages/FileDetail";
@@ -16,6 +17,7 @@ const publicRoutes = [
 
   { path: "/login", component: Login, layout: "onlylayout" },
   { path: "/register", component: Register, layout: "onlylayout" },
+  { path: "/About/:userId", component: AboutUser, layout: "onlylayout" },
 
   { path: "/uploadfile", component: UploadFile, layout: "onlylayout" },
   {

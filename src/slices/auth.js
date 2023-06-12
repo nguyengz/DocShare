@@ -39,9 +39,7 @@ export const login = createAsyncThunk(
       return { user: data };
     } catch (error) {
       const message =
-        (error.data &&
-          error.data &&
-          error.data.message) ||
+        (error.data && error.data && error.data.message) ||
         error.message ||
         error.toString("Sai tai khoan hoac mat khau");
       thunkAPI.dispatch(setMessage(message));
@@ -49,6 +47,14 @@ export const login = createAsyncThunk(
     }
   }
 );
+// export const fetchUser = createAsyncThunk(
+//   "auth/fetchUser",
+//   async (data, thunkAPI) => {
+//     const response = await AuthService.fetchUser(data);
+//     thunkAPI.dispatch(setMessage(response.data.message));
+//     return response.data;
+//   }
+// );
 
 export const logout = createAsyncThunk("auth/logout", async () => {
   await AuthService.logout();
@@ -72,7 +78,6 @@ const authSlice = createSlice({
       state.isLoggedIn = true;
       state.user = action.payload.user;
       state.error = action.payload.error;
-      
     },
     [login.rejected]: (state, action) => {
       state.isLoggedIn = false;
@@ -83,6 +88,17 @@ const authSlice = createSlice({
       state.isLoggedIn = false;
       state.user = null;
     },
+    // [fetchUser.pending]: (state, action) => {
+    //   state.status = "loading";
+    // },
+    // [fetchUser.fulfilled]: (state, action) => {
+    //   state.status = "succeeded";
+    //   state.data = action.payload;
+    // },
+    // [fetchUser.rejected]: (state, action) => {
+    //   state.status = "failed";
+    //   state.error = action.error.message;
+    // },
   },
 });
 

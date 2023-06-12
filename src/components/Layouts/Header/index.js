@@ -209,7 +209,7 @@ export default function Header() {
                       // setidlink(page.id);
                       // alert(page.title);
                     }}
-                    underline="none"
+                    // underline="none"
                     href={`/${page.id}`}
                     value={page.id}
                     key={index}

@@ -11,6 +11,7 @@ import {
   Avatar,
   Chip,
   CircularProgress,
+  Link,
 } from "@mui/material";
 import "./styles.css";
 import { saveAs } from "file-saver";
@@ -155,6 +156,10 @@ function FileDetail() {
                 item
                 sx={{
                   height: 400,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  // justifyContent: "center"
                 }}
               >
                 {isLoading ? (
@@ -206,6 +211,7 @@ function FileDetail() {
                   height: 300,
                   margin: 1,
                 }}
+                spacing={4}
               >
                 <Stack
                   direction="row"
@@ -271,7 +277,28 @@ function FileDetail() {
                     <Avatar></Avatar>
                   </Stack>
                   <Stack item>
-                    <Typography> {fileDetail.userName} </Typography>
+                  <Typography
+                  component={Link}
+                  style={{
+                    marginRight: "auto",
+                    textDecoration: "none",
+                    color: "#1976d2",
+                  }}
+                  onClick={() => {
+                    // setidlink(page.id);
+                    // alert(page.title);
+                  }}
+                  href={`/${fileDetail.userId}`}
+                  key={fileDetail.userId}
+                  onMouseEnter={(e) => {
+                    e.target.style.color = "blue";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.color = "1976d2";
+                  }}
+                >
+                  {fileDetail.userName}
+                </Typography>
                     <Typography>About</Typography>
                   </Stack>
                 </Stack>
