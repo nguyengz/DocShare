@@ -70,10 +70,12 @@ const style = {
     height: "200px",
   },
 };
-function AboutUser() {
+function Profile() {
+    
   const dispatch = useDispatch();
 
-  const { userId } = useParams();
+//   const { userId } = useParams();
+  const { user: currentUser } = useSelector((state) => state.auth);
   let userAbout = useSelector((state) => state.userAbout.userAbout);
   // const handleListProducts = () => {
   // eslint-disable-next-line no-lone-blocks
@@ -154,9 +156,9 @@ function AboutUser() {
   //   }
   // };
   useEffect(() => {
-    dispatch(fetchUser(userId));
-    console.log(userAbout);
-  }, [userId, dispatch]);
+    dispatch(fetchUser(currentUser.id));
+    // console.log(userAbout);
+  }, [currentUser, dispatch]);
 
   // useEffect(() => {
   //   console.log("link" + userAbout.link);
@@ -342,4 +344,5 @@ function AboutUser() {
   );
 }
 
-export default AboutUser;
+export default Profile;
+

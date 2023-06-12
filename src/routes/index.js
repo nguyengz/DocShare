@@ -4,11 +4,12 @@ import Expole from "~/pages/Expole";
 // import Found404 from "~/pages/Found404";
 import Login from "~/pages/Auth/Login";
 import Register from "~/pages/Auth/Register";
-import AboutUser from "~/pages/Auth/User";
+import AboutUser from "~/pages/Auth/UserAbout";
 import UploadFile from "~/pages/UploadFile";
 import InfomationUpload from "~/pages/UploadFile";
 import FileDetail from "~/pages/FileDetail";
 import Verify from "~/pages/Auth/Verify";
+import Profile from "~/pages/Auth/Profile";
 // import ProductDetail from "~/pages/ProductDetail";
 
 const publicRoutes = [
@@ -17,6 +18,7 @@ const publicRoutes = [
 
   { path: "/login", component: Login, layout: "onlylayout" },
   { path: "/register", component: Register, layout: "onlylayout" },
+  { path: "/profile", component: Profile, layout: "onlylayout" },
   { path: "/About/:userId", component: AboutUser, layout: "onlylayout" },
 
   { path: "/uploadfile", component: UploadFile, layout: "onlylayout" },
