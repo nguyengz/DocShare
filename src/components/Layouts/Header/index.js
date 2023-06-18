@@ -139,7 +139,14 @@ export default function Header() {
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
+  const handleClickProfile = (todo) => {
+    // console.log(todo.link);
+    // const state = { link: todo.link };
+    // const title = "";
+    // const url = `/fileDetail/${todo.link}`;
+    // window.history.pushState(state, title, url);
+    navigate(`/profile/${currentUser.name}`);
+  };
   // const handleMobileMenuClose = () => {
   //   setMobileMoreAnchorEl(null);
   // };
@@ -170,7 +177,7 @@ export default function Header() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Myaccount setting</MenuItem>
+      <MenuItem onClick={handleMenuClose}>My account setting</MenuItem>
       <MenuItem onClick={logOut}>Log out</MenuItem>
     </Menu>
   );
@@ -270,11 +277,11 @@ export default function Header() {
                   open={isMenuOpen}
                   onClose={handleMenuClose}
                 >
-                  <MenuItem onClick={handleMenuClose}>
+                  <MenuItem onClick={handleClickProfile}>
                     {currentUser.name}
                   </MenuItem>
                   <MenuItem onClick={handleMenuClose}>
-                    Myaccount setting
+                    My account setting
                   </MenuItem>
                   <MenuItem onClick={logOut}>Log out</MenuItem>
                 </Menu>

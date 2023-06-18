@@ -78,7 +78,7 @@ const PdfToImage = (props) => {
   return (
     <>
       {isError ? (
-        <CardContent sx={{ height: 200 }}>
+        <CardContent sx={{ height: 100 }}>
           Error: Could not load images.
         </CardContent>
       ) : isLoading ? (
@@ -87,7 +87,7 @@ const PdfToImage = (props) => {
         <CardMedia
           image={images[0]}
           sx={{
-            height: 200,
+            height: props.height,
             objectFit: "contain",
             backgroundPosition: "unset",
           }}

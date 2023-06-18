@@ -105,7 +105,8 @@ function FileDetail() {
     setIsLoading(false); // set isLoading to false when pages are rendered
   }
   const handleDownload = () => {
-    const fileUrl = fileDetail.link;
+    const fileUrl =
+      fileDetail.link + "/" + fileDetail.userId + "/" + fileDetail.id;
     const fileName = fileDetail.fileName;
     dispatch(downloadFile({ fileUrl, fileName }));
   };
@@ -129,7 +130,7 @@ function FileDetail() {
   }, [id, dispatch]);
 
   useEffect(() => {
-    console.log("link" + fileDetail.link);
+    console.log("link: " + fileDetail.link);
     const pdfUrl =
       "http://localhost:8080/file/download/" +
       fileDetail.link +
@@ -137,6 +138,7 @@ function FileDetail() {
       fileDetail.userId +
       "/" +
       fileDetail.id;
+
     console.log(pdfUrl);
     if (pdfUrl && currentPage) {
       renderPage(pdfUrl, currentPage); // pass currentPage to renderPage function
@@ -277,28 +279,28 @@ function FileDetail() {
                     <Avatar></Avatar>
                   </Stack>
                   <Stack item>
-                  <Typography
-                  component={Link}
-                  style={{
-                    marginRight: "auto",
-                    textDecoration: "none",
-                    color: "#1976d2",
-                  }}
-                  onClick={() => {
-                    // setidlink(page.id);
-                    // alert(page.title);
-                  }}
-                  href={`/${fileDetail.userId}`}
-                  key={fileDetail.userId}
-                  onMouseEnter={(e) => {
-                    e.target.style.color = "blue";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.color = "1976d2";
-                  }}
-                >
-                  {fileDetail.userName}
-                </Typography>
+                    <Typography
+                      component={Link}
+                      style={{
+                        marginRight: "auto",
+                        textDecoration: "none",
+                        color: "#1976d2",
+                      }}
+                      onClick={() => {
+                        // setidlink(page.id);
+                        // alert(page.title);
+                      }}
+                      href={`/About/${fileDetail.userId}`}
+                      key={fileDetail.userId}
+                      onMouseEnter={(e) => {
+                        e.target.style.color = "blue";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.color = "1976d2";
+                      }}
+                    >
+                      {fileDetail.userName}
+                    </Typography>
                     <Typography>About</Typography>
                   </Stack>
                 </Stack>

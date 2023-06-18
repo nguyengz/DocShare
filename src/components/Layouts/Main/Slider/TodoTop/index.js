@@ -1,5 +1,5 @@
 import React from "react";
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from "react-router-dom";
 import {
   Avatar,
   Box,
@@ -10,13 +10,12 @@ import {
   CardContent,
   CardMedia,
   Grid,
-
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import PdfToImage from "../../pdftoimage";
+import PdfToImage from "../../../pdftoimage";
 
 const styles = {
   todoName: {
@@ -69,6 +68,7 @@ function TodoListTop({ ...props }) {
                   link={todo.link}
                   userId={todo.userId}
                   id={todo.id}
+                  height={200}
                 />
                 <CardContent sx={{ height: "100px" }}>
                   <Typography style={styles.todoName} gutterBottom variant="h6">

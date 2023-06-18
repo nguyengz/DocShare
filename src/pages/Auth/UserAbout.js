@@ -1,4 +1,6 @@
 import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Avatar,
   Box,
@@ -12,14 +14,21 @@ import {
   Link,
   Stack,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import { AccountCircle } from "@mui/icons-material";
-import PdfToImage from "~/components/Layouts/Main/pdftoimage";
-import { useDispatch, useSelector } from "react-redux";
+
+import PdfToImage from "~/components/Layouts/pdftoimage";
 import { fetchUser } from "~/slices/user";
-import { useParams } from "react-router-dom";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Navigation } from "swiper";
+import "swiper/swiper.css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/free-mode";
+import "swiper/css/scrollbar";
 
 const Item = styled(Grid)(({ theme }) => ({
   margin: 2,
@@ -48,6 +57,7 @@ const useStyles = makeStyles({
     width: "70%",
   },
 });
+
 const style = {
   largeAvatar: {
     width: "100px",
@@ -63,115 +73,116 @@ const style = {
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
-    maxWidth: "300px",
+    maxWidth: "200px",
   },
   girdCard: {
     width: "200px",
     height: "200px",
   },
+  wrapper: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "1px",
+  },
+  imageWrapper: {
+    display: "grid",
+    width: "100%",
+    height: "100%",
+
+    // borderRadius: "1px",
+    // boxShadow: "5px 5px 5px 5px rgba(0,0,0,0.25)",
+    justifyContent: "center",
+    padding: "0",
+    overflowX: "hidden",
+  },
 };
+
 function AboutUser() {
   const dispatch = useDispatch();
 
   const { userId } = useParams();
   let userAbout = useSelector((state) => state.userAbout.userAbout);
-  // const handleListProducts = () => {
-  // eslint-disable-next-line no-lone-blocks
-  // {
-  // eslint-disable-next-line array-callback-return
-  //     todoList.some((todo, index) => {
-  //       if (index === number[2]) {
-  //         return true;
-  //       }
-  //       result.push(
-  //         <Grid
-  //           item
-  //           xs={matches ? number[0] : number[1]}
-  //           key={todo.id}
-  //           padding={1}
-  //         >
-  //           <Card elevation={0}>
-  //             <CardActionArea
-  //               sx={{ height: "300px" }}
-  //               onClick={() => handleClickProduct(todo)}
-  //             >
-  //               <PdfToImage
-  //                 link={todo.link}
-  //                 userId={todo.userId}
-  //                 id={todo.id}
-  //               />
-  //               <CardContent sx={{ height: "100px" }}>
-  //                 <Typography style={styles.todoName} gutterBottom variant="h6">
-  //                   {todo.name}
-  //                 </Typography>
-  //                 <Typography variant="body2" color="text.secondary">
-  //                   <Typography>
-  //                     {todo.name.length > 50
-  //                       ? todo.name.slice(0, 50) + "..."
-  //                       : todo.name}
-  //                   </Typography>
-  //                 </Typography>
-  //               </CardContent>
-  //             </CardActionArea>
-  //             <CardActions
-  //               style={{
-  //                 display: "flex",
-  //                 margin: "0px 1px",
-  //                 justifyContent: "space-between",
-  //               }}
-  //             >
-  //               <Typography
-  //                 component={Link}
-  //                 style={{
-  //                   marginRight: "auto",
-  //                   textDecoration: "none",
-  //                   color: "#1976d2",
-  //                 }}
-  //                 onClick={() => {
-  //                   // setidlink(page.id);
-  //                   // alert(page.title);
-  //                 }}
-  //                 href={`/${todo.id}`}
-  //                 key={index}
-  //                 onMouseEnter={(e) => {
-  //                   e.target.style.color = "blue";
-  //                 }}
-  //                 onMouseLeave={(e) => {
-  //                   e.target.style.color = "1976d2";
-  //                 }}
-  //               >
-  //                 {todo.userName}
-  //               </Typography>
-  //               <Typography variant="caption">{todo.view} views</Typography>
-  //               <Button size="small" color="primary">
-  //                 Share
-  //               </Button>
-  //             </CardActions>
-  //           </Card>
-  //         </Grid>
-  //       );
-  //     });
-  //   }
-  // };
   useEffect(() => {
-    dispatch(fetchUser(userId));
-    console.log(userAbout);
-  }, [userId, dispatch]);
+    dispatch(fetchUser(userId)).then((response) => {
+      console.log(response); // log the fetched user data
+    });
+  }, [dispatch, userId]);
+  const result = [];
+  const matches = useMediaQuery("(min-width:100px)");
+  const number = [4, 2]; // replace with your desired values
 
-  // useEffect(() => {
-  //   console.log("link" + userAbout.link);
-  //   const pdfUrl =
-  //     "http://localhost:8080/file/download/" +
-  //     userAbout.link +
-  //     "/" +
-  //     userAbout.userId +
-  //     "/" +
-  //     userAbout.id;
-  //   console.log(pdfUrl);
-  //   // if (pdfUrl && currentPage) {
-  //   //   renderPage(pdfUrl, currentPage); // pass currentPage to renderPage function
-  //   // }
-  // }, [currentPage, fileDetail.link, fileDetail.userId, fileDetail.id]);
+  const handleListProducts = () => {
+    // eslint-disable-next-line no-lone-blocks
+    {
+      // eslint-disable-next-line array-callback-return
+
+      if (userAbout && userAbout.files) {
+        userAbout.files.some((todo, index) => {
+          // if (index === number[2]) {
+          //   return true;
+          // }
+          result.push(
+            <Grid
+              item
+              xs={matches ? number[0] : number[1]}
+              key={todo.id}
+              padding={1}
+            >
+              <Card
+                elevation={0}
+                sx={{
+                  border: "1px solid",
+                  width: "200px",
+                }}
+              >
+                <CardActionArea
+                  sx={{ height: "100%" }}
+                  // onClick={() => handleClickProduct(todo)}
+                >
+                  <PdfToImage
+                    link={todo.link}
+                    userId={todo.userId}
+                    id={todo.id}
+                    height={100}
+                  />
+                  <CardContent sx={{ height: "50px" }}>
+                    <Typography
+                      style={style.todoName}
+                      gutterBottom
+                      variant="body2"
+                    >
+                      {todo.fileName.length > 50
+                        ? todo.fileName.slice(0, 50) + "..."
+                        : todo.fileName}
+                    </Typography>
+                    {/* <Typography variant="body2" color="text.secondary">
+                      <Typography>
+                        {todo.fileName.length > 50
+                          ? todo.fileName.slice(0, 50) + "..."
+                          : todo.fileName}
+                      </Typography>
+                    </Typography> */}
+                  </CardContent>
+                </CardActionArea>
+                <CardActions
+                  style={{
+                    display: "flex",
+                    margin: "0px 1px",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Typography variant="caption">{todo.view} views</Typography>
+                </CardActions>
+              </Card>
+            </Grid>
+          );
+        });
+      }
+    }
+  };
+
   return (
     <Box sx={{ minHeight: "1000px", margin: "1px", background: "white" }}>
       <Grid container spacing={2} style={style.gridUser}>
@@ -268,14 +279,33 @@ function AboutUser() {
           </Stack>
         </Grid>
         <Grid item xs={8}>
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <Typography
               variant="h2"
               color="initial"
               sx={{ fontSize: 20, fontWeight: 700 }}
             >
-              More Related Content (20)
+              More Related Content ({userAbout?.files.length})
             </Typography>
+            <Grid xs={12} sx={{ width: "100%", margin: "auto" }}>
+              <Swiper
+                // pagination={{
+                //   type: "progressbar",
+                // }}
+                slidesPerView={3}
+                slidesPerGroup={3}
+                navigation={true}
+                modules={[Pagination, Navigation]}
+                style={style.wrapper}
+              >
+                {handleListProducts()}
+                {result.map((item, idx) => (
+                  <SwiperSlide key={idx} style={style.imageWrapper}>
+                    {item}
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </Grid>
           </Grid>
           <Grid item xs={12}>
             <Typography
@@ -283,58 +313,8 @@ function AboutUser() {
               color="initial"
               sx={{ fontSize: 20, fontWeight: 700 }}
             >
-              More Related Content (20)
+              More Related Content ( {userAbout?.files.length})
             </Typography>
-            <Grid
-              item
-              // xs={matches ? number[0] : number[1]}
-              // key={todo.id}
-              style={style.girdCard}
-            >
-              <Card elevation={0}>
-                <CardActionArea
-                  sx={{ height: "100px" }}
-                  // onClick={() => handleClickProduct(todo)}
-                >
-                  <PdfToImage
-                  // link={todo.link}
-                  // userId={todo.userId}
-                  // id={todo.id}
-                  />
-                  <CardContent sx={{ height: "100px" }}>
-                    <Typography
-                      style={style.todoName}
-                      gutterBottom
-                      variant="h6"
-                    >
-                      {/* {todo.name} */}nguyen
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      <Typography>
-                        {/* {todo.name.length > 50
-                        ? todo.name.slice(0, 50) + "..."
-                        : todo.name} */}{" "}
-                        nguyen
-                      </Typography>
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
-                <CardActions
-                  style={{
-                    display: "flex",
-                    margin: "0px 1px",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Typography variant="caption">
-                    {/* {todo.view} */}1 views
-                  </Typography>
-                  <Button size="small" color="primary">
-                    Share
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
           </Grid>
         </Grid>
       </Grid>

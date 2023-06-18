@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
-import PdfToImage from "../../pdftoimage";
+import PdfToImage from "../../../pdftoimage";
 
 const styles = {
   todoName: {
@@ -58,14 +58,14 @@ function TodoList({ ...props }) {
           >
             <Card
               elevation={0}
-              onClick={() => handleClickProduct(todo)}
               sx={{ height: "100%", boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)" }}
             >
-              <CardActionArea>
+              <CardActionArea onClick={() => handleClickProduct(todo)}>
                 <PdfToImage
                   link={todo.link}
                   userId={todo.userId}
                   id={todo.id}
+                  height={200}
                 />
                 <CardContent sx={{ height: "100px" }}>
                   <Typography style={styles.todoName} gutterBottom variant="h6">
@@ -98,7 +98,8 @@ function TodoList({ ...props }) {
                     // setidlink(page.id);
                     // alert(page.title);
                   }}
-                  href={`/${todo.id}`}
+                  href={`/About/${todo.name}`}
+                  // to={`/About/${todo.userId}`}
                   key={index}
                   onMouseEnter={(e) => {
                     e.target.style.color = "blue";

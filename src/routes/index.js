@@ -18,7 +18,7 @@ const publicRoutes = [
 
   { path: "/login", component: Login, layout: "onlylayout" },
   { path: "/register", component: Register, layout: "onlylayout" },
-  { path: "/profile", component: Profile, layout: "onlylayout" },
+
   { path: "/About/:userId", component: AboutUser, layout: "onlylayout" },
 
   { path: "/uploadfile", component: UploadFile, layout: "onlylayout" },
@@ -32,6 +32,7 @@ const publicRoutes = [
 
 const privateRoutes = [
   { path: "/verify", component: Verify, layout: "nonetlayout" },
+  { path: "/profile/:name", component: Profile, layout: "onlylayout" },
 ];
 
 export { publicRoutes, privateRoutes };
