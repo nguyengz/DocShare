@@ -3,27 +3,44 @@ import { MaterialReactTable } from "material-react-table";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
 import { data, states } from "./makeData";
+import { fetchUser } from "~/slices/user";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 
 const Example = () => {
+  const dispatch = useDispatch();
   //   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [tableData, setTableData] = useState(() => data);
+  const { user: currentUser } = useSelector((state) => state.auth);
+  const userAbout = useSelector((state) => state.userAbout.userAbout);
+
+  const [tableData, setTableData] = useState([]);
+
   const [validationErrors, setValidationErrors] = useState({});
-
-  const handleDeleteRow = useCallback(
-    (row) => {
-      if (
-        // eslint-disable-next-line no-restricted-globals
-        !confirm(`Are you sure you want to delete ${row.getValue("firstName")}`)
-      ) {
-        return;
-      }
-      //send api delete request here, then refetch or update local table data for re-render
-
-      setTableData([...tableData]);
-      tableData.splice(row.index, 1);
-    },
-    [tableData]
-  );
+  useEffect(() => {
+    if (userAbout?.files) {
+      setTableData(userAbout.files);
+    }
+  }, [userAbout]);
+  const handleDeleteFile = (fileId) => {
+    const updatedTableData = tableData.filter((file) => file.id !== fileId);
+    setTableData(updatedTableData);
+  };
+  const handleConfirmDelete = (file) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete the file ${file.fileName}?`
+    );
+    if (confirmed) {
+      handleDeleteFile(file.id);
+    }
+  };
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = { year: "numeric", month: "short", day: "numeric" };
+    const formattedDate = date.toLocaleDateString("en-US", options);
+    return formattedDate;
+  };
+  
+  const formattedDate = formatDate(userAbout?.files.uploadDate);
 
   const getCommonEditTextFieldProps = useCallback(
     (cell) => {
@@ -56,28 +73,29 @@ const Example = () => {
     [validationErrors]
   );
 
+  const columnsOrder = ["fileName", "View", "likeFile", "Download"];
   const columns = useMemo(
     () => [
       {
-        accessorKey: "id",
-        header: "ID",
+        accessorKey: "fileName",
+        header: "File",
         enableColumnOrdering: false,
         enableEditing: false, //disable editing on this column
         enableSorting: false,
-        size: 200,
+        size: 250,
       },
       {
-        accessorKey: "Like",
+        accessorKey: "likeFile",
         header: "Like",
-        size: 140,
+        size: 50,
         muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
           ...getCommonEditTextFieldProps(cell),
         }),
       },
       {
-        accessorKey: "View",
+        accessorKey: "view",
         header: "View",
-        size: 140,
+        size: 50,
         muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
           ...getCommonEditTextFieldProps(cell),
         }),
@@ -85,6 +103,17 @@ const Example = () => {
       {
         accessorKey: "Download",
         header: "Download",
+        size: 50,
+        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+          ...getCommonEditTextFieldProps(cell),
+        }),
+      },
+      {
+        accessorKey: "uploadDate",
+        header: "Date Upload",
+        size: 50,
+        enableSorting: true,
+        Cell: ({ cell }) => formatDate(cell),
         muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
           ...getCommonEditTextFieldProps(cell),
         }),
@@ -109,8 +138,9 @@ const Example = () => {
             size: 120,
           },
         }}
-        data={data}
+        data={tableData}
         columns={columns}
+        columnsOrder={columnsOrder}
         enableEditing
         enableColumnOrdering
         renderRowActions={({ table, row }) => (
@@ -121,7 +151,10 @@ const Example = () => {
               </IconButton>
             </Tooltip>
             <Tooltip arrow placement="right" title="Delete">
-              <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+              <IconButton
+                color="error"
+                onClick={() => handleConfirmDelete(row.original)}
+              >
                 <Delete />
               </IconButton>
             </Tooltip>

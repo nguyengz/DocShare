@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { alpha, styled } from "@mui/material/styles";
 import {
   Avatar,
@@ -27,6 +27,9 @@ import { AccountCircle } from "@mui/icons-material";
 import { makeStyles } from "@mui/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import Example from "./Table";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { fetchUser } from "~/slices/user";
 const Item = styled(Grid)(({ theme }) => ({
   ...theme.typography.body2,
   margin: 1,
@@ -147,6 +150,18 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 function MyUpload() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // const { userId } = useParams();
+  const { user: currentUser } = useSelector((state) => state.auth);
+  const userAbout = useSelector((state) => state.userAbout.userAbout);
+  const [imageData, setImageData] = useState("");
+
+  useEffect(() => {
+    dispatch(fetchUser(currentUser.id));
+    // console.log(userAbout);
+  }, [currentUser, dispatch]);
   return (
     <>
       <Box sx={{ minHeight: "1000px", margin: "1px", background: "white" }}>
@@ -198,16 +213,7 @@ function MyUpload() {
               padding: 2,
             }}
           >
-            <Search>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Search…"
-                inputProps={{ "aria-label": "search" }}
-              />
-            </Search>
-            <Example />
+            <Example data={userAbout?.files} />
           </Grid>
         </Grid>
       </Box>
