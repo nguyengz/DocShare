@@ -2,7 +2,7 @@ import { Box, Grid, Paper, Typography } from "@mui/material";
 import Todo from "./TodoT";
 import { useEffect, useState } from "react";
 
-import { fetchfile } from "~/slices/file";
+import { fetchfile, fetchfileTop } from "~/slices/file";
 
 import { useDispatch, useSelector } from "react-redux";
 
@@ -12,7 +12,7 @@ function Slider() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(fetchfile())
+    dispatch(fetchfileTop())
       .then(() => setIsLoading(false))
       .catch((error) => console.log(error));
   }, []);
@@ -25,7 +25,7 @@ function Slider() {
         userId: file.userId,
         name: file.fileName,
         price: file.description,
-        // image: file.linkImg,
+        image: file.linkImg,
         link: file.link,
         view: file.view,
         userName: file.userName

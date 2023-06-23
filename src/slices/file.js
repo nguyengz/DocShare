@@ -1,20 +1,35 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-// import axios from 'axios';
+import Swal from "sweetalert2";
 import fileService from "~/services/file.service";
 import { setMessage } from "./message";
+
 export const fetchfile = createAsyncThunk("file/fetchFileList", async () => {
   const response = await fileService.fetchFileList();
   return response.data;
 });
+
+export const fetchfileTop = createAsyncThunk("file/fetchFileTop", async () => {
+  const response = await fileService.fetchFileTop();
+  return response.data;
+});
+
+export const fetchfileFeatured = createAsyncThunk(
+  "file/fetchFileFeatured",
+  async () => {
+    const response = await fileService.fetchFileFeatured();
+    return response.data;
+  }
+);
+
 export const fetchFileDetail = createAsyncThunk(
   "file/fetchFileDetail",
   async (data, thunkAPI) => {
     const response = await fileService.fetchFileDetail(data);
     thunkAPI.dispatch(setMessage(response.data.message));
     return response.data;
-    
   }
 );
+
 export const downLoadFile = createAsyncThunk(
   "file/downLoadFile",
   async (link, thunkAPI) => {
@@ -23,12 +38,22 @@ export const downLoadFile = createAsyncThunk(
     return response.data;
   }
 );
+
 export const uploadfile = createAsyncThunk(
   "file/uploadFile",
   async (formdata, thunkAPI) => {
     try {
       const response = await fileService.uploadFile(formdata);
       thunkAPI.dispatch(setMessage(response.data.message));
+      // Dispatch the success message using dispatch() function
+      thunkAPI.dispatch(
+        fileSlice.actions.setSuccessMessage("File uploaded successfully")
+      );
+      // Display the success message using Swal.fire()
+      Swal.fire({
+        icon: "success",
+        title: "File uploaded successfully",
+      });
       return response.data;
     } catch (error) {
       const message =
@@ -42,9 +67,22 @@ export const uploadfile = createAsyncThunk(
     }
   }
 );
+
+const initialState = {
+  list1: [], // initial data for list 1
+  list2: [], // initial data for list 2
+};
+
 const fileSlice = createSlice({
   name: "file",
-  initialState: { data: [], status: "no", error: null },
+  initialState: {
+    data: [],
+    fileList: [],
+    detailList: [],
+    status: "no",
+    error: null,
+    successMessage: null,
+  },
   reducers: {
     downloadFileStart: (state) => {
       state.isLoading = true;
@@ -57,53 +95,79 @@ const fileSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
+    setSuccessMessage: (state, action) => {
+      state.successMessage = action.payload;
+    },
   },
-  extraReducers: {
-      [fetchfile.pending]: (state) => {
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchfile.pending, (state) => {
         state.status = "loading";
-      },
-      [fetchfile.fulfilled]: (state, action) => {
+      })
+      .addCase(fetchfile.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.data = action.payload;
-      },
-      [fetchfile.rejected]: (state, action) => {
+        state.fileList = action.payload;
+      })
+      .addCase(fetchfile.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
-      },
-      [fetchFileDetail.pending]: (state) => {
+      })
+      .addCase(fetchfileTop.pending, (state) => {
         state.status = "loading";
-      },
-      [fetchFileDetail.fulfilled]: (state, action) => {
+      })
+      .addCase(fetchfileTop.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.data = action.payload;
-      },
-      [fetchFileDetail.rejected]: (state, action) => {
+      })
+      .addCase(fetchfileTop.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
-      },
-      [downLoadFile.pending]: (state) => {
+      })
+      .addCase(fetchfileFeatured.pending, (state) => {
         state.status = "loading";
-      },
-      [downLoadFile.fulfilled]: (state, action) => {
+      })
+      .addCase(fetchfileFeatured.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.data = action.payload;
-      },
-      [downLoadFile.rejected]: (state, action) => {
+      })
+      .addCase(fetchfileFeatured.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
-      },
-      
-      [uploadfile.pending]: (state) => {
+      })
+      .addCase(fetchFileDetail.pending, (state) => {
         state.status = "loading";
-      },
-      [uploadfile.fulfilled]: (state, action) => {
+      })
+      .addCase(fetchFileDetail.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.detailList = action.payload;
+      })
+      .addCase(fetchFileDetail.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(downLoadFile.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(downLoadFile.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.data = action.payload;
-      },
-      [uploadfile.rejected]: (state, action) => {
+      })
+      .addCase(downLoadFile.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
-      }
+      })
+
+      .addCase(uploadfile.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(uploadfile.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.data = action.payload;
+      })
+      .addCase(uploadfile.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      });
   },
 });
 

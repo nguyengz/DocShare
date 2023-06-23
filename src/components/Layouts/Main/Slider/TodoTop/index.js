@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
   Avatar,
@@ -34,6 +34,7 @@ function TodoListTop({ ...props }) {
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("sm"));
+  const [imageData, setImageData] = useState("");
 
   const handleClickProduct = (todo) => {
     // console.log(todo.link);
@@ -43,7 +44,23 @@ function TodoListTop({ ...props }) {
     // window.history.pushState(state, title, url);
     navigate(`/fileDetail/${todo.id}`);
   };
-
+  useEffect(() => {
+    todoList.forEach((todo) => {
+      fetch(`http://localhost:8080/file/image/${todo.image}`)
+        .then((response) => response.arrayBuffer())
+        .then((buffer) =>
+          setImageData((prevImageData) => ({
+            ...prevImageData,
+            [todo.id]: `data:image/jpeg;base64,${btoa(
+              new Uint8Array(buffer).reduce(
+                (data, byte) => data + String.fromCharCode(byte),
+                ""
+              )
+            )}`,
+          }))
+        );
+    });
+  }, [todoList]);
   const handleListProducts = () => {
     // eslint-disable-next-line no-lone-blocks
     {
@@ -64,11 +81,15 @@ function TodoListTop({ ...props }) {
                 sx={{ height: "300px" }}
                 onClick={() => handleClickProduct(todo)}
               >
-                <PdfToImage
-                  link={todo.link}
-                  userId={todo.userId}
-                  id={todo.id}
+                <CardMedia
+                  component="img"
+                  image={imageData[todo.id] || ""}
+                  alt="green iguana"
                   height={200}
+                  sx={{
+                    objectFit: "none",
+                    objectPosition: "top"
+                  }}
                 />
                 <CardContent sx={{ height: "100px" }}>
                   <Typography style={styles.todoName} gutterBottom variant="h6">

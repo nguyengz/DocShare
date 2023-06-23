@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -28,7 +28,7 @@ const styles = {
 
 function TodoList({ ...props }) {
   const { todoList, number } = props;
-
+  const [imageData, setImageData] = useState("");
   const navigate = useNavigate();
 
   const result = [];
@@ -36,6 +36,23 @@ function TodoList({ ...props }) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("sm"));
 
+  useEffect(() => {
+    todoList.forEach((todo) => {
+      fetch(`http://localhost:8080/file/image/${todo.image}`)
+        .then((response) => response.arrayBuffer())
+        .then((buffer) =>
+          setImageData((prevImageData) => ({
+            ...prevImageData,
+            [todo.id]: `data:image/jpeg;base64,${btoa(
+              new Uint8Array(buffer).reduce(
+                (data, byte) => data + String.fromCharCode(byte),
+                ""
+              )
+            )}`,
+          }))
+        );
+    });
+  }, [todoList]);
   const handleClickProduct = (todo) => {
     console.log(todo);
     navigate(`/fileDetail/${todo.id}`);
@@ -61,11 +78,15 @@ function TodoList({ ...props }) {
               sx={{ height: "100%", boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)" }}
             >
               <CardActionArea onClick={() => handleClickProduct(todo)}>
-                <PdfToImage
-                  link={todo.link}
-                  userId={todo.userId}
-                  id={todo.id}
+                <CardMedia
+                  component="img"
+                  image={imageData[todo.id] || ""}
+                  alt="green iguana"
                   height={200}
+                  sx={{
+                    objectFit: "none",
+                    objectPosition: "top",
+                  }}
                 />
                 <CardContent sx={{ height: "100px" }}>
                   <Typography style={styles.todoName} gutterBottom variant="h6">

@@ -1,34 +1,21 @@
-import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Avatar,
   Box,
   Button,
-  Card,
-  CardActionArea,
-  CardActions,
-  CardContent,
-  Chip,
   Grid,
   Link,
   Stack,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { makeStyles } from "@mui/styles";
 import { AccountCircle } from "@mui/icons-material";
 
-import PdfToImage from "~/components/Layouts/pdftoimage";
 import { fetchUser } from "~/slices/user";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper";
-import "swiper/swiper.css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/free-mode";
-import "swiper/css/scrollbar";
+import FileList from "./ListComponent/FileList";
+import TagList from "./ListComponent/TagList";
 
 const Item = styled(Grid)(({ theme }) => ({
   margin: 2,
@@ -45,18 +32,6 @@ const Item = styled(Grid)(({ theme }) => ({
     },
   },
 }));
-
-const useStyles = makeStyles({
-  largeAvatar: {
-    width: "100px",
-    height: "100px",
-    fontSize: "50px",
-  },
-  gridUser: {
-    margin: "auto",
-    width: "70%",
-  },
-});
 
 const style = {
   largeAvatar: {
@@ -79,110 +54,55 @@ const style = {
     width: "200px",
     height: "200px",
   },
-  wrapper: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "1px",
-  },
-  imageWrapper: {
-    display: "grid",
-    width: "100%",
-    height: "100%",
-
-    // borderRadius: "1px",
-    // boxShadow: "5px 5px 5px 5px rgba(0,0,0,0.25)",
-    justifyContent: "center",
-    padding: "0",
-    overflowX: "hidden",
-  },
 };
 
 function AboutUser() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { userId } = useParams();
   let userAbout = useSelector((state) => state.userAbout.userAbout);
+  const [imageData, setImageData] = useState("");
   useEffect(() => {
     dispatch(fetchUser(userId)).then((response) => {
       console.log(response); // log the fetched user data
     });
   }, [dispatch, userId]);
-  const result = [];
-  const matches = useMediaQuery("(min-width:100px)");
-  const number = [4, 2]; // replace with your desired values
-
-  const handleListProducts = () => {
-    // eslint-disable-next-line no-lone-blocks
-    {
-      // eslint-disable-next-line array-callback-return
-
-      if (userAbout && userAbout.files) {
-        userAbout.files.some((todo, index) => {
-          // if (index === number[2]) {
-          //   return true;
-          // }
-          result.push(
-            <Grid
-              item
-              xs={matches ? number[0] : number[1]}
-              key={todo.id}
-              padding={1}
-            >
-              <Card
-                elevation={0}
-                sx={{
-                  border: "1px solid",
-                  width: "200px",
-                }}
-              >
-                <CardActionArea
-                  sx={{ height: "100%" }}
-                  // onClick={() => handleClickProduct(todo)}
-                >
-                  <PdfToImage
-                    link={todo.link}
-                    userId={todo.userId}
-                    id={todo.id}
-                    height={100}
-                  />
-                  <CardContent sx={{ height: "50px" }}>
-                    <Typography
-                      style={style.todoName}
-                      gutterBottom
-                      variant="body2"
-                    >
-                      {todo.fileName.length > 50
-                        ? todo.fileName.slice(0, 50) + "..."
-                        : todo.fileName}
-                    </Typography>
-                    {/* <Typography variant="body2" color="text.secondary">
-                      <Typography>
-                        {todo.fileName.length > 50
-                          ? todo.fileName.slice(0, 50) + "..."
-                          : todo.fileName}
-                      </Typography>
-                    </Typography> */}
-                  </CardContent>
-                </CardActionArea>
-                <CardActions
-                  style={{
-                    display: "flex",
-                    margin: "0px 1px",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Typography variant="caption">{todo.view} views</Typography>
-                </CardActions>
-              </Card>
-            </Grid>
+  useEffect(() => {
+    if (userAbout && userAbout.files) {
+      // add a check for userAbout and userAbout.files
+      userAbout.files.forEach((todo) => {
+        fetch(`http://localhost:8080/file/image/${todo.linkImg}`)
+          .then((response) => response.arrayBuffer())
+          .then((buffer) =>
+            setImageData((prevImageData) => ({
+              ...prevImageData,
+              [todo.id]: `data:image/jpeg;base64,${btoa(
+                new Uint8Array(buffer).reduce(
+                  (data, byte) => data + String.fromCharCode(byte),
+                  ""
+                )
+              )}`,
+            }))
           );
-        });
-      }
+      });
     }
-  };
+  }, [userAbout]);
+  useEffect(() => {
+    dispatch(fetchUser(userId)).then((response) => {
+      console.log(response); // log the fetched user data
+    });
 
+    // call handleListTags to get list of tags
+  }, [dispatch, userId]);
+  const handleClickFile = (todo) => {
+    // console.log(todo.link);
+    // const state = { link: todo.link };
+    // const title = "";
+    // const url = `/fileDetail/${todo.link}`;
+    // window.history.pushState(state, title, url);
+    navigate(`/fileDetail/${todo.id}`);
+  };
   return (
     <Box sx={{ minHeight: "1000px", margin: "1px", background: "white" }}>
       <Grid container spacing={2} style={style.gridUser}>
@@ -195,9 +115,9 @@ function AboutUser() {
                 </Avatar>
               </Item>
             </Stack>
-            <Stack item sx={{ marginLeft: "5px" }}>
+            <Stack item sx={{ marginLeft: "10px" }}>
               <Item>
-                <Typography variant="h5">{userAbout?.name}</Typography>
+                <Typography variant="h5">{userAbout?.username}</Typography>
               </Item>
               <Item>
                 <Typography
@@ -256,26 +176,7 @@ function AboutUser() {
             </Stack>
           </Stack>
           <Stack item>
-            <Typography variant="h5" color="initial">
-              Tags
-            </Typography>
-            <Item>
-              <Button
-                // key={index}
-                component={Link}
-                href={"/"}
-                sx={{
-                  border: "1px solid",
-                  borderRadius: "16px",
-                  background: "",
-                  padding: "0 16px",
-                  lineHeight: "24px",
-                }}
-                label={"tag."}
-              >
-                Nguyen
-              </Button>
-            </Item>
+            <TagList userAbout={userAbout} />
           </Stack>
         </Grid>
         <Grid item xs={8}>
@@ -288,23 +189,11 @@ function AboutUser() {
               More Related Content ({userAbout?.files.length})
             </Typography>
             <Grid xs={12} sx={{ width: "100%", margin: "auto" }}>
-              <Swiper
-                // pagination={{
-                //   type: "progressbar",
-                // }}
-                slidesPerView={3}
-                slidesPerGroup={3}
-                navigation={true}
-                modules={[Pagination, Navigation]}
-                style={style.wrapper}
-              >
-                {handleListProducts()}
-                {result.map((item, idx) => (
-                  <SwiperSlide key={idx} style={style.imageWrapper}>
-                    {item}
-                  </SwiperSlide>
-                ))}
-              </Swiper>
+              <FileList
+                file={userAbout?.files}
+                imageData={imageData}
+                handleClickFile={handleClickFile}
+              />
             </Grid>
           </Grid>
           <Grid item xs={12}>

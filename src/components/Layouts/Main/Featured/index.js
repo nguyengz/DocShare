@@ -3,7 +3,7 @@ import Todo from "./TodoF";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchfile } from "~/slices/file";
+import { fetchfile, fetchfileFeatured } from "~/slices/file";
 
 function Featured() {
   const dispatch = useDispatch();
@@ -11,7 +11,7 @@ function Featured() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(fetchfile())
+    dispatch(fetchfileFeatured())
       .then(() => setIsLoading(false))
       .catch((error) => console.log(error));
   }, []);
@@ -24,7 +24,7 @@ function Featured() {
         userId: file.userId,
         name: file.fileName,
         price: file.description,
-        // image: file.linkImg,
+        image: file.linkImg,
         link: file.link,
         view: file.view,
         userName: file.userName

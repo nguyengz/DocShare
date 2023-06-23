@@ -5,10 +5,10 @@ import {
   Typography,
   CircularProgress,
   CardContent,
+  Box,
 } from "@mui/material";
 import { pdfjs } from "react-pdf";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
-
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -82,7 +82,9 @@ const PdfToImage = (props) => {
           Error: Could not load images.
         </CardContent>
       ) : isLoading ? (
-        <CircularProgress />
+        <Box>
+          <CircularProgress />
+        </Box>
       ) : images.length >= 1 ? (
         <CardMedia
           image={images[0]}

@@ -3,10 +3,16 @@ const API_URL = "/file";
 // const API_URL_upload = "/Files";
 
 const fetchFileList = () => {
-  return axios.get(API_URL + "/Files");
+  return axios.get(API_URL + "/ListFiles");
+};
+const fetchFileTop = () => {
+  return axios.get(API_URL + "/TopFiles");
+};
+const fetchFileFeatured = () => {
+  return axios.get(API_URL + "/Featured");
 };
 const uploadFile = (formData) => {
-  return axios.post(API_URL + "/upload/file", formData, {
+  return axios.post(API_URL + "/upload", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -22,6 +28,8 @@ const downLoadFile = (link) => {
 };
 const fileService = {
   fetchFileList,
+  fetchFileTop,
+  fetchFileFeatured,
   uploadFile,
   fetchFileDetail,
   downLoadFile,

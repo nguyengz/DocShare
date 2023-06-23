@@ -9,7 +9,7 @@ function Footer() {
         backgroundColor: "black",
         height: "200px",
         width: "100%",
-        position: "static",
+        // position: "absolute",
         bottom: 0,
       }}
     ></Box>

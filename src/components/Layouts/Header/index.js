@@ -147,6 +147,14 @@ export default function Header() {
     // window.history.pushState(state, title, url);
     navigate(`/profile/${currentUser.name}`);
   };
+  const handleClickAcountSetting = (todo) => {
+    // console.log(todo.link);
+    // const state = { link: todo.link };
+    // const title = "";
+    // const url = `/fileDetail/${todo.link}`;
+    // window.history.pushState(state, title, url);
+    navigate(`/AcountSetting/${currentUser.name}`);
+  };
   // const handleMobileMenuClose = () => {
   //   setMobileMoreAnchorEl(null);
   // };
@@ -280,7 +288,7 @@ export default function Header() {
                   <MenuItem onClick={handleClickProfile}>
                     {currentUser.name}
                   </MenuItem>
-                  <MenuItem onClick={handleMenuClose}>
+                  <MenuItem onClick={handleClickAcountSetting}>
                     My account setting
                   </MenuItem>
                   <MenuItem onClick={logOut}>Log out</MenuItem>

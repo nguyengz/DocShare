@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Avatar,
@@ -29,7 +29,9 @@ import "swiper/css/scrollbar";
 
 import { fetchUser } from "~/slices/user";
 import PdfToImage from "~/components/Layouts/pdftoimage";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import FileList from "./ListComponent/FileList";
+import TagList from "./ListComponent/TagList";
 
 const Item = styled(Grid)(({ theme }) => ({
   margin: 2,
@@ -99,179 +101,46 @@ const style = {
 };
 function Profile() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // const { userId } = useParams();
   const { user: currentUser } = useSelector((state) => state.auth);
   let userAbout = useSelector((state) => state.userAbout.userAbout);
-  // const handleListProducts = () => {
-  // eslint-disable-next-line no-lone-blocks
-  // {
-  // eslint-disable-next-line array-callback-return
-  //     todoList.some((todo, index) => {
-  //       if (index === number[2]) {
-  //         return true;
-  //       }
-  //       result.push(
-  //         <Grid
-  //           item
-  //           xs={matches ? number[0] : number[1]}
-  //           key={todo.id}
-  //           padding={1}
-  //         >
-  //           <Card elevation={0}>
-  //             <CardActionArea
-  //               sx={{ height: "300px" }}
-  //               onClick={() => handleClickProduct(todo)}
-  //             >
-  //               <PdfToImage
-  //                 link={todo.link}
-  //                 userId={todo.userId}
-  //                 id={todo.id}
-  //               />
-  //               <CardContent sx={{ height: "100px" }}>
-  //                 <Typography style={styles.todoName} gutterBottom variant="h6">
-  //                   {todo.name}
-  //                 </Typography>
-  //                 <Typography variant="body2" color="text.secondary">
-  //                   <Typography>
-  //                     {todo.name.length > 50
-  //                       ? todo.name.slice(0, 50) + "..."
-  //                       : todo.name}
-  //                   </Typography>
-  //                 </Typography>
-  //               </CardContent>
-  //             </CardActionArea>
-  //             <CardActions
-  //               style={{
-  //                 display: "flex",
-  //                 margin: "0px 1px",
-  //                 justifyContent: "space-between",
-  //               }}
-  //             >
-  //               <Typography
-  //                 component={Link}
-  //                 style={{
-  //                   marginRight: "auto",
-  //                   textDecoration: "none",
-  //                   color: "#1976d2",
-  //                 }}
-  //                 onClick={() => {
-  //                   // setidlink(page.id);
-  //                   // alert(page.title);
-  //                 }}
-  //                 href={`/${todo.id}`}
-  //                 key={index}
-  //                 onMouseEnter={(e) => {
-  //                   e.target.style.color = "blue";
-  //                 }}
-  //                 onMouseLeave={(e) => {
-  //                   e.target.style.color = "1976d2";
-  //                 }}
-  //               >
-  //                 {todo.userName}
-  //               </Typography>
-  //               <Typography variant="caption">{todo.view} views</Typography>
-  //               <Button size="small" color="primary">
-  //                 Share
-  //               </Button>
-  //             </CardActions>
-  //           </Card>
-  //         </Grid>
-  //       );
-  //     });
-  //   }
-  // };
+  const [imageData, setImageData] = useState("");
+
   useEffect(() => {
     dispatch(fetchUser(currentUser.id));
     // console.log(userAbout);
   }, [currentUser, dispatch]);
-  const result = [];
-  const matches = useMediaQuery("(min-width:100px)");
-  const number = [4, 2]; // replace with your desired values
-
-  const handleListProducts = () => {
-    // eslint-disable-next-line no-lone-blocks
-    {
-      // eslint-disable-next-line array-callback-return
-
-      if (userAbout && userAbout.files) {
-        userAbout.files.some((todo, index) => {
-          // if (index === number[2]) {
-          //   return true;
-          // }
-          result.push(
-            <Grid
-              item
-              xs={matches ? number[0] : number[1]}
-              key={todo.id}
-              padding={1}
-            >
-              <Card
-                elevation={0}
-                sx={{
-                  border: "1px solid",
-                  width: "200px",
-                }}
-              >
-                <CardActionArea
-                  sx={{ height: "100%" }}
-                  // onClick={() => handleClickProduct(todo)}
-                >
-                  <PdfToImage
-                    link={todo.link}
-                    userId={todo.userId}
-                    id={todo.id}
-                    height={100}
-                  />
-                  <CardContent sx={{ height: "50px" }}>
-                    <Typography
-                      style={style.todoName}
-                      gutterBottom
-                      variant="body2"
-                    >
-                      {todo.fileName.length > 50
-                        ? todo.fileName.slice(0, 50) + "..."
-                        : todo.fileName}
-                    </Typography>
-                    {/* <Typography variant="body2" color="text.secondary">
-                      <Typography>
-                        {todo.fileName.length > 50
-                          ? todo.fileName.slice(0, 50) + "..."
-                          : todo.fileName}
-                      </Typography>
-                    </Typography> */}
-                  </CardContent>
-                </CardActionArea>
-                <CardActions
-                  style={{
-                    display: "flex",
-                    margin: "0px 1px",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Typography variant="caption">{todo.view} views</Typography>
-                </CardActions>
-              </Card>
-            </Grid>
+  useEffect(() => {
+    if (userAbout && userAbout.files) {
+      // add a check for userAbout and userAbout.files
+      userAbout.files.forEach((todo) => {
+        fetch(`http://localhost:8080/file/image/${todo.linkImg}`)
+          .then((response) => response.arrayBuffer())
+          .then((buffer) =>
+            setImageData((prevImageData) => ({
+              ...prevImageData,
+              [todo.id]: `data:image/jpeg;base64,${btoa(
+                new Uint8Array(buffer).reduce(
+                  (data, byte) => data + String.fromCharCode(byte),
+                  ""
+                )
+              )}`,
+            }))
           );
-        });
-      }
+      });
     }
+  }, [userAbout]);
+  const handleClickFile = (todo) => {
+    // console.log(todo.link);
+    // const state = { link: todo.link };
+    // const title = "";
+    // const url = `/fileDetail/${todo.link}`;
+    // window.history.pushState(state, title, url);
+    navigate(`/fileDetail/${todo.id}`);
   };
-  // useEffect(() => {
-  //   console.log("link" + userAbout.link);
-  //   const pdfUrl =
-  //     "http://localhost:8080/file/download/" +
-  //     userAbout.link +
-  //     "/" +
-  //     userAbout.userId +
-  //     "/" +
-  //     userAbout.id;
-  //   console.log(pdfUrl);
-  //   // if (pdfUrl && currentPage) {
-  //   //   renderPage(pdfUrl, currentPage); // pass currentPage to renderPage function
-  //   // }
-  // }, [currentPage, fileDetail.link, fileDetail.userId, fileDetail.id]);
+
   return (
     <Box sx={{ minHeight: "1000px", margin: "1px", background: "white" }}>
       <Grid container spacing={2} style={style.gridUser}>
@@ -286,7 +155,7 @@ function Profile() {
             </Stack>
             <Stack item sx={{ marginLeft: "5px" }}>
               <Item>
-                <Typography variant="h5">{userAbout?.name}</Typography>
+                <Typography variant="h5">{userAbout?.username}</Typography>
               </Item>
               <Item>
                 <Typography
@@ -345,26 +214,7 @@ function Profile() {
             </Stack>
           </Stack>
           <Stack item>
-            <Typography variant="h5" color="initial">
-              Tags
-            </Typography>
-            <Item>
-              <Button
-                // key={index}
-                component={Link}
-                href={"/"}
-                sx={{
-                  border: "1px solid",
-                  borderRadius: "16px",
-                  background: "",
-                  padding: "0 16px",
-                  lineHeight: "24px",
-                }}
-                label={"tag."}
-              >
-                Nguyen
-              </Button>
-            </Item>
+            <TagList userAbout={userAbout} />
           </Stack>
         </Grid>
         <Grid item xs={8}>
@@ -377,23 +227,11 @@ function Profile() {
               More Related Content ({userAbout?.files.length})
             </Typography>
             <Grid xs={12} sx={{ width: "100%", margin: "auto" }}>
-              <Swiper
-                // pagination={{
-                //   type: "progressbar",
-                // }}
-                slidesPerView={3}
-                slidesPerGroup={3}
-                navigation={true}
-                modules={[Pagination, Navigation]}
-                style={style.wrapper}
-              >
-                {handleListProducts()}
-                {result.map((item, idx) => (
-                  <SwiperSlide key={idx} style={style.imageWrapper}>
-                    {item}
-                  </SwiperSlide>
-                ))}
-              </Swiper>
+              <FileList
+                file={userAbout?.files}
+                imageData={imageData}
+                handleClickFile={handleClickFile}
+              />
             </Grid>
           </Grid>
           <Grid item xs={12}>

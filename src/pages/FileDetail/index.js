@@ -12,9 +12,9 @@ import {
   Chip,
   CircularProgress,
   Link,
+  Snackbar,
 } from "@mui/material";
-import "./styles.css";
-import { saveAs } from "file-saver";
+// import "./styles.css";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper";
@@ -24,17 +24,24 @@ import "swiper/css/pagination";
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import DownloadIcon from "@mui/icons-material/Download";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShareRoundedIcon from "@mui/icons-material/ShareRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 
-import { downLoadFile, fetchFileDetail } from "~/slices/file";
+import { fetchFileDetail, fetchfile } from "~/slices/file";
 import { pdfjs } from "react-pdf";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { downloadFile } from "~/slices/download";
+import FileListMore from "./FileList";
+import FileListTags from "./FileListTags";
+import Pricing from "../Payment/Package";
+
 pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 const styles = {
@@ -44,8 +51,11 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     gap: "1px",
+    width: "100%",
+    height: "100%",
   },
   imageWrapper: {
+    margin: "auto",
     display: "block",
     width: "100%",
     height: "100%",
@@ -55,6 +65,8 @@ const styles = {
     padding: "0",
     overflowX: "hidden",
     background: "aliceblue",
+    /* width: 100px; */
+    objectfit: "cover",
   },
 };
 function FileDetail() {
@@ -69,15 +81,27 @@ function FileDetail() {
   const [isLoading, setIsLoading] = useState(false);
   const [pdfRendering, setPdfRendering] = React.useState("");
   const [pageRendering, setPageRendering] = React.useState("");
-  const fileDetail = useSelector((state) => state.file.data);
+
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [showPricing, setShowPricing] = useState(false);
+  const { user: currentUser } = useSelector((state) => state.auth);
+  const fileDetail = useSelector((state) => state.file.detailList);
+  const fileList = useSelector((state) => state.file.fileList);
   const uploadDate = new Date(fileDetail.uploadDate);
   const options = { year: "numeric", month: "short", day: "numeric" };
   const formattedDate = uploadDate.toLocaleDateString("en-US", options);
 
+  const buttonColor = isFollowing ? "paleturquoise" : "#FFFFFF";
+  const iconColor = isLiked ? "#FF0000" : "#000000";
   const tags = fileDetail.tags;
   // const link = state.link;
   // const file_id = id;
-
+  useEffect(() => {
+    dispatch(fetchFileDetail(id));
+    dispatch(fetchfile());
+  }, []);
   async function renderPage(pdfUrl, pageNumber) {
     setPageRendering(true);
     setIsLoading(true);
@@ -104,30 +128,31 @@ function FileDetail() {
     setPageRendering(false);
     setIsLoading(false); // set isLoading to false when pages are rendered
   }
+  const showSubscriptionPopup = () => {
+    // Display a popup with a message and a button to subscribe
+    const popup = window.confirm(
+      "Please subscribe to a package to download this file."
+    );
+    if (popup) {
+      // Redirect the user to a subscription page
+      window.location.href = "/subscription";
+    }
+  };
   const handleDownload = () => {
+    // Check if the user has an active subscription
+    const hasSubscription = false;
+    if (!hasSubscription) {
+      // Show the pricing page
+      setShowPricing(true);
+      return;
+    }
+
+    // If the user has an active subscription, allow them to download the file
     const fileUrl =
       fileDetail.link + "/" + fileDetail.userId + "/" + fileDetail.id;
     const fileName = fileDetail.fileName;
     dispatch(downloadFile({ fileUrl, fileName }));
   };
-  // useEffect(() => {
-  //   dispatch(fetchFileDetail(id));
-  //   console.log("link" + fileDetail.link);
-  //   const pdfUrl =
-  //     "http://localhost:8080/file/download/" +
-  //     fileDetail.link +
-  //     "/" +
-  //     fileDetail.userId +
-  //     "/" +
-  //     fileDetail.id;
-  //   console.log(pdfUrl);
-  //   if (pdfUrl && currentPage) {
-  //     renderPage(pdfUrl, currentPage); // pass currentPage to renderPage function
-  //   }
-  // }, [id, currentPage, fileDetail.link, dispatch, fileDetail.userId, fileDetail.id]);
-  useEffect(() => {
-    dispatch(fetchFileDetail(id));
-  }, [id, dispatch]);
 
   useEffect(() => {
     console.log("link: " + fileDetail.link);
@@ -144,15 +169,97 @@ function FileDetail() {
       renderPage(pdfUrl, currentPage); // pass currentPage to renderPage function
     }
   }, [currentPage, fileDetail.link, fileDetail.userId, fileDetail.id]);
+  const handleLikeFile = () => {
+    fetch("http://localhost:8080/file/like", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userid: currentUser.id,
+        fileid: fileDetail.id,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data === true) {
+          setIsLiked(true);
+          // xử lý khi like thành công
+          toast.success("Liked file!", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        } else {
+          // xử lý khi like thất bại
+          toast.error("Failed to like file.", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const handleFollow = () => {
+    fetch("http://localhost:8080/api/auth/follow", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: currentUser.id,
+        friend_id: fileDetail.userId,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          setIsFollowing(!isFollowing);
+          response.json().then((data) => {
+            toast.success(data.message, {
+              position: toast.POSITION.TOP_RIGHT,
+            });
+          });
+        } else {
+          response.json().then((error) => {
+            toast.error(error.message, {
+              position: toast.POSITION.TOP_RIGHT,
+            });
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   return (
     <>
+      {" "}
+      <ToastContainer />
+      {showPricing && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 9999,
+          }}
+        >
+          <Pricing onBack={() => setShowPricing(false)} />
+        </div>
+      )}
       <Box container sx={{ minHeight: "1000px" }}>
         <Card
           sx={{
             margin: "10px auto",
           }}
         >
-          <Grid container direction="row">
+          <Grid sm={12} container direction="row">
             <Grid xs={12} sm={8} direction="column">
               <Grid
                 item
@@ -161,12 +268,11 @@ function FileDetail() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  // justifyContent: "center"
                 }}
               >
                 {isLoading ? (
                   <CircularProgress /> // show CircularProgress when isLoading is true
-                ) : images && images ? (
+                ) : images && images.length > 0 ? (
                   <Swiper
                     pagination={{
                       type: "progressbar",
@@ -183,14 +289,13 @@ function FileDetail() {
                           src={image}
                           alt="pdfImage"
                           style={{
+                            display: "block",
                             width: width,
                             height: height,
                             border: "2px ridge  ",
                             margin: "5px auto",
                           }}
                         />
-
-                        {/* </div> */}
                       </SwiperSlide>
                     ))}
                   </Swiper>
@@ -199,15 +304,10 @@ function FileDetail() {
                     None
                   </Typography>
                 )}
-
-                {/* <iframe
-                  src="https://drive.google.com/file/d/1xdJ419aG8M_OZEhQksy0Ne3G1O_A1NJb/preview  "
-                  allow="autoplay"
-                  width="100%"
-                  height="100%"
-                ></iframe> */}
               </Grid>
               <Grid
+                xs={12}
+                sm={8}
                 item
                 sx={{
                   height: 300,
@@ -216,16 +316,23 @@ function FileDetail() {
                 spacing={4}
               >
                 <Stack
+                  sm={8}
                   direction="row"
                   spacing={1}
                   justifyContent="space-between"
                 >
-                  <Stack item>
+                  <Stack sm={4} item sx={{ width: "80%" }}>
                     <Typography
-                      variant="h1"
-                      sx={{ fontSize: "26px", fontWeight: 600 }}
+                      variant="h2"
+                      sx={{
+                        fontSize: "26px",
+                        fontWeight: 200,
+                        wordWrap: "break-word",
+                      }}
                     >
-                      {fileDetail.fileName}
+                      {fileDetail.fileName > 100
+                        ? fileDetail.fileName.slice(0, 100) + "..."
+                        : fileDetail.fileName}
                     </Typography>
                     <Typography variant="caption" sx={{ fontSize: "10px" }}>
                       {formattedDate} • {fileDetail.likeFile} likes •{" "}
@@ -237,6 +344,7 @@ function FileDetail() {
                       variant="contained"
                       color="primary"
                       onClick={handleDownload}
+                      height="50px"
                     >
                       <DownloadIcon />
                       Download Now
@@ -247,15 +355,27 @@ function FileDetail() {
                   </Stack>
                 </Stack>
                 <Stack direction="row" spacing={2}>
-                  <FavoriteBorderIcon />
+                  {isLiked ? (
+                    <FavoriteBorderIcon
+                      style={{ color: iconColor }}
+                      onClick={handleLikeFile}
+                    />
+                  ) : (
+                    <FavoriteBorderIcon
+                      style={{ color: iconColor }}
+                      onClick={handleLikeFile}
+                    />
+                  )}
                   <ShareRoundedIcon />
                   <MoreHorizRoundedIcon />
                 </Stack>
                 <Stack direction="row" spacing={2}>
                   {tags &&
                     tags.map((tag, index) => (
-                      <Chip
+                      <Button
                         key={index}
+                        component={Link}
+                        href={`/`}
                         sx={{
                           border: "1px solid",
                           borderRadius: "56px",
@@ -264,7 +384,9 @@ function FileDetail() {
                           lineHeight: "24px",
                         }}
                         label={tag.tagName}
-                      />
+                      >
+                        {tag.tagName}
+                      </Button>
                     ))}
                 </Stack>
                 <Stack direction="row" spacing={2}>
@@ -301,15 +423,43 @@ function FileDetail() {
                     >
                       {fileDetail.userName}
                     </Typography>
-                    <Typography>About</Typography>
+                    <Button
+                      variant="text"
+                      sx={{
+                        margin: "0px",
+                        fontSize: "10px",
+                        backgroundColor: buttonColor,
+                      }}
+                      onClick={handleFollow}
+                    >
+                      {isFollowing ? "UnFollow" : "Follow"}
+                    </Button>
                   </Stack>
                 </Stack>
               </Grid>
             </Grid>
-            <Grid>bb</Grid>
+            <Grid
+              item
+              // xs={12}
+              sm={4}
+              sx={{
+                height: 700,
+                background: "whitesmoke",
+              }}
+            >
+              <Typography>Recommended</Typography>
+              <FileListTags fileMore={fileList} />
+            </Grid>
           </Grid>
         </Card>
-        <Grid container spacing={2}>
+        <Grid
+          container
+          spacing={2}
+          sx={{
+            background: "whitesmoke",
+            borderTop: "1px solid",
+          }}
+        >
           <Grid
             item
             xs={12}
@@ -330,18 +480,17 @@ function FileDetail() {
             item
             xs={12}
             sx={{
-              marginY: "20px",
+              marginBottom: "20px",
             }}
           >
-            <Typography
-              variant="h2"
-              color="initial"
-              sx={{ fontSize: 20, fontWeight: 700 }}
-            >
-              More Related Content (20)
-            </Typography>
+            <FileListMore fileMore={fileList} />
+            {/* <FileList
+                file={userAbout?.files}
+                imageData={imageData}
+                handleClickFile={handleClickFile}
+              /> */}
           </Grid>
-          <Grid
+          {/* <Grid
             item
             xs={12}
             sx={{
@@ -355,7 +504,7 @@ function FileDetail() {
             >
               More Related Content (20)
             </Typography>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Box>
     </>
