@@ -109,10 +109,11 @@ function FileListMore(props) {
                   component="img"
                   image={imageData[todo.id] || ""}
                   alt="green iguana"
-                  height={100}
+                  height={200}
                   sx={{
-                    objectFit: "none",
+                    objectFit: "contain",
                     objectPosition: "top",
+                    background: "gainsboro",
                   }}
                 />
                 <CardContent sx={{ height: "50px" }}>

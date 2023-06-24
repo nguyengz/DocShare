@@ -78,17 +78,28 @@ function TodoList({ ...props }) {
               sx={{ height: "100%", boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)" }}
             >
               <CardActionArea onClick={() => handleClickProduct(todo)}>
-                <CardMedia
-                  component="img"
-                  image={imageData[todo.id] || ""}
-                  alt="green iguana"
+                <Box
                   height={200}
                   sx={{
-                    objectFit: "none",
-                    objectPosition: "top",
+                    backgroundImage: `url(${imageData[todo.id]})`,
+                    backdropFilter: "blur(10px)"
                   }}
-                />
-                <CardContent sx={{ height: "100px" }}>
+                >
+                  <CardMedia
+                    component="img"
+                    image={imageData[todo.id] || ""}
+                    alt="green iguana"
+                    height={200}
+                    sx={{
+                      objectFit: "contain",
+                      objectPosition: "center",
+                      background: "gainsboro",
+                      // backgroundImage: `url(${imageData[todo.id]})`,
+                    }}
+                  />
+                </Box>
+
+                <CardContent sx={{ height: "100px", background:"#f8f8f8" }}>
                   <Typography style={styles.todoName} gutterBottom variant="h6">
                     {todo.name}
                   </Typography>
@@ -106,6 +117,7 @@ function TodoList({ ...props }) {
                   display: "flex",
                   margin: "0px 1px",
                   justifyContent: "space-between",
+                  background:"#f8f8f8"
                 }}
               >
                 <Typography

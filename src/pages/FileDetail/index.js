@@ -256,7 +256,7 @@ function FileDetail() {
       <Box container sx={{ minHeight: "1000px" }}>
         <Card
           sx={{
-            margin: "10px auto",
+            margin: "5px ",
           }}
         >
           <Grid sm={12} container direction="row">

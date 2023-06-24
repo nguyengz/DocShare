@@ -68,10 +68,7 @@ export const uploadfile = createAsyncThunk(
   }
 );
 
-const initialState = {
-  list1: [], // initial data for list 1
-  list2: [], // initial data for list 2
-};
+
 
 const fileSlice = createSlice({
   name: "file",

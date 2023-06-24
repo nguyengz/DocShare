@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
 import {
-  Avatar,
   Box,
   Button,
   Card,
@@ -10,12 +8,13 @@ import {
   CardContent,
   CardMedia,
   Grid,
+  Link,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
-import PdfToImage from "../../../pdftoimage";
+
+import { useNavigate } from "react-router-dom";
 
 const styles = {
   todoName: {
@@ -25,25 +24,17 @@ const styles = {
     maxWidth: "300px",
   },
 };
-function TodoListTop({ ...props }) {
-  const { todoList, number } = props;
 
+function TodoListSearch({ ...props }) {
+  const { todoList, number } = props;
+  const [imageData, setImageData] = useState("");
   const navigate = useNavigate();
 
   const result = [];
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("sm"));
-  const [imageData, setImageData] = useState("");
 
-  const handleClickProduct = (todo) => {
-    // console.log(todo.link);
-    // const state = { link: todo.link };
-    // const title = "";
-    // const url = `/fileDetail/${todo.link}`;
-    // window.history.pushState(state, title, url);
-    navigate(`/fileDetail/${todo.id}`);
-  };
   useEffect(() => {
     todoList.forEach((todo) => {
       fetch(`http://localhost:8080/file/image/${todo.image}`)
@@ -61,6 +52,12 @@ function TodoListTop({ ...props }) {
         );
     });
   }, [todoList]);
+
+  const handleClickProduct = (todo) => {
+    console.log(todo);
+    navigate(`/fileDetail/${todo.id}`);
+  };
+
   const handleListProducts = () => {
     // eslint-disable-next-line no-lone-blocks
     {
@@ -81,29 +78,20 @@ function TodoListTop({ ...props }) {
               sx={{ height: "100%", boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)" }}
             >
               <CardActionArea onClick={() => handleClickProduct(todo)}>
-                <Box
+                <CardMedia
+                  component="img"
+                  image={imageData[todo.id] || ""}
+                  alt="green iguana"
                   height={200}
-                  // sx={{
-                  //   backgroundImage: `url(${imageData[todo.id]})`,
-                  //   // filter: "blur(10px)",
-                  // }}
-                >
-                  <CardMedia
-                    component="img"
-                    image={imageData[todo.id] || ""}
-                    alt="green iguana"
-                    height={200}
-                    sx={{
-                      objectFit: "contain",
-                      objectPosition: "center",
-                      background: "gainsboro",
-                      position: "absolute"
-                      // backgroundImage: `url(${imageData[todo.id]})`,
-                    }}
-                  />
-                </Box>
+                  sx={{
+                    objectFit: "contain",
+                    objectPosition: "center",
+                    background: "gainsboro",
+                    // backgroundImage: `url(${imageData[todo.id]})`,
+                  }}
+                />
 
-                <CardContent sx={{ height: "100px", background: "#f8f8f8" }}>
+                <CardContent sx={{ height: "100px" }}>
                   <Typography style={styles.todoName} gutterBottom variant="h6">
                     {todo.name}
                   </Typography>
@@ -121,7 +109,6 @@ function TodoListTop({ ...props }) {
                   display: "flex",
                   margin: "0px 1px",
                   justifyContent: "space-between",
-                  background: "#f8f8f8",
                 }}
               >
                 <Typography
@@ -163,6 +150,7 @@ function TodoListTop({ ...props }) {
       <Box sx={{ flexGrow: 1 }}>
         <Grid container sx={{ width: "100%", margin: "auto" }}>
           {handleListProducts()}
+          {/* {result.slice(0, 3).map((item) => item)} */}
           {result.map((item) => item)}
         </Grid>
       </Box>
@@ -170,4 +158,4 @@ function TodoListTop({ ...props }) {
   );
 }
 
-export default TodoListTop;
+export default TodoListSearch;

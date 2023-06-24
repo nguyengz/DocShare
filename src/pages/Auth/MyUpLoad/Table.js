@@ -6,21 +6,21 @@ import { data, states } from "./makeData";
 import { fetchUser } from "~/slices/user";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
+import { format, parseISO } from "date-fns";
+import moment from "moment/moment";
 
-const Example = () => {
-  const dispatch = useDispatch();
+const Example = (props) => {
+
   //   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const { user: currentUser } = useSelector((state) => state.auth);
-  const userAbout = useSelector((state) => state.userAbout.userAbout);
 
   const [tableData, setTableData] = useState([]);
 
   const [validationErrors, setValidationErrors] = useState({});
   useEffect(() => {
-    if (userAbout?.files) {
-      setTableData(userAbout.files);
+    if (props.data) {
+      setTableData(props.data);
     }
-  }, [userAbout]);
+  }, [props.data]);
   const handleDeleteFile = (fileId) => {
     const updatedTableData = tableData.filter((file) => file.id !== fileId);
     setTableData(updatedTableData);
@@ -33,14 +33,14 @@ const Example = () => {
       handleDeleteFile(file.id);
     }
   };
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const options = { year: "numeric", month: "short", day: "numeric" };
-    const formattedDate = date.toLocaleDateString("en-US", options);
-    return formattedDate;
-  };
-  
-  const formattedDate = formatDate(userAbout?.files.uploadDate);
+  // const formatDate = (dateString) => {
+  //   const date = new Date(dateString);
+  //   const options = { year: "numeric", month: "short", day: "numeric" };
+  //   const formattedDate = date.toLocaleDateString("en-US", options);
+  //   return formattedDate;
+  // };
+
+  // const formattedDate = formatDate(userAbout?.files.uploadDate);
 
   const getCommonEditTextFieldProps = useCallback(
     (cell) => {
@@ -73,6 +73,10 @@ const Example = () => {
     [validationErrors]
   );
 
+  const formatDate = (dateString) => {
+    const date = moment.utc(dateString).toDate();
+    return format(date, 'dd/MM/yyyy HH:mm:ss');
+  };
   const columnsOrder = ["fileName", "View", "likeFile", "Download"];
   const columns = useMemo(
     () => [
@@ -113,7 +117,7 @@ const Example = () => {
         header: "Date Upload",
         size: 50,
         enableSorting: true,
-        Cell: ({ cell }) => formatDate(cell),
+        Cell: ({ cell }) => formatDate(cell.value),
         muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
           ...getCommonEditTextFieldProps(cell),
         }),

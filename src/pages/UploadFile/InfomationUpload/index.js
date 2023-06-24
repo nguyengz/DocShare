@@ -34,7 +34,7 @@ import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
 
 // import "./styles1.css";
-import axios from "axios";
+
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategory } from "~/slices/category";
 import { uploadfile } from "~/slices/file";
@@ -97,12 +97,11 @@ const styles = {
   },
 };
 
-// const tags = ["React", "JavaScript", "Material-UI", "Web Development"];
+
 function InfomationUpload(props) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const MAX_CHARACTERS_PER_LINE = 30;
-  // let nameFileWithBreaks = "";
+ 
 
   const { user: currentUser } = useSelector((state) => state.auth);
   const categoryData = useSelector((state) => state.category.data);
@@ -124,9 +123,9 @@ function InfomationUpload(props) {
   const [height, setHeight] = React.useState(0);
   const [images, setImages] = useState([]);
   const [firstImage, setfirstImage] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [pdfRendering, setPdfRendering] = React.useState("");
+  // const [pdfRendering, setPdfRendering] = React.useState("");
   const [pageRendering, setPageRendering] = React.useState("");
   const canvasRef = useRef(null);
 
@@ -196,7 +195,7 @@ function InfomationUpload(props) {
   useEffect(() => {
     dispatch(fetchCategory());
     pdf && renderPage();
-  }, [pdf, currentPage, dispatch]);
+  }, [pdf, dispatch]);
 
   const handleFileUpload = async () => {
     setIsUploading(true);
@@ -224,8 +223,9 @@ function InfomationUpload(props) {
     try {
       // dispatch the uploadfile action
       await dispatch(uploadfile(formData));
+      setIsUploading(false); 
       navigate(`/currentUser.name/EditUpload`);
-      setIsUploading(false); // set isUploading state to false after upload is complete
+      // set isUploading state to false after upload is complete
     } catch (error) {
       console.log(error);
       setIsUploading(false); // set isUploading state to false if there is an error

@@ -21,22 +21,41 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 
 import { logout } from "~/slices/auth";
 import EventBus from "~/common/EventBus";
-import { useNavigate } from "react-router-dom";
+import { unstable_HistoryRouter, useNavigate } from "react-router-dom";
+import SearchResutlt from "~/pages/Search";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: "20px",
-  border: "1px solid",
-  borderColor: "blue",
+  border: "1px solid blue",
   backgroundColor: alpha(theme.palette.common.white, 0.25),
   "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.35),
     borderColor: "white",
+    borderRadius: "20px",
   },
   marginRight: theme.spacing(2),
   width: "100%",
   [theme.breakpoints.up("sm")]: {
     marginLeft: theme.spacing(3),
     width: "auto",
+  },
+  "& .suggestion-list": {
+    position: "absolute",
+    top: "100%",
+    left: 0,
+    zIndex: 1,
+    padding: "8px",
+    backgroundColor: "#fff",
+    border: "1px solid #ccc",
+    borderRadius: "20px",
+  },
+  "& .suggestion-list li": {
+    listStyle: "none",
+    padding: "4px 8px",
+    cursor: "pointer",
+    "&:hover": {
+      backgroundColor: "#f5f5f5",
+    },
   },
 }));
 
@@ -122,7 +141,7 @@ export default function Header() {
   const { user: currentUser } = useSelector((state) => state.auth);
   const [anchorEl, setAnchorEl] = React.useState(null);
   // const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
+  const [tagName, setTagName] = useState("");
   const isMenuOpen = Boolean(anchorEl);
   // const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const dispatch = useDispatch();
@@ -165,6 +184,11 @@ export default function Header() {
   // const handleMobileMenuOpen = (event) => {
   //   setMobileMoreAnchorEl(event.currentTarget);
   // };
+  const handleSearch = (event) => {
+    event.preventDefault();
+    const query = event.target.elements.search.value;
+    navigate(`/Search?tagName=${query}`);
+  };
 
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -199,133 +223,148 @@ export default function Header() {
   //   // console.log(idlink);
   // };
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" color="default">
-        <Toolbar>
-          <Typography variant="h6" noWrap component="div" sx={{ mr: 4 }}>
-            DocShare
-          </Typography>
-          <List sx={{ display: "flex" }}>
-            <ListItem>
-              {titlePages.map((page, index) => {
-                return (
-                  <Typography
-                    component={Link}
-                    variant="h7"
-                    sx={{
-                      mr: 2,
-                      textDecoration: "none",
-                      // color: idlink === page.id ? "red" : "white",
-                      ":hover": { color: "blue" },
-                    }}
-                    onClick={() => {
-                      // setidlink(page.id);
-                      // alert(page.title);
-                    }}
-                    // underline="none"
-                    href={`/${page.id}`}
-                    value={page.id}
-                    key={index}
+    <>
+      <Box sx={{ flexGrow: 1 }}>
+        <AppBar position="static" color="default">
+          <Toolbar>
+            <Typography variant="h6" noWrap component="div" sx={{ mr: 4 }}>
+              DocShare
+            </Typography>
+            <List sx={{ display: "flex" }}>
+              <ListItem>
+                {titlePages.map((page, index) => {
+                  return (
+                    <Typography
+                      component={Link}
+                      variant="h7"
+                      sx={{
+                        mr: 2,
+                        textDecoration: "none",
+                        // color: idlink === page.id ? "red" : "white",
+                        ":hover": { color: "blue" },
+                      }}
+                      onClick={() => {
+                        // setidlink(page.id);
+                        // alert(page.title);
+                      }}
+                      // underline="none"
+                      href={`/${page.id}`}
+                      value={page.id}
+                      key={index}
+                    >
+                      {page.title}
+                    </Typography>
+                  );
+                })}
+              </ListItem>
+            </List>
+
+            <form
+              onSubmit={handleSearch}
+              style={{
+                borderRadius: "20px",
+              }}
+            >
+              <Search>
+                <SearchIconWrapper>
+                  <SearchIcon />
+                </SearchIconWrapper>
+                <StyledInputBase
+                  name="search"
+                  placeholder="Search…"
+                  inputProps={{ "aria-label": "search" }}
+                  value={tagName}
+                  onChange={(event) => setTagName(event.target.value)}
+                />
+              </Search>
+            </form>
+            {/* <SearchResutlt tagName={tagName} /> */}
+            <Box sx={{ flexGrow: 1 }} />
+            <Box sx={{ display: { xs: "", md: "flex" } }}>
+              <Button
+                variant="contained"
+                sx={{ mr: "10px" }}
+                onClick={checkUpload}
+              >
+                {" "}
+                <FileUploadIcon />
+                <Typography variant="caption">Upload</Typography>
+              </Button>
+
+              {currentUser && currentUser.name ? (
+                <>
+                  <IconButton
+                    size="large"
+                    edge="end"
+                    aria-label="account of current user"
+                    aria-controls={menuId}
+                    aria-haspopup="true"
+                    onClick={handleProfileMenuOpen}
+                    color="inherit"
                   >
-                    {page.title}
-                  </Typography>
-                );
-              })}
-            </ListItem>
-          </List>
+                    <AccountCircle />
+                  </IconButton>
+                  <Menu
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    id={menuId}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    open={isMenuOpen}
+                    onClose={handleMenuClose}
+                  >
+                    <MenuItem onClick={handleClickProfile}>
+                      {currentUser.name}
+                    </MenuItem>
+                    <MenuItem onClick={handleClickAcountSetting}>
+                      My account setting
+                    </MenuItem>
+                    <MenuItem onClick={handleClickMyUpload}>My Upload</MenuItem>
+                    <MenuItem onClick={logOut}>Log out</MenuItem>
+                  </Menu>
+                  {/* {renderMenu} */}
+                  {/* <Button sx={{ mr: "10px" }} onClick={logOut}>
+              Log out
+            </Button> */}
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="outlined"
+                    sx={{ mr: "10px" }}
+                    href={"/login"}
+                  >
+                    Sign in
+                  </Button>
+                  <Button sx={{ mr: "10px" }} href={"/register"}>
+                    Sign up
+                  </Button>
+                </>
+              )}
+            </Box>
 
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-            />
-          </Search>
-          <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: "", md: "flex" } }}>
-            <Button
-              variant="contained"
-              sx={{ mr: "10px" }}
-              onClick={checkUpload}
-            >
-              {" "}
-              <FileUploadIcon />
-              <Typography variant="caption">Upload</Typography>
-            </Button>
-
-            {currentUser && currentUser.name ? (
-              <>
-                <IconButton
-                  size="large"
-                  edge="end"
-                  aria-label="account of current user"
-                  aria-controls={menuId}
-                  aria-haspopup="true"
-                  onClick={handleProfileMenuOpen}
-                  color="inherit"
-                >
-                  <AccountCircle />
-                </IconButton>
-                <Menu
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  id={menuId}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={isMenuOpen}
-                  onClose={handleMenuClose}
-                >
-                  <MenuItem onClick={handleClickProfile}>
-                    {currentUser.name}
-                  </MenuItem>
-                  <MenuItem onClick={handleClickAcountSetting}>
-                    My account setting
-                  </MenuItem>
-                  <MenuItem onClick={handleClickMyUpload}>
-                    My Upload
-                  </MenuItem>
-                  <MenuItem onClick={logOut}>Log out</MenuItem>
-                </Menu>
-                {/* {renderMenu} */}
-                {/* <Button sx={{ mr: "10px" }} onClick={logOut}>
-                  Log out
-                </Button> */}
-              </>
-            ) : (
-              <>
-                <Button variant="outlined" sx={{ mr: "10px" }} href={"/login"}>
-                  Sign in
-                </Button>
-                <Button sx={{ mr: "10px" }} href={"/register"}>
-                  Sign up
-                </Button>
-              </>
-            )}
-          </Box>
-
-          <Box sx={{ display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              // onClick={handleMobileMenuOpen}
-              color="inherit"
-            >
-              <MoreIcon />
-            </IconButton>
-          </Box>
-        </Toolbar>
-      </AppBar>
-      {/* {renderMobileMenu} */}
-    </Box>
+            <Box sx={{ display: { xs: "flex", md: "none" } }}>
+              <IconButton
+                size="large"
+                aria-label="show more"
+                aria-controls={mobileMenuId}
+                aria-haspopup="true"
+                // onClick={handleMobileMenuOpen}
+                color="inherit"
+              >
+                <MoreIcon />
+              </IconButton>
+            </Box>
+          </Toolbar>
+        </AppBar>
+        {/* {renderMobileMenu} */}
+      </Box>
+    </>
   );
 }

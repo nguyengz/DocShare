@@ -40,7 +40,6 @@ const style = {
     width: "100%",
     height: "200px",
     justifyContent: "center",
-    
   },
 };
 
@@ -90,6 +89,7 @@ function FileListTags(props) {
                 }}
                 spacing={1}
               >
+                
                 <CardMedia
                   component="img"
                   image={imageData[todo.id] || ""}
@@ -97,8 +97,9 @@ function FileListTags(props) {
                   sx={{
                     width: "200px",
                     // display: "block",
-                    objectFit: "none",
-                    objectPosition: "top",
+                    objectFit: "contain",
+                    objectPosition: "center",
+                    background: "gainsboro",
                     // height: "100%",
                   }}
                 />

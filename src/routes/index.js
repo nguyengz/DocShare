@@ -13,6 +13,8 @@ import Profile from "~/pages/Auth/Profile";
 import FileListMore from "~/pages/FileDetail/FileList";
 import AcountSetting from "~/pages/Auth/AcoutSetting";
 import MyUpload from "~/pages/Auth/MyUpLoad";
+import Search from "~/pages/Search";
+import SearchResutlt from "~/pages/Search";
 // import ProductDetail from "~/pages/ProductDetail";
 
 const publicRoutes = [
@@ -32,6 +34,7 @@ const publicRoutes = [
   },
   { path: "/fileDetail/:id", component: FileDetail, layout: "onlylayout" },
   { path: "/filemore", component: FileListMore, layout: "onlylayout" },
+  { path: "/Search", component: SearchResutlt, layout: "onlylayout" },
 ];
 
 const privateRoutes = [
