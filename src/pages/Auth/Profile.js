@@ -140,6 +140,12 @@ function Profile() {
     // window.history.pushState(state, title, url);
     navigate(`/fileDetail/${todo.id}`);
   };
+  const handleClickAcountSetting = (todo) => {
+    navigate(`/AcountSetting/${currentUser.name}`);
+  };
+  const handleClickMyFile = (todo) => {
+    navigate(`/${currentUser.name}/EditUpload`);
+  };
 
   return (
     <Box sx={{ minHeight: "1000px", margin: "1px", background: "white" }}>
@@ -160,11 +166,8 @@ function Profile() {
               <Item>
                 <Typography
                   component={Link}
-                  onClick={() => {
-                    // setidlink(page.id);
-                    // alert(page.title);
-                  }}
-                  href={`/`}
+                  // onClick={handleClickMyFile}
+                  href={`/${currentUser.name}/EditUpload`}
                 >
                   {userAbout?.files.length} DocShare
                 </Typography>
@@ -206,7 +209,7 @@ function Profile() {
                 <Button
                   variant="outlined"
                   sx={{ margin: "10px" }}
-                  href={"/login"}
+                  onClick={handleClickAcountSetting}
                 >
                   Edit
                 </Button>

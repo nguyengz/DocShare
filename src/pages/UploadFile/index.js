@@ -49,6 +49,7 @@ function UploadFile() {
           icon: "error",
           confirmButtonText: "OK",
         });
+        setIsLoading(false);
         return;
       }
       setSelectedFile(file);
@@ -56,12 +57,12 @@ function UploadFile() {
       const uri = URL.createObjectURL(file);
       const _pdf = await pdfjs.getDocument({ url: uri }).promise;
       setPdf(_pdf);
-      setIsLoading(false);
+
       setFileUrl(uri);
       console.log(fileUrl);
       console.log(selectedFile.type);
     } catch (error) {
-      setIsLoading(true);
+      setIsLoading(false);
       await Swal.fire({
         title: "Error",
         text: error.message,
@@ -81,167 +82,160 @@ function UploadFile() {
   // };
   return (
     <>
-      {isLoading ? (
-        <Box minHeight={"1000px"}>
-          {" "}
-          <CircularProgress color="primary" />
-        </Box>
-      ) : (
-        <>
-          {isFilePicked && fileUrl && (
-            <InfomationUpload
-              url={fileUrl}
-              nameFile={selectedFile.name}
-              selectedFile={selectedFile}
-              pdf={pdf}
-            />
-          )}{" "}
-          {!isFilePicked && (
-            <Box
-              container
+      <>
+        {isFilePicked && fileUrl && (
+          <InfomationUpload
+            url={fileUrl}
+            nameFile={selectedFile.name}
+            selectedFile={selectedFile}
+            pdf={pdf}
+          />
+        )}{" "}
+        {!isFilePicked && (
+          <Box
+            container
+            sx={{
+              width: "75%",
+              minHeight: "100vh",
+              margin: "40px auto ",
+              alignItems: "center",
+              alignContent: "center",
+              justifyContent: "center",
+              textAlign: "center",
+              padding: 1,
+            }}
+          >
+            <Typography
+              variant="h1"
               sx={{
-                width: "75%",
-                minHeight: "100vh",
-                margin: "40px auto ",
-                alignItems: "center",
-                alignContent: "center",
-                justifyContent: "center",
+                fontSize: "28px",
+                fontWeight: "600",
                 textAlign: "center",
-                padding: 1,
               }}
             >
-              <Typography
-                variant="h1"
-                sx={{
-                  fontSize: "28px",
-                  fontWeight: "600",
-                  textAlign: "center",
-                }}
-              >
-                Upload and share with over 70 million people
-              </Typography>
-              <Typography
-                variant="h1"
-                sx={{
-                  fontSize: "16px",
-                  fontWeight: "400",
-                  textAlign: "center",
-                  color: "var(--blue-gray-600)",
-                  margin: "10px auto",
-                }}
-              >
-                Presentations, Documents, Infographics, and more
-              </Typography>
-              <Card
+              Upload and share with over 70 million people
+            </Typography>
+            <Typography
+              variant="h1"
+              sx={{
+                fontSize: "16px",
+                fontWeight: "400",
+                textAlign: "center",
+                color: "var(--blue-gray-600)",
+                margin: "10px auto",
+              }}
+            >
+              Presentations, Documents, Infographics, and more
+            </Typography>
+            <Card
+              container
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                backgroundColor: "#f5fcff",
+                border: "1px dashed #b4bbd1",
+                justifyContent: "center",
+                justifyItems: "center",
+                marginTop: "20px",
+                padding: 2,
+              }}
+            >
+              <Grid
                 container
+                spacing={1}
+                display="flex"
+                flexDirection="column"
+                direction="column"
+                justify="center"
+                alignItems="center"
+                alignContent="center"
                 sx={{
+                  padding: "90px 0",
+                  gap: "8px",
                   display: "flex",
                   flexDirection: "column",
-                  backgroundColor: "#f5fcff",
-                  border: "1px dashed #b4bbd1",
-                  justifyContent: "center",
-                  justifyItems: "center",
-                  marginTop: "20px",
-                  padding: 2,
                 }}
               >
+                {/* <input type="file" name="file" /> */}
+
                 <Grid
-                  container
-                  spacing={1}
-                  display="flex"
-                  flexDirection="column"
-                  direction="column"
-                  justify="center"
-                  alignItems="center"
-                  alignContent="center"
+                  item
                   sx={{
-                    padding: "90px 0",
-                    gap: "8px",
                     display: "flex",
                     flexDirection: "column",
+                    gap: "8px",
                   }}
                 >
-                  {/* <input type="file" name="file" /> */}
-
-                  <Grid
-                    item
+                  <Button
+                    // disableElevation
+                    // disabled={loading
+                    size="large"
+                    type="submit"
+                    variant="contained"
+                    color="primary"
                     sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "8px",
+                      color: "white",
                     }}
+                    // onMouseOver={onMouseOver}
+                    onClick={handleUploadButtonClick}
                   >
-                    <Button
-                      // disableElevation
-                      // disabled={loading
-                      size="large"
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      sx={{
-                        color: "white",
-                      }}
-                      // onMouseOver={onMouseOver}
-                      onClick={handleUploadButtonClick}
-                    >
-                      <input
-                        id="contained-button-file"
-                        name="file"
-                        type="file"
-                        onChange={handleFileUpload}
-                        hidden
-                        accept="application/pdf"
-                      />
-                      <FileUploadIcon />
-                      <Typography variant="caption">
-                        Select Documents To Upload
-                      </Typography>
-                    </Button>
-                    <Typography variant="caption" color="initial">
-                      or Drag & Drop here
-                    </Typography>{" "}
-                  </Grid>
+                    <input
+                      id="contained-button-file"
+                      name="file"
+                      type="file"
+                      onChange={handleFileUpload}
+                      hidden
+                      accept="application/pdf"
+                    />
+                    <FileUploadIcon />
+                    <Typography variant="caption">
+                      Select Documents To Upload
+                    </Typography>
+                  </Button>
+                  <Typography variant="caption" color="initial">
+                    or Drag & Drop here
+                  </Typography>{" "}
+                </Grid>
+              </Grid>
+              <Grid
+                xs={8}
+                container
+                spacing={1}
+                direction="row"
+                justify="center"
+                alignItems="center"
+                alignContent="center"
+                wrap="nowrap"
+                margin="auto"
+              >
+                <Grid
+                  item
+                  xs={5}
+                  sx={{ padding: "0", gap: "8px", textAlign: "right" }}
+                >
+                  <Typography variant="caption" color="initial">
+                    or upload documents from the cloud:
+                  </Typography>
                 </Grid>
                 <Grid
-                  xs={8}
-                  container
-                  spacing={1}
-                  direction="row"
-                  justify="center"
-                  alignItems="center"
-                  alignContent="center"
-                  wrap="nowrap"
-                  margin="auto"
-                >
-                  <Grid
-                    item
-                    xs={5}
-                    sx={{ padding: "0", gap: "8px", textAlign: "right" }}
-                  >
-                    <Typography variant="caption" color="initial">
-                      or upload documents from the cloud:
-                    </Typography>
-                  </Grid>
-                  <Grid
-                    item
-                    xs={4}
-                    sx={{
-                      padding: "",
-                      height: "25px",
-                      background:
-                        "url(https://public.slidesharecdn.com/images/upload-background-sprite.png)",
+                  item
+                  xs={4}
+                  sx={{
+                    padding: "",
+                    height: "25px",
+                    background:
+                      "url(https://public.slidesharecdn.com/images/upload-background-sprite.png)",
 
-                      backgroundPosition: "-20px -130px",
-                    }}
-                  >
-                    <Link></Link>
-                  </Grid>
+                    backgroundPosition: "-20px -130px",
+                  }}
+                >
+                  <Link></Link>
                 </Grid>
-              </Card>
-            </Box>
-          )}
-        </>
-      )}
+              </Grid>
+            </Card>
+          </Box>
+        )}
+      </>
     </>
   );
 }

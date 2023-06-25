@@ -8,6 +8,10 @@ import Grid from "@mui/material/Grid";
 import StarIcon from "@mui/icons-material/StarBorder";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/system";
+import { useDispatch, useSelector } from "react-redux";
+import { registerPackage } from "~/slices/paypal";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const PricingList = styled("ul")({
   margin: 0,
@@ -50,6 +54,30 @@ const tiers = [
   },
 ];
 export default function Pricing({ onBack }) {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [isUploading, setIsUploading] = useState(false);
+  const { user: currentUser } = useSelector((state) => state.auth);
+  // const payLink = useSelector((state) => state.package.data);
+  const handleResgisterPackage = async () => {
+    setIsUploading(true);
+    const data = {
+      user_id: 1,
+      package_id: 1,
+    };
+
+    try {
+      // dispatch the uploadfile action
+      const response = await dispatch(registerPackage(data));
+      const payLink = response.payload;
+      console.log(response.payload);
+      window.location.href = payLink;
+    } catch (error) {
+      console.log(error);
+      setIsUploading(false); // set isUploading state to false if there is an error
+    }
+  };
+
   return (
     <Container maxWidth="md" component="main" sx={{}}>
       <Grid container spacing={5} alignItems="flex-end">
@@ -101,7 +129,11 @@ export default function Pricing({ onBack }) {
                 </PricingList>
               </CardContent>
               <CardActions>
-                <Button fullWidth variant={tier.buttonVariant}>
+                <Button
+                  fullWidth
+                  variant={tier.buttonVariant}
+                  onClick={handleResgisterPackage}
+                >
                   {tier.buttonText}
                 </Button>
               </CardActions>

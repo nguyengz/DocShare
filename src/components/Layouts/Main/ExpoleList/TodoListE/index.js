@@ -59,7 +59,7 @@ function TodoList({ ...props }) {
                   width={"50%"}
                   height={"70%"}
                 />
-                <CardContent sx={{height: "30%"}}>
+                <CardContent sx={{ height: "30%" }}>
                   <Typography variant="body2" color="text.secondary">
                     {todo.name}
                   </Typography>

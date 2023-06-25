@@ -72,10 +72,11 @@ function FileList(props) {
               component="img"
               image={props.imageData[todo.id] || ""}
               alt="green iguana"
-              height={150}
+              height={200}
               sx={{
-                objectFit: "none",
-                objectPosition: "top",
+                objectFit: "contain",
+                objectPosition: "none",
+                // border: "1px solid black",
               }}
             />
             <CardContent sx={{ height: "50px" }}>
@@ -119,7 +120,6 @@ function FileList(props) {
           </SwiperSlide>
         ))}
       </Swiper>
-      ;
     </>
   );
 }

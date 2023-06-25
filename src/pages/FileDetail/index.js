@@ -41,6 +41,7 @@ import { downloadFile } from "~/slices/download";
 import FileListMore from "./FileList";
 import FileListTags from "./FileListTags";
 import Pricing from "../Payment/Package";
+import { registerPackage } from "~/slices/paypal";
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -81,7 +82,7 @@ function FileDetail() {
   const [isLoading, setIsLoading] = useState(false);
   const [pdfRendering, setPdfRendering] = React.useState("");
   const [pageRendering, setPageRendering] = React.useState("");
-
+  
   const [isFollowing, setIsFollowing] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -140,7 +141,7 @@ function FileDetail() {
   };
   const handleDownload = () => {
     // Check if the user has an active subscription
-    const hasSubscription = false;
+    const hasSubscription = true;
     if (!hasSubscription) {
       // Show the pricing page
       setShowPricing(true);
@@ -148,10 +149,10 @@ function FileDetail() {
     }
 
     // If the user has an active subscription, allow them to download the file
-    const fileUrl =
-      fileDetail.link + "/" + fileDetail.userId + "/" + fileDetail.id;
-    const fileName = fileDetail.fileName;
-    dispatch(downloadFile({ fileUrl, fileName }));
+    // const fileUrl =
+    //   fileDetail.link + "/" + fileDetail.userId + "/" + fileDetail.id;
+    // const fileName = fileDetail.fileName;
+    // dispatch(downloadFile({ fileUrl, fileName }));
   };
 
   useEffect(() => {
@@ -230,7 +231,7 @@ function FileDetail() {
         console.log(error);
       });
   };
-
+  
   return (
     <>
       {" "}

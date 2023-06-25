@@ -5,18 +5,13 @@ import {
   Box,
   Button,
   Card,
-  CardActionArea,
   CardContent,
   CardMedia,
   Grid,
   InputLabel,
-  MenuItem,
   OutlinedInput,
-  Select,
   Stack,
-  TextField,
   TextareaAutosize,
-  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
 import { Form, Formik } from "formik";
@@ -258,6 +253,19 @@ function AcountSetting() {
                       >
                         <Stack direction="column" spacing={4}>
                           <Item>
+                            <InputLabel htmlFor="Email">Email</InputLabel>
+                            <OutlinedInput
+                              className={classes.input}
+                              type="text"
+                              fullWidth
+                              //   value={title}
+                              //   onChange={(e) => {
+                              //     // handleChange(e);
+                              //     setTitle(e.target.value);
+                              //   }}
+                            />
+                          </Item>
+                          <Item>
                             <InputLabel htmlFor="FirstName">
                               FirstName
                             </InputLabel>
@@ -286,6 +294,20 @@ function AcountSetting() {
                         </Stack>
                         <Stack direction="column" spacing={4}>
                           <Item>
+                            <Button>Change Password</Button>
+                            {/* <InputLabel htmlFor="PassWord">PassWord</InputLabel>
+                            <OutlinedInput
+                              className={classes.input}
+                              type="text"
+                              fullWidth
+                              //   value={title}
+                              //   onChange={(e) => {
+                              //     // handleChange(e);
+                              //     setTitle(e.target.value);
+                              //   }}
+                            /> */}
+                          </Item>
+                          <Item>
                             <InputLabel htmlFor="LastName">LastName</InputLabel>
                             <OutlinedInput
                               className={classes.input}
@@ -299,30 +321,35 @@ function AcountSetting() {
                             />
                           </Item>
                           <Item>
-                            <InputLabel htmlFor="Title-login">Tags</InputLabel>
+                            <InputLabel htmlFor="Title-login">
+                              NumberPhone
+                            </InputLabel>
 
-                            {/* <OutlinedInput
-                            sx={useStyles.input}
-                            className={classes.input}
-                            type="text"
-                            value={selectedTags}
-                            onChange={(e) => {
-                              // handleChange(e);
-                              setSelectedTags(e.target.value);
-                            }}
-                            fullWidth
-                          ></OutlinedInput> */}
+                            <OutlinedInput
+                              sx={useStyles.input}
+                              className={classes.input}
+                              type="text"
+                              // value={selectedTags}
+                              // onChange={(e) => {
+                              //   // handleChange(e);
+                              //   setSelectedTags(e.target.value);
+                              // }}
+                              fullWidth
+                            ></OutlinedInput>
                           </Item>
                           <Item>
-                            <InputLabel htmlFor="Privacy">Privacy</InputLabel>
-                            <ToggleButtonGroup
-                              color="primary"
-                              backgroundColor="primary"
-                              //   value={alignment}
-                              //   exclusive
-                              //   onChange={handleChangePrivacy}
-                              aria-label="Platform"
-                            ></ToggleButtonGroup>
+                            <InputLabel htmlFor="Privacy">Address</InputLabel>
+                            <OutlinedInput
+                              sx={useStyles.input}
+                              className={classes.input}
+                              type="text"
+                              // value={selectedTags}
+                              // onChange={(e) => {
+                              //   // handleChange(e);
+                              //   setSelectedTags(e.target.value);
+                              // }}
+                              fullWidth
+                            ></OutlinedInput>
                           </Item>
                         </Stack>
                       </Stack>

@@ -6,6 +6,7 @@ import {
   Card,
   CircularProgress,
   Container,
+  FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
@@ -97,11 +98,9 @@ const styles = {
   },
 };
 
-
 function InfomationUpload(props) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
- 
 
   const { user: currentUser } = useSelector((state) => state.auth);
   const categoryData = useSelector((state) => state.category.data);
@@ -112,7 +111,7 @@ function InfomationUpload(props) {
   const classes = useStyles();
 
   const [selectedCategory, setSelectedCategory] = useState("Select a Category");
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [tags, setSelectedTags] = useState([]);
   const [alignment, setAlignment] = useState("true");
   const [title, setTitle] = useState(props.nameFile);
   const [description, setDescription] = useState("");
@@ -130,20 +129,8 @@ function InfomationUpload(props) {
   const canvasRef = useRef(null);
 
   const pdf = props.pdf;
-  // Check if the nameFile is longer than the maximum number of characters per line
-  // if (props.nameFile && props.nameFile.length > MAX_CHARACTERS_PER_LINE) {
-  //   // Split the nameFile into an array of substrings with a maximum length of MAX_CHARACTERS_PER_LINE
-  //   const nameFileParts = props.nameFile.match(
-  //     new RegExp(`.{1,${MAX_CHARACTERS_PER_LINE}}`, "g")
-  //   );
-
-  //   // Join the nameFileParts array into a string with "<br>" between each substring
-  //   nameFileWithBreaks = nameFileParts.join("<br>");
-  // } else {
-  //   nameFileWithBreaks = props.nameFile || "";
-  // }
   const handleDelete = (tag) => {
-    const newTags = selectedTags.filter((t) => t !== tag);
+    const newTags = tags.filter((t) => t !== tag);
     setSelectedTags(newTags);
   };
   const handleChangePrivacy = (event, newAlignment) => {
@@ -202,10 +189,10 @@ function InfomationUpload(props) {
     const data = {
       filePath: currentUser.name,
       shared: alignment,
-      title: props.nameFile,
+      title: title,
       description: description,
       category: selectedCategory,
-      tags: selectedTags,
+      tags: tags,
       iduser: currentUser.id,
       fileImg: firstImage,
     };
@@ -223,7 +210,7 @@ function InfomationUpload(props) {
     try {
       // dispatch the uploadfile action
       await dispatch(uploadfile(formData));
-      setIsUploading(false); 
+      setIsUploading(false);
       navigate(`/currentUser.name/EditUpload`);
       // set isUploading state to false after upload is complete
     } catch (error) {
@@ -308,18 +295,18 @@ function InfomationUpload(props) {
               initialValues={{
                 filePath: "",
                 shared: "",
-                title: "",
+                title: props.nameFile,
                 description: "",
                 category: "",
-                tags: "",
+                tags: [],
               }}
               validationSchema={Yup.object().shape({
-                username: Yup.string()
+                title: Yup.string().max(200).required("FileName is required"),
+                description: Yup.string()
+                  .min(10)
                   .max(255)
-                  .required("username is required"),
-                password: Yup.string()
-                  .max(255)
-                  .required("Password is required"),
+                  .required("Description is required"),
+                tags: Yup.array().required("Tags is required"),
               })}
               // onSubmit={handleLogin}
             >
@@ -406,30 +393,58 @@ function InfomationUpload(props) {
                       >
                         <Stack direction="column" spacing={4}>
                           <Item>
-                            <InputLabel htmlFor="Title-login">Title</InputLabel>
+                            <InputLabel htmlFor="Title-login">
+                              FileName
+                            </InputLabel>
                             <OutlinedInput
                               className={classes.input}
                               type="text"
-                              fullWidth
+                              name="title"
+                              onBlur={handleBlur}
+                              placeholder="Enter FileName"
+                              error={Boolean(touched.title && errors.title)}
                               value={title}
                               onChange={(e) => {
-                                // handleChange(e);
+                                handleChange(e);
                                 setTitle(e.target.value);
                               }}
+                              fullWidth
                             />
+                            {touched.title && errors.title && (
+                              <FormHelperText
+                                error
+                                id="standard-weight-helper-text-email-login"
+                              >
+                                {errors.title}
+                              </FormHelperText>
+                            )}
                           </Item>
                           <Item>
-                            <InputLabel htmlFor="Title-login">
+                            <InputLabel htmlFor="description-login">
                               Description*
                             </InputLabel>
                             <TextareaAutosize
                               style={{ height: "100px", width: "100%" }}
+                              name="description"
+                              onBlur={handleBlur}
+                              placeholder="Enter FileName"
+                              error={Boolean(
+                                touched.description && errors.description
+                              )}
                               value={description}
                               onChange={(e) => {
-                                // handleChange(e);
+                                handleChange(e);
                                 setDescription(e.target.value);
                               }}
                             />
+                            {touched.description && errors.description && (
+                              <FormHelperText
+                                error
+                                id="standard-weight-helper-text-email-login"
+                              >
+                                {errors.description}
+                              </FormHelperText>
+                            )}
                           </Item>
                         </Stack>
                         <Stack direction="column" spacing={4}>
@@ -438,12 +453,19 @@ function InfomationUpload(props) {
                             <Select
                               className={classes.input}
                               value={selectedCategory}
+                              name="selectedCategory"
+                              onBlur={handleBlur}
+                              error={Boolean(
+                                touched.selectedCategory &&
+                                  errors.selectedCategory
+                              )}
                               onChange={(e) => {
                                 setSelectedCategory(e.target.value);
                               }}
                               sx={{ width: "100%" }}
                               // autoWidth
                               displayEmpty
+                              required
                             >
                               <MenuItem value="Select a Category" disabled>
                                 Select a Category
@@ -458,30 +480,36 @@ function InfomationUpload(props) {
                                 </MenuItem>
                               ))}
                             </Select>
+                            {touched.selectedCategory &&
+                              errors.selectedCategory && (
+                                <FormHelperText
+                                  error
+                                  id="standard-weight-helper-text-email-login"
+                                >
+                                  {errors.selectedCategory}
+                                </FormHelperText>
+                              )}
                           </Item>
                           <Item>
                             <InputLabel htmlFor="Title-login">Tags</InputLabel>
                             <TagsInput
                               className={classes.input}
-                              value={selectedTags}
-                              onChange={
-                                // handleChange(e);
-                                setSelectedTags
-                              }
-                              name="Tags"
+                              name="tags"
+                              onBlur={handleBlur}
+                              error={Boolean(touched.tags && errors.tags)}
+                              value={tags}
+                              onChange={(tags) => setSelectedTags(tags)}
                               placeHolder="enter tags"
+                              required
                             />
-                            {/* <OutlinedInput
-                            sx={useStyles.input}
-                            className={classes.input}
-                            type="text"
-                            value={selectedTags}
-                            onChange={(e) => {
-                              // handleChange(e);
-                              setSelectedTags(e.target.value);
-                            }}
-                            fullWidth
-                          ></OutlinedInput> */}
+                            {touched.tags && errors.tags && (
+                              <FormHelperText
+                                error
+                                id="standard-weight-helper-text-email-login"
+                              >
+                                {errors.tags}
+                              </FormHelperText>
+                            )}
                           </Item>
                           <Item>
                             <InputLabel htmlFor="Privacy">Privacy</InputLabel>

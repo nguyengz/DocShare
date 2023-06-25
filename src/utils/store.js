@@ -4,12 +4,14 @@ import messageReducer from "~/slices/message";
 import categoryReducer from "~/slices/category";
 import fileReducer from "~/slices/file";
 import userReducer from "~/slices/user";
+import registerReducer from "~/slices/paypal";
 const reducer = {
   auth: authReducer,
   message: messageReducer,
   category: categoryReducer,
   file: fileReducer,
   userAbout: userReducer,
+  package: registerReducer,
 };
 
 const store = configureStore({

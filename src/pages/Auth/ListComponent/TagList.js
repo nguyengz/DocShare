@@ -34,7 +34,7 @@ function TagList({ userAbout }) {
           <Button
             key={index}
             component={Link}
-            href={`/`}
+            href={`/Search?tagName=${tag.tagName}`}
             sx={{
               border: "1px solid",
               borderRadius: "16px",
