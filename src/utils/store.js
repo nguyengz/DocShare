@@ -5,11 +5,13 @@ import categoryReducer from "~/slices/category";
 import fileReducer from "~/slices/file";
 import userReducer from "~/slices/user";
 import registerReducer from "~/slices/paypal";
+import downloadReducer from "~/slices/download";
 const reducer = {
   auth: authReducer,
   message: messageReducer,
   category: categoryReducer,
   file: fileReducer,
+  download: downloadReducer,
   userAbout: userReducer,
   package: registerReducer,
 };

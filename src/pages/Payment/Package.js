@@ -11,7 +11,7 @@ import { styled } from "@mui/system";
 import { useDispatch, useSelector } from "react-redux";
 import { registerPackage } from "~/slices/paypal";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const PricingList = styled("ul")({
   margin: 0,
@@ -31,6 +31,7 @@ const PricingCard = styled(Card)(({ theme }) => ({
 
 const tiers = [
   {
+    tiers_id:1,
     title: "Free",
     price: "0",
     description: ["10 downloads", "1 GB of storage"],
@@ -38,6 +39,7 @@ const tiers = [
     buttonVariant: "outlined",
   },
   {
+    tiers_id:2,
     title: "Pro",
     subheader: "Most popular",
     price: "15",
@@ -46,6 +48,7 @@ const tiers = [
     buttonVariant: "contained",
   },
   {
+    tiers_id:3,
     title: "Enterprise",
     price: "30",
     description: ["50 downloads", "5 GB of storage"],
@@ -53,24 +56,26 @@ const tiers = [
     buttonVariant: "outlined",
   },
 ];
-export default function Pricing({ onBack }) {
+export default function Pricing({ onBack, fileDetail_id  }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  // const { id } = useParams();
   const [isUploading, setIsUploading] = useState(false);
   const { user: currentUser } = useSelector((state) => state.auth);
   // const payLink = useSelector((state) => state.package.data);
-  const handleResgisterPackage = async () => {
+  const handleResgisterPackage = async (tier) => {
     setIsUploading(true);
     const data = {
-      user_id: 1,
-      package_id: 1,
+      user_id: currentUser.id,
+      package_id: tier.tiers_id,
+      file_id: parseInt(fileDetail_id),
     };
 
     try {
       // dispatch the uploadfile action
       const response = await dispatch(registerPackage(data));
       const payLink = response.payload;
-      console.log(response.payload);
+      console.log(data);
       window.location.href = payLink;
     } catch (error) {
       console.log(error);
@@ -84,7 +89,7 @@ export default function Pricing({ onBack }) {
         {tiers.map((tier) => (
           <Grid
             item
-            key={tier.title}
+            key={tier.tiers_id}
             xs={12}
             sm={tier.title === "Enterprise" ? 12 : 8}
             md={4}
@@ -132,7 +137,7 @@ export default function Pricing({ onBack }) {
                 <Button
                   fullWidth
                   variant={tier.buttonVariant}
-                  onClick={handleResgisterPackage}
+                  onClick={() => handleResgisterPackage(tier)}
                 >
                   {tier.buttonText}
                 </Button>

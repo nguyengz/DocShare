@@ -55,7 +55,10 @@ export const login = createAsyncThunk(
 //     return response.data;
 //   }
 // );
-
+export const updateRoles = (updatedUser) => ({
+  type: 'UPDATE_ROLES',
+  payload: updatedUser,
+});
 export const logout = createAsyncThunk("auth/logout", async () => {
   await AuthService.logout();
 });
@@ -88,17 +91,9 @@ const authSlice = createSlice({
       state.isLoggedIn = false;
       state.user = null;
     },
-    // [fetchUser.pending]: (state, action) => {
-    //   state.status = "loading";
-    // },
-    // [fetchUser.fulfilled]: (state, action) => {
-    //   state.status = "succeeded";
-    //   state.data = action.payload;
-    // },
-    // [fetchUser.rejected]: (state, action) => {
-    //   state.status = "failed";
-    //   state.error = action.error.message;
-    // },
+    [updateRoles.type]: (state, action) => {
+      state.user.roles = action.payload.roles.slice();
+    },
   },
 });
 

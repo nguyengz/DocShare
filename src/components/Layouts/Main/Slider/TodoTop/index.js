@@ -49,7 +49,7 @@ function TodoListTop({ ...props }) {
   };
   useEffect(() => {
     todoList.forEach((todo) => {
-      fetch(`http://localhost:8080/file/image/${todo.image}`)
+      fetch(`http://localhost:8080/file/review/${todo.image}`)
         .then((response) => response.arrayBuffer())
         .then((buffer) =>
           setImageData((prevImageData) => ({

@@ -1,4 +1,5 @@
 import axios from "axios";
+import authHeader from "./auth-header";
 const API_URL = "/file";
 // const API_URL_upload = "/Files";
 
@@ -21,9 +22,13 @@ const uploadFile = (formData) => {
 const fetchFileDetail = (data) => {
   return axios.get(API_URL + "/getFile/id?file_id=" + data);
 };
-const downLoadFile = (link) => {
+const user = JSON.parse(localStorage.getItem("user"));
+const downLoadFile = (link,fileName) => {
   return axios.get(API_URL + "/download/" + link, {
     responseType: "blob",
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
   });
 };
 const fileService = {

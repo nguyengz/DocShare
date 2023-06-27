@@ -23,7 +23,7 @@ const Item = styled(Grid)(({ theme }) => ({
   ...theme.typography.body2,
   margin: 1,
   textAlign: "left",
-  minHeight: "20px",
+  minHeight: "30px",
   width: "300px",
   color: theme.palette.text.secondary,
 }));
@@ -122,10 +122,12 @@ function AcountSetting() {
           margin="auto"
         >
           <Typography
-            variant="h1"
-            color="initial"
-            fontSize={50}
+            variant="h2"
+            // color="initial
+            fontSize={40}
             fontWeight={50}
+            mt={5}
+            ml={-45}
           >
             Acount Setting
           </Typography>
@@ -294,7 +296,8 @@ function AcountSetting() {
                         </Stack>
                         <Stack direction="column" spacing={4}>
                           <Item>
-                            <Button>Change Password</Button>
+                            <InputLabel htmlFor="About">Password</InputLabel>
+                            <Button sx={{}}>Change Password</Button>
                             {/* <InputLabel htmlFor="PassWord">PassWord</InputLabel>
                             <OutlinedInput
                               className={classes.input}

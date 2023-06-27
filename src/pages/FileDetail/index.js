@@ -13,6 +13,7 @@ import {
   CircularProgress,
   Link,
   Snackbar,
+  Modal,
 } from "@mui/material";
 // import "./styles.css";
 
@@ -33,15 +34,16 @@ import ShareRoundedIcon from "@mui/icons-material/ShareRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 
 import { fetchFileDetail, fetchfile } from "~/slices/file";
+import { updateRoles } from "~/slices/auth";
 import { pdfjs } from "react-pdf";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { downloadFile } from "~/slices/download";
+import { useLocation, useParams } from "react-router-dom";
+import { downloadFile, setShowPricing } from "~/slices/download";
 import FileListMore from "./FileList";
 import FileListTags from "./FileListTags";
 import Pricing from "../Payment/Package";
-import { registerPackage } from "~/slices/paypal";
+import Swal from "sweetalert2";
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -72,6 +74,8 @@ const styles = {
 };
 function FileDetail() {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const { pathname, search } = location;
   const { id } = useParams();
   // const { state } = window.history;
   const [currentPage, setCurrentPage] = useState(1);
@@ -82,17 +86,23 @@ function FileDetail() {
   const [isLoading, setIsLoading] = useState(false);
   const [pdfRendering, setPdfRendering] = React.useState("");
   const [pageRendering, setPageRendering] = React.useState("");
-  
+
   const [isFollowing, setIsFollowing] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [showPricing, setShowPricing] = useState(false);
+
+  // const [showPricing, setShowPricing] = useState(false);
+  // const [showPricing, setShowPricing] = useState(false);
   const { user: currentUser } = useSelector((state) => state.auth);
+
+  const showPricing = useSelector((state) => state.download.showPricing);
   const fileDetail = useSelector((state) => state.file.detailList);
   const fileList = useSelector((state) => state.file.fileList);
   const uploadDate = new Date(fileDetail.uploadDate);
   const options = { year: "numeric", month: "short", day: "numeric" };
   const formattedDate = uploadDate.toLocaleDateString("en-US", options);
+  const error = useSelector((state) => state.download.error);
+
+  // const [error, setError] = useState(null);
 
   const buttonColor = isFollowing ? "paleturquoise" : "#FFFFFF";
   const iconColor = isLiked ? "#FF0000" : "#000000";
@@ -129,42 +139,28 @@ function FileDetail() {
     setPageRendering(false);
     setIsLoading(false); // set isLoading to false when pages are rendered
   }
-  const showSubscriptionPopup = () => {
-    // Display a popup with a message and a button to subscribe
-    const popup = window.confirm(
-      "Please subscribe to a package to download this file."
-    );
-    if (popup) {
-      // Redirect the user to a subscription page
-      window.location.href = "/subscription";
-    }
-  };
-  const handleDownload = () => {
-    // Check if the user has an active subscription
-    const hasSubscription = true;
-    if (!hasSubscription) {
-      // Show the pricing page
-      setShowPricing(true);
-      return;
-    }
 
-    // If the user has an active subscription, allow them to download the file
-    // const fileUrl =
-    //   fileDetail.link + "/" + fileDetail.userId + "/" + fileDetail.id;
-    // const fileName = fileDetail.fileName;
-    // dispatch(downloadFile({ fileUrl, fileName }));
+  const handleDownload = () => {
+    const userLc = JSON.parse(localStorage.getItem("user"));
+    // Check if the user has an active subscription
+    const adminRole = userLc.roles.find((role) => role.authority === "ADMIN");
+    const adminAuthority = adminRole ? adminRole.authority : null;
+    // const adminAuthority = "";
+    const hasSubscription = adminAuthority === "ADMIN";
+    if (hasSubscription) {
+      const fileName = fileDetail.fileName;
+      const fileUrl = `${fileDetail.link}/${currentUser.id}/${fileDetail.id}`;
+      console.log(fileUrl);
+      dispatch(downloadFile({ link: fileUrl, fileName }));
+      setShowPricing(false);
+    } else {
+      dispatch(setShowPricing(true));
+    }
   };
 
   useEffect(() => {
     console.log("link: " + fileDetail.link);
-    const pdfUrl =
-      "http://localhost:8080/file/download/" +
-      fileDetail.link +
-      "/" +
-      fileDetail.userId +
-      "/" +
-      fileDetail.id;
-
+    const pdfUrl = "http://localhost:8080/file/review/" + fileDetail.link;
     console.log(pdfUrl);
     if (pdfUrl && currentPage) {
       renderPage(pdfUrl, currentPage); // pass currentPage to renderPage function
@@ -231,7 +227,38 @@ function FileDetail() {
         console.log(error);
       });
   };
-  
+  useEffect(() => {
+    const searchParams = new URLSearchParams(search);
+    const status = searchParams.get("status");
+    if (status === "true") {
+      Swal.fire({
+        icon: "success",
+        title: "Payment success!",
+        text: "You can download the file right now.",
+      });
+      // localStorage.setItem("messageShown", "true");
+      searchParams.delete("status");
+      const newUrl = `${pathname}?${searchParams.toString()}`;
+      window.history.replaceState(null, "", newUrl);
+      console.log(currentUser);
+      const user = JSON.parse(localStorage.getItem("user"));
+      // const user = { ...currentUser }; // Lấy thông tin user từ Redux store
+      user.roles = [{ authority: "ADMIN" }];
+      localStorage.setItem("user", JSON.stringify(user)); // Cập nhật giá trị roles
+      // dispatch(updateRoles({ roles: user.roles })); // Gửi action updateRoles đến reducer của slice auth
+      // Lưu giá trị mới vào localStorage // Lưu thông tin user vào localStorage
+    } else if (status === "false") {
+      Swal.fire({
+        icon: "error",
+        title: "Payment error!",
+        text: "Please check your information again.",
+      });
+      // localStorage.setItem("messageShown", "true");
+      searchParams.delete("status");
+      const newUrl = `${pathname}?${searchParams.toString()}`;
+      window.history.replaceState(null, "", newUrl);
+    }
+  }, [search, pathname, currentUser, dispatch]);
   return (
     <>
       {" "}
@@ -245,13 +272,16 @@ function FileDetail() {
             width: "100%",
             height: "100%",
             display: "flex",
-            alignItems: "center",
+            alignItems: "center ",
             justifyContent: "center",
             backgroundColor: "rgba(0, 0, 0, 0.5)",
             zIndex: 9999,
           }}
         >
-          <Pricing onBack={() => setShowPricing(false)} />
+          <Pricing
+            onBack={() => dispatch(setShowPricing(false))}
+            fileDetail_id={id}
+          />
         </div>
       )}
       <Box container sx={{ minHeight: "1000px" }}>
@@ -350,6 +380,14 @@ function FileDetail() {
                       <DownloadIcon />
                       Download Now
                     </Button>
+                    {/* {downloadUrl && (
+                      <a href={downloadUrl} download={fileDetail.fileName}>
+                        Downloaded File
+                      </a>
+                    )} */}
+
+                    {/* {status === "loading" && <span>Downloading...</span>}
+                    {status === "failed" && <span>Error: {error}</span>} */}
                     <Typography variant="caption" sx={{ fontSize: "10px" }}>
                       Download to read offline
                     </Typography>
@@ -449,7 +487,7 @@ function FileDetail() {
               }}
             >
               <Typography>Recommended</Typography>
-              <FileListTags fileMore={fileList} />
+              {/* <FileListTags fileMore={fileList} /> */}
             </Grid>
           </Grid>
         </Card>
@@ -484,7 +522,7 @@ function FileDetail() {
               marginBottom: "20px",
             }}
           >
-            <FileListMore fileMore={fileList} />
+            {/* <FileListMore fileMore={fileList} /> */}
             {/* <FileList
                 file={userAbout?.files}
                 imageData={imageData}

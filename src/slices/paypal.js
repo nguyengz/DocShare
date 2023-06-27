@@ -11,16 +11,6 @@ export const registerPackage = createAsyncThunk(
     try {
       const response = await PayPalService.registerPackage(formdata);
       thunkAPI.dispatch(setMessage(response.data.message));
-     
-      // Dispatch the success message using dispatch() function
-      // thunkAPI.dispatch(
-      //   packageSlice.actions.setSuccessMessage("File uploaded successfully")
-      // );
-      // // Display the success message using Swal.fire()
-      // Swal.fire({
-      //   icon: "success",
-      //   title: "File uploaded successfully",
-      // });
       return response.data;
     } catch (error) {
       const message =

@@ -9,14 +9,7 @@ const registerPackage = (formData) => {
     },
   });
 };
-// const fetchFileDetail = (data) => {
-//   return axios.get(API_URL + "/getFile/id?file_id=" + data);
-// };
-// const downLoadFile = (link) => {
-//   return axios.get(API_URL + "/download/" + link, {
-//     responseType: "blob",
-//   });
-// };
+
 const PayPalService = {
   registerPackage,
 };
