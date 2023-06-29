@@ -26,7 +26,7 @@ function TodoList({ ...props }) {
 
   const handleClickProduct = (todo) => {
     console.log(todo);
-    navigate(`/chitietsanpham/${todo.id}`);
+    navigate(`/SearchCatory/${todo.name}`);
   };
 
   const handleListProducts = () => {

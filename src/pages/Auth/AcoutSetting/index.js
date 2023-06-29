@@ -19,6 +19,9 @@ import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { AccountCircle } from "@mui/icons-material";
 import { makeStyles } from "@mui/styles";
+import { useState } from "react";
+import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
 const Item = styled(Grid)(({ theme }) => ({
   ...theme.typography.body2,
   margin: 1,
@@ -101,11 +104,31 @@ const useStyles = makeStyles({
 });
 function AcountSetting() {
   const classes = useStyles();
-  const iconFile = new Blob([<AccountCircle />], { type: "image/svg+xml" });
-  const iconUrl = URL.createObjectURL(iconFile);
+  const { user: currentUser } = useSelector((state) => state.auth);
+  
+  const [avatarUrl, setAvatarUrl] = useState(null);
   const handleUploadButtonClick = () => {
+    const MAX_FILE_SIZE = 500 * 1024;
     const fileInput = document.getElementById("contained-button-file");
     fileInput.click();
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (file.size > MAX_FILE_SIZE) {
+        Swal.fire({
+          title: "Error!",
+          text: "File size should not exceed 500KB",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+        return;
+      } else {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setAvatarUrl(reader.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
   };
   return (
     <>
@@ -196,7 +219,16 @@ function AcountSetting() {
                               margin: "auto",
                             }}
                           >
-                            <Avatar style={style.largeAvatar}>
+                            <Avatar
+                              style={{
+                                width: "150px",
+                                height: "150px",
+                                fontSize: "50px",
+                                margin: "auto",
+                                objectFit: "cover", // add this line
+                              }}
+                              src={avatarUrl}
+                            >
                               <AccountCircle />
                             </Avatar>
                           </CardMedia>
@@ -220,6 +252,11 @@ function AcountSetting() {
                               color="primary"
                               sx={{
                                 marginBottom: 0,
+                                mt: 10,
+                                mr: 2,
+
+                                borderRadius: "10px",
+                                textTransform: "none",
                               }}
                               onClick={handleUploadButtonClick}
                             >
@@ -228,13 +265,28 @@ function AcountSetting() {
                                 id="contained-button-file"
                                 name="file"
                                 type="file"
-                                // onChange={(event) => {
-                                //   const selectedFile = event.target.files[0];
-                                //   // handle the selected file here
-                                // }}
                                 hidden
                                 accept="image/*"
                               />
+                            </Button>
+                            <Button
+                              variant="contained"
+                              color="secondary"
+                              sx={{
+                                marginBottom: 0,
+                                mt: 10,
+                                borderRadius: "10px",
+                                textTransform: "none",
+                              }}
+                              onClick={() => {
+                                setAvatarUrl(null);
+                                const fileInput = document.getElementById(
+                                  "contained-button-file"
+                                );
+                                fileInput.value = null;
+                              }}
+                            >
+                              Clear Image
                             </Button>
                           </CardContent>
                         </Card>
@@ -260,7 +312,7 @@ function AcountSetting() {
                               className={classes.input}
                               type="text"
                               fullWidth
-                              //   value={title}
+                                // value={}
                               //   onChange={(e) => {
                               //     // handleChange(e);
                               //     setTitle(e.target.value);
@@ -297,7 +349,9 @@ function AcountSetting() {
                         <Stack direction="column" spacing={4}>
                           <Item>
                             <InputLabel htmlFor="About">Password</InputLabel>
-                            <Button sx={{}}>Change Password</Button>
+                            <Button variant="contained" color="primary" sx={{ borderRadius: "10px",}}>
+                              Change Password
+                            </Button>
                             {/* <InputLabel htmlFor="PassWord">PassWord</InputLabel>
                             <OutlinedInput
                               className={classes.input}

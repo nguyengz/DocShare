@@ -16,6 +16,7 @@ import { fetchUser } from "~/slices/user";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import InventoryIcon from "@mui/icons-material/Inventory";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 import MyPackage from "../MyPackage";
 function MyUpload() {
   const dispatch = useDispatch();
@@ -34,6 +35,10 @@ function MyUpload() {
   const handlClickPackage = () => {
     // navigate("/");
     setShowPackage(true);
+  };
+  const handlClickFileuploadTb = () => {
+    // navigate("/");
+    setShowPackage(false);
   };
   const handleClosePackage = () => {
     setShowPackage(false);
@@ -119,18 +124,15 @@ function MyUpload() {
               <FileUploadIcon sx={{ marginRight: "5px" }} /> SizeCloud:{" "}
               {userAbout?.files.length}
             </Typography>
-            <Button onClick={handlClickPackage}>
-              {" "}
-              <InventoryIcon /> Package
-            </Button>
-            <Modal
-              open={showPackage}
-              onClose={handleClosePackage}
-              closeButton={true}
+            <Button
+              onClick={showPackage ? handlClickFileuploadTb : handlClickPackage}
             >
-              <MyPackage />
-            </Modal>
+              {" "}
+              {showPackage ? <UploadFileIcon /> : <InventoryIcon />}{" "}
+              {showPackage ? "My upload" : "Package"}
+            </Button>
           </Grid>
+
           <Grid
             container
             xs={12}
@@ -143,7 +145,12 @@ function MyUpload() {
               padding: 2,
             }}
           >
-            <Example data={userAbout?.files} />
+            {" "}
+            {showPackage && showPackage ? (
+              <MyPackage />
+            ) : (
+              <Example data={userAbout?.files} />
+            )}
           </Grid>
         </Grid>
       </Box>

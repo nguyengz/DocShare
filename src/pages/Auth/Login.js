@@ -35,7 +35,7 @@ const Login = () => {
   const [isSubmitting, setSubmitting] = useState(false);
   const { isLoggedIn } = useSelector((state) => state.auth);
   const { message, isError } = useSelector((state) => state.auth);
-  
+
   const [checked, setChecked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -46,17 +46,28 @@ const Login = () => {
   const handleLogin = async (formValue, { setSubmitting }) => {
     const { username, password } = formValue;
     setLoading(true);
-    dispatch(login({ username, password }));
-    setSubmitting(false);
-  }
-
+    dispatch(login({ username, password }))
+      .then(() => {
+        setSubmitting(false);
+        const queryParams = new URLSearchParams(window.location.search);
+        const returnUrl = queryParams.get("returnUrl");
+        if (returnUrl) {
+          navigate(returnUrl); // Navigate to the returnUrl directly
+        } else {
+          navigate("/");
+        }
+      })
+      .catch(() => {
+        setSubmitting(false);
+      });
+  };
   const handleCloseSnackbar = () => {
     dispatch(clearMessage());
   };
 
-  if (isLoggedIn) {
-    return <Navigate to="/" />;
-  }
+  // if (isLoggedIn) {
+  //   return <Navigate to="/" />;
+  // }
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -241,7 +252,7 @@ const Login = () => {
                         variant="contained"
                         onClick={handleLogin}
                       >
-                           {isSubmitting ? "Loading..." : "Login"}
+                        {isSubmitting ? "Loading..." : "Login"}
                       </Button>
                       {loading && (
                         <span className="spinner-border spinner-border-sm"></span>

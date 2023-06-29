@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
+import useFetchImageData from "~/utils/useEffectIamge";
 
 const styles = {
   todoName: {
@@ -27,31 +28,15 @@ const styles = {
 
 function TodoListSearch({ ...props }) {
   const { todoList, number } = props;
-  const [imageData, setImageData] = useState("");
+ 
   const navigate = useNavigate();
-
+  const imageData = useFetchImageData(todoList);
   const result = [];
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("sm"));
 
-  useEffect(() => {
-    todoList.forEach((todo) => {
-      fetch(`http://localhost:8080/file/image/${todo.image}`)
-        .then((response) => response.arrayBuffer())
-        .then((buffer) =>
-          setImageData((prevImageData) => ({
-            ...prevImageData,
-            [todo.id]: `data:image/jpeg;base64,${btoa(
-              new Uint8Array(buffer).reduce(
-                (data, byte) => data + String.fromCharCode(byte),
-                ""
-              )
-            )}`,
-          }))
-        );
-    });
-  }, [todoList]);
+  
 
   const handleClickProduct = (todo) => {
     console.log(todo);

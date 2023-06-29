@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import {
   Box,
   Card,
@@ -19,6 +20,9 @@ import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
 
 import { Link } from "react-router-dom";
+import useFetchImageData from "~/utils/useEffectIamge";
+import LazyLoad from "react-lazyload";
+
 const style = {
   todoName: {
     // whiteSpace: "nowrap",
@@ -44,32 +48,34 @@ const style = {
 };
 
 function FileListTags(props) {
-  const [imageData, setImageData] = useState("");
+  // const [imageData, setImageData] = useState("");
+  const imageData = useFetchImageData(props.fileMore);
 
   const number = [4, 2];
   const options = { year: "numeric", month: "short", day: "numeric" };
   // const result = [];
 
-  useEffect(() => {
-    if (props && props.fileMore) {
-      // add a check for userAbout and userAbout.files
-      props.fileMore.forEach((todo) => {
-        fetch(`http://localhost:8080/file/image/${todo.linkImg}`)
-          .then((response) => response.arrayBuffer())
-          .then((buffer) =>
-            setImageData((prevImageData) => ({
-              ...prevImageData,
-              [todo.id]: `data:image/jpeg;base64,${btoa(
-                new Uint8Array(buffer).reduce(
-                  (data, byte) => data + String.fromCharCode(byte),
-                  ""
-                )
-              )}`,
-            }))
-          );
-      });
-    }
-  }, [props.fileMore]);
+  // useEffect(() => {
+  //   if (props && props.fileMore) {
+  //     props.fileMore.forEach((todo) => {
+  //       axios
+  //         .get(`http://localhost:8080/file/review/${todo.linkImg}`, {
+  //           responseType: "arraybuffer",
+  //         })
+  //         .then((response) =>
+  //           setImageData((prevImageData) => ({
+  //             ...prevImageData,
+  //             [todo.id]: `data:image/jpeg;base64,${btoa(
+  //               new Uint8Array(response.data).reduce(
+  //                 (data, byte) => data + String.fromCharCode(byte),
+  //                 ""
+  //               )
+  //             )}`,
+  //           }))
+  //         );
+  //     });
+  //   }
+  // }, [props, props.fileMore]);
   const handleClickFile = (todo) => {
     // Define the handleClickFile function here
   };
@@ -82,82 +88,90 @@ function FileListTags(props) {
 
           return (
             <Grid item sm={12} key={todo.id} sx={{ width: "450px" }}>
-              <Card
-                sx={{
-                  display: "flex",
-                  height: "200px",
-                }}
-                spacing={1}
-              >
-                
-                <CardMedia
-                  component="img"
-                  image={imageData[todo.id] || ""}
-                  alt="green iguana"
-                  sx={{
-                    width: "200px",
-                    // display: "block",
-                    objectFit: "contain",
-                    objectPosition: "center",
-                    background: "gainsboro",
-                    // height: "100%",
-                  }}
-                />
-                <Box
+              <LazyLoad height={200} once>
+                <Card
                   sx={{
                     display: "flex",
-                    flexDirection: "column",
-                    width: "250px",
+                    height: "200px",
                   }}
+                  spacing={1}
                 >
-                  <CardContent sx={{ height: "90%" }}>
-                    <Typography
-                      style={style.todoName}
-                      gutterBottom
-                      variant="body2"
-                    >
-                      {todo.fileName}
-                    </Typography>
-                    <Typography
-                      component={Link}
-                      style={{
-                        marginTop: "30px",
-                        textDecoration: "none",
-                        color: "#1976d2",
-                      }}
-                      onClick={() => {
-                        // setidlink(page.id);
-                        // alert(page.title);
-                      }}
-                      href={`/About/${todo.userId}`}
-                      key={todo.userId}
-                      onMouseEnter={(e) => {
-                        e.target.style.color = "blue";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.color = "1976d2";
-                      }}
-                    >
-                      {todo.userName}
-                    </Typography>
-                  </CardContent>
+                  <CardMedia
+                    component="img"
+                    image={imageData[todo.id] || ""}
+                    alt="green iguana"
+                    sx={{
+                      width: "200px",
+                      // display: "block",
+                      objectFit: "contain",
+                      objectPosition: "center",
+                      background: "gainsboro",
+                      // height: "100%",
+                    }}
+                  />
                   <Box
-                    sx={{ display: "flex", alignItems: "center", pl: 1, pb: 1 }}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      width: "250px",
+                    }}
                   >
-                    <CardActions
-                      style={{
-                        // display: "",
-                        margin: "0px 1px",
+                    <CardContent sx={{ height: "90%" }}>
+                      <Typography
+                        style={style.todoName}
+                        gutterBottom
+                        variant="body2"
+                      >
+                        {todo.fileName}
+                      </Typography>
+                      <Typography
+                        component={Link}
+                        style={{
+                          marginTop: "30px",
+                          textDecoration: "none",
+                          color: "#1976d2",
+                        }}
+                        onClick={() => {
+                          // setidlink(page.id);
+                          // alert(page.title);
+                        }}
+                        href={`/About/${todo.userId}`}
+                        key={todo.userId}
+                        onMouseEnter={(e) => {
+                          e.target.style.color = "blue";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.color = "1976d2";
+                        }}
+                      >
+                        {todo.userName}
+                      </Typography>
+                    </CardContent>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        pl: 1,
+                        pb: 1,
                       }}
                     >
-                      <Typography variant="caption">
-                        {todo.view} views
-                      </Typography>
-                      <Typography variant="caption">{formattedDate}</Typography>
-                    </CardActions>
+                      <CardActions
+                        style={{
+                          // display: "",
+                          margin: "0px 1px",
+                        }}
+                      >
+                        <Typography variant="caption">
+                          {todo.view} views
+                        </Typography>
+                        <Typography variant="caption">
+                          {formattedDate}
+                        </Typography>
+                      </CardActions>
+                    </Box>
                   </Box>
-                </Box>
-              </Card>
+                </Card>
+              </LazyLoad>
             </Grid>
           );
         })
@@ -173,6 +187,10 @@ function FileListTags(props) {
           mousewheel={true}
           modules={[Mousewheel, Pagination]}
           style={style.wrapper}
+          lazy={{
+            loadPrevNext: true,
+            loadPrevNextAmount: 3,
+          }}
         >
           {result?.map((item, idx) => (
             <SwiperSlide key={idx} style={style.imageWrapper}>

@@ -2,11 +2,9 @@ import React, { useCallback, useMemo, useState } from "react";
 import { MaterialReactTable } from "material-react-table";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
-import { data, states } from "./makeData";
-import { fetchUser } from "~/slices/user";
-import { useDispatch, useSelector } from "react-redux";
+
 import { useEffect } from "react";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import moment from "moment/moment";
 
 const Example = (props) => {

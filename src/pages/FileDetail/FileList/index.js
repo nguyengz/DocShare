@@ -19,6 +19,7 @@ import "swiper/css/scrollbar";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchfile } from "~/slices/file";
 import { Link } from "react-router-dom";
+import useFetchImageData from "~/utils/useEffectIamge";
 const style = {
   todoName: {
     whiteSpace: "nowrap",
@@ -49,7 +50,7 @@ const style = {
 
 function FileListMore(props) {
   const dispatch = useDispatch();
-  const [imageData, setImageData] = useState("");
+  const imageData = useFetchImageData(props.fileMore);
 
   const [matches] = useState(false);
   const number = [4, 2];
@@ -62,26 +63,7 @@ function FileListMore(props) {
   const handleClickFile = (todo) => {
     // Define the handleClickFile function here
   };
-  useEffect(() => {
-    if (props && props.fileMore) {
-      // add a check for userAbout and userAbout.files
-      props.fileMore.forEach((todo) => {
-        fetch(`http://localhost:8080/file/image/${todo.linkImg}`)
-          .then((response) => response.arrayBuffer())
-          .then((buffer) =>
-            setImageData((prevImageData) => ({
-              ...prevImageData,
-              [todo.id]: `data:image/jpeg;base64,${btoa(
-                new Uint8Array(buffer).reduce(
-                  (data, byte) => data + String.fromCharCode(byte),
-                  ""
-                )
-              )}`,
-            }))
-          );
-      });
-    }
-  }, [props, props.fileMore]);
+  
   const result = Array.isArray(props.fileMore)
     ? props.fileMore.slice(0, number[2])?.map((todo, index) => {
         const uploadDate = new Date(todo.uploadDate);

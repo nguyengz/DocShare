@@ -15,6 +15,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
+import useFetchImageData from "~/utils/useEffectIamge";
 
 const data =[
   
@@ -37,7 +38,7 @@ function TodoListTop({ ...props }) {
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("sm"));
-  const [imageData, setImageData] = useState("");
+  const imageData = useFetchImageData(todoList);
 
   const handleClickProduct = (todo) => {
     // console.log(todo.link);
@@ -47,23 +48,23 @@ function TodoListTop({ ...props }) {
     // window.history.pushState(state, title, url);
     navigate(`/fileDetail/${todo.id}`);
   };
-  useEffect(() => {
-    todoList.forEach((todo) => {
-      fetch(`http://localhost:8080/file/review/${todo.image}`)
-        .then((response) => response.arrayBuffer())
-        .then((buffer) =>
-          setImageData((prevImageData) => ({
-            ...prevImageData,
-            [todo.id]: `data:image/jpeg;base64,${btoa(
-              new Uint8Array(buffer).reduce(
-                (data, byte) => data + String.fromCharCode(byte),
-                ""
-              )
-            )}`,
-          }))
-        );
-    });
-  }, [todoList]);
+  // useEffect(() => {
+  //   todoList.forEach((todo) => {
+  //     fetch(`http://localhost:8080/file/review/${todo.image}`)
+  //       .then((response) => response.arrayBuffer())
+  //       .then((buffer) =>
+  //         setImageData((prevImageData) => ({
+  //           ...prevImageData,
+  //           [todo.id]: `data:image/jpeg;base64,${btoa(
+  //             new Uint8Array(buffer).reduce(
+  //               (data, byte) => data + String.fromCharCode(byte),
+  //               ""
+  //             )
+  //           )}`,
+  //         }))
+  //       );
+  //   });
+  // }, [todoList]);
   const handleListProducts = () => {
     // eslint-disable-next-line no-lone-blocks
     {

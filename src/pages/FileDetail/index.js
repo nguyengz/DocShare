@@ -38,12 +38,13 @@ import { updateRoles } from "~/slices/auth";
 import { pdfjs } from "react-pdf";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { downloadFile, setShowPricing } from "~/slices/download";
 import FileListMore from "./FileList";
 import FileListTags from "./FileListTags";
 import Pricing from "../Payment/Package";
 import Swal from "sweetalert2";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -64,16 +65,17 @@ const styles = {
     height: "100%",
     border: "1px solid rgba(0,0,0,0.15)",
     // borderRadius: "1px",
-    // boxShadow: "5px 5px 5px 5px rgba(0,0,0,0.25)",
+    boxShadow: "5px 5px 5px 5px rgba(0,0,0,0.25)",
     padding: "0",
     overflowX: "hidden",
-    background: "aliceblue",
+    background: "gainsboro",
     /* width: 100px; */
     objectfit: "cover",
   },
 };
 function FileDetail() {
   const dispatch = useDispatch();
+  let navigate = useNavigate();
   const location = useLocation();
   const { pathname, search } = location;
   const { id } = useParams();
@@ -104,7 +106,7 @@ function FileDetail() {
 
   // const [error, setError] = useState(null);
 
-  const buttonColor = isFollowing ? "paleturquoise" : "#FFFFFF";
+  const buttonColor = isFollowing ? "paleturquoise" : "primary";
   const iconColor = isLiked ? "#FF0000" : "#000000";
   const tags = fileDetail.tags;
   // const link = state.link;
@@ -143,6 +145,21 @@ function FileDetail() {
   const handleDownload = () => {
     const userLc = JSON.parse(localStorage.getItem("user"));
     // Check if the user has an active subscription
+    if (!userLc) {
+      const downloadUrl = window.location.href; // Get the current URL as the download URL
+      const queryParams = new URLSearchParams({
+        returnUrl: downloadUrl,
+      }).toString();
+      Swal.fire({
+        icon: "error",
+        title: "Please Sign in !",
+        text: "You can download the file right now.",
+        confirmButtonText: "OK",
+      }).then(() => {
+        navigate(`/login?${queryParams}`);
+      });
+      return;
+    }
     const adminRole = userLc.roles.find((role) => role.authority === "ADMIN");
     const adminAuthority = adminRole ? adminRole.authority : null;
     // const adminAuthority = "";
@@ -325,6 +342,7 @@ function FileDetail() {
                             height: height,
                             border: "2px ridge  ",
                             margin: "5px auto",
+                            boxShadow: "0px 4px 5px 5px rgb(194 219 246)",
                           }}
                         />
                       </SwiperSlide>
@@ -352,12 +370,12 @@ function FileDetail() {
                   spacing={1}
                   justifyContent="space-between"
                 >
-                  <Stack sm={4} item sx={{ width: "80%" }}>
+                  <Stack sm={4} item sx={{ width: "80%", marginLeft: "5px" }}>
                     <Typography
                       variant="h2"
                       sx={{
                         fontSize: "26px",
-                        fontWeight: 200,
+                        fontWeight: 150,
                         wordWrap: "break-word",
                       }}
                     >
@@ -365,7 +383,10 @@ function FileDetail() {
                         ? fileDetail.fileName.slice(0, 100) + "..."
                         : fileDetail.fileName}
                     </Typography>
-                    <Typography variant="caption" sx={{ fontSize: "10px" }}>
+                    <Typography
+                      variant="caption"
+                      sx={{ fontSize: "15px", marginLeft: "10px" }}
+                    >
                       {formattedDate} • {fileDetail.likeFile} likes •{" "}
                       {fileDetail.view} views
                     </Typography>
@@ -388,12 +409,12 @@ function FileDetail() {
 
                     {/* {status === "loading" && <span>Downloading...</span>}
                     {status === "failed" && <span>Error: {error}</span>} */}
-                    <Typography variant="caption" sx={{ fontSize: "10px" }}>
+                    <Typography variant="caption" sx={{ fontSize: "15px" }}>
                       Download to read offline
                     </Typography>
                   </Stack>
                 </Stack>
-                <Stack direction="row" spacing={2}>
+                <Stack direction="row" spacing={2} sx={{ margin: "10px" }}>
                   {isLiked ? (
                     <FavoriteBorderIcon
                       style={{ color: iconColor }}
@@ -408,7 +429,7 @@ function FileDetail() {
                   <ShareRoundedIcon />
                   <MoreHorizRoundedIcon />
                 </Stack>
-                <Stack direction="row" spacing={2}>
+                <Stack direction="row" spacing={2} sx={{ margin: "10px" }}>
                   {tags &&
                     tags.map((tag, index) => (
                       <Button
@@ -434,10 +455,15 @@ function FileDetail() {
                     effort. Full LinkedIn article: http://bit.ly/4Strategies
                   </Typography>
                 </Stack>
-                <Stack direction="row" spacing={2} sx={{ margin: "10px 5px" }}>
+                <Stack direction="row" spacing={2} sx={{ margin: "10px 10px" }}>
                   <Stack item>
                     {" "}
-                    <Avatar></Avatar>
+                    <Avatar
+                      sx={{
+                        width: "50px",
+                        height: "50px",
+                      }}
+                    ></Avatar>
                   </Stack>
                   <Stack item>
                     <Typography
@@ -463,14 +489,18 @@ function FileDetail() {
                       {fileDetail.userName}
                     </Typography>
                     <Button
-                      variant="text"
+                      variant="contained"
                       sx={{
                         margin: "0px",
-                        fontSize: "10px",
+                        fontSize: "5px",
                         backgroundColor: buttonColor,
+                        height: "20px",
+                        padding: "2px",
+                        width: "20px",
                       }}
                       onClick={handleFollow}
                     >
+                      <PersonAddIcon />
                       {isFollowing ? "UnFollow" : "Follow"}
                     </Button>
                   </Stack>
@@ -483,11 +513,21 @@ function FileDetail() {
               sm={4}
               sx={{
                 height: 700,
-                background: "whitesmoke",
+                // background: "whitesmoke",
               }}
             >
-              <Typography>Recommended</Typography>
-              {/* <FileListTags fileMore={fileList} /> */}
+              <Typography
+                variant="h1"
+                color="initial"
+                sx={{
+                  margin: "5px",
+                  fontSize: 20,
+                  fontWeight: 700,
+                }}
+              >
+                List of similar tags
+              </Typography>
+              <FileListTags fileMore={fileList} />
             </Grid>
           </Grid>
         </Card>
@@ -522,7 +562,7 @@ function FileDetail() {
               marginBottom: "20px",
             }}
           >
-            {/* <FileListMore fileMore={fileList} /> */}
+            <FileListMore fileMore={fileList} />
             {/* <FileList
                 file={userAbout?.files}
                 imageData={imageData}

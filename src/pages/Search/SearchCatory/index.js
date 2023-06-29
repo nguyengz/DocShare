@@ -19,10 +19,10 @@ import {
 import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { fetchCategory } from "~/slices/category";
-import TodoSearch from "./TodoS";
-import useSearchQuery from "~/utils/Filter";
+import TodoSearch from "../TodoS";
+import { fetchfile } from "~/slices/file";
 const useStyles = {
   input: {
     with: "200px",
@@ -38,35 +38,53 @@ const Item = styled(Grid)(({ theme }) => ({
   width: "300px",
   color: theme.palette.text.secondary,
 }));
-function SearchResutlt() {
+function SearchCatory() {
   const dispatch = useDispatch();
-  const [searchResults, setSearchResults] = useState([]);
+  const { name } = useParams();
+  const [searchQuery, setSearchQuery] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedOption, setSelectedOption] = useState("relevant");
+  const [selectedOption, setSelectedOption] = useState("Lọc");
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const tagName = searchParams.get("tagName");
   const categoryData = useSelector((state) => state.category.data);
-  const [selectedCategory, setSelectedCategory] = useState("Select a Category");
+  const fileData = useSelector((state) => state.file.fileList);
+  const [selectedCategory, setSelectedCategory] = useState(name);
   const [selectedDateRange, setSelectedDateRange] = useState(null);
   useEffect(() => {
-    fetch(`http://localhost:8080/file/search?tagName=${tagName}`)
-      .then((response) => response.json())
-      .then((data) => setSearchResults(data))
-      .catch((error) => console.log(error));
-  }, [tagName]);
-  const filteredResults = useSearchQuery({
-    fileData: searchResults,
-    selectedCategory,
-    name: "",
-    selectedOption,
-    selectedDateRange: null,
-  });
-  useEffect(() => {
+    dispatch(fetchfile());
     dispatch(fetchCategory());
+    console.log(name);
     // pdf && renderPage();
-  }, [dispatch]);
+  }, []);
+  useEffect(() => {
+    const filteredData = fileData.filter(
+      (file) =>
+        selectedCategory === "" ||
+        file.category?.categoryName === selectedCategory ||
+        ((name === "" ||
+          file.category?.categoryName
+            .toLowerCase()
+            .includes(name.toLowerCase())) &&
+          (selectedDateRange === null ||
+            (new Date(file.uploadDate) >= selectedDateRange[0] &&
+              new Date(file.uploadDate) <= selectedDateRange[1])))
+    );
+    if (selectedOption === "newest") {
+      const sortedFiles = [...filteredData].sort(
+        (a, b) => new Date(b.uploadDate) - new Date(a.uploadDate)
+      );
+      setSearchQuery(sortedFiles);
+    } else if (selectedOption === "oldest") {
+      const sortedFiles = [...filteredData].sort(
+        (a, b) => new Date(a.uploadDate) - new Date(b.uploadDate)
+      );
+      setSearchQuery(sortedFiles);
+    } else {
+      setSearchQuery(filteredData);
+    }
+  }, [selectedCategory, fileData, name, selectedOption, selectedDateRange]);
   const renderSelectedOption = (selectedOption) => {
     if (selectedOption === "oldest") {
       return "oldest";
@@ -106,13 +124,13 @@ function SearchResutlt() {
   const getAlldata = () => {
     let datas = [];
 
-    filteredResults.map((file) => {
+    searchQuery.map((file) => {
       const data = {
         id: file.id,
         userId: file.userId,
         name: file.fileName,
         price: file.description,
-        image: file.linkImg,
+        linkImg: file.linkImg,
         link: file.link,
         view: file.view,
         userName: file.userName,
@@ -122,7 +140,7 @@ function SearchResutlt() {
     return datas;
   };
   const todoList = getAlldata();
-  const numberProduct = [3, 12, 10];
+  const numberProduct = [3, 12];
   return (
     <>
       <Box minHeight={1000} sx={{ flexGrow: 1 }}>
@@ -182,7 +200,7 @@ function SearchResutlt() {
             >
               <Item>
                 <Typography variant="body2" sx={{ color: "#999" }}>
-                  1 - 18 of {searchResults.length} results
+                  1 - 18 of {fileData.length} results
                 </Typography>
               </Item>
 
@@ -195,7 +213,7 @@ function SearchResutlt() {
                     width: "100px",
                     height: "20px",
                     alignContent: "center",
-                    ml: "150px",
+                    ml: "150px"
                   }}
                   MenuProps={{
                     MenuListProps: {
@@ -228,4 +246,4 @@ function SearchResutlt() {
   );
 }
 
-export default SearchResutlt;
+export default SearchCatory;

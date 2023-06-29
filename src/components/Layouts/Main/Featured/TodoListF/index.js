@@ -16,6 +16,7 @@ import {
 
 import { useNavigate } from "react-router-dom";
 import PdfToImage from "../../../pdftoimage";
+import useFetchImageData from "~/utils/useEffectIamge";
 
 const styles = {
   todoName: {
@@ -28,7 +29,7 @@ const styles = {
 
 function TodoList({ ...props }) {
   const { todoList, number } = props;
-  const [imageData, setImageData] = useState("");
+  // const [imageData, setImageData] = useState("");
   const navigate = useNavigate();
 
   const result = [];
@@ -36,23 +37,7 @@ function TodoList({ ...props }) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("sm"));
 
-  useEffect(() => {
-    todoList.forEach((todo) => {
-      fetch(`http://localhost:8080/file/image/${todo.image}`)
-        .then((response) => response.arrayBuffer())
-        .then((buffer) =>
-          setImageData((prevImageData) => ({
-            ...prevImageData,
-            [todo.id]: `data:image/jpeg;base64,${btoa(
-              new Uint8Array(buffer).reduce(
-                (data, byte) => data + String.fromCharCode(byte),
-                ""
-              )
-            )}`,
-          }))
-        );
-    });
-  }, [todoList]);
+  const imageData = useFetchImageData(todoList);
   const handleClickProduct = (todo) => {
     console.log(todo);
     navigate(`/fileDetail/${todo.id}`);
