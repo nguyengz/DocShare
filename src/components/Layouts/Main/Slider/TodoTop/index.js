@@ -12,7 +12,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function TodoList({ ...props }) {
   const { todoList, number } = props;
@@ -59,10 +59,10 @@ function TodoList({ ...props }) {
                 />
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
-                    Lizard
+                  {todo.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {todo.name}
+                  {todo.description}
                   </Typography>
                 </CardContent>
               </CardActionArea>
@@ -70,6 +70,7 @@ function TodoList({ ...props }) {
                 <Button size="small" color="primary">
                   Share
                 </Button>
+             <Typography component={Link} href={"/"}> {todo.username}</Typography>
               </CardActions>
             </Card>
           </Grid>

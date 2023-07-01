@@ -22,8 +22,9 @@ function Slider() {
       const data = {
         id: file.id,
         name: file.fileName,
-        price: file.descriptio,
-        image: file.link,
+        description: file.description,
+        image: file.linkImg,
+        username: file.userName,
       };
       datas = [...datas, data];
     });console.log(datas);
