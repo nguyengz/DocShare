@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -8,15 +8,28 @@ import {
   CardContent,
   CardMedia,
   Grid,
+  Link,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+
 import { useNavigate } from "react-router-dom";
+import PdfToImage from "../../../pdftoimage";
+import useFetchImageData from "~/utils/useEffectIamge";
+
+const styles = {
+  todoName: {
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    maxWidth: "300px",
+  },
+};
 
 function TodoList({ ...props }) {
   const { todoList, number } = props;
-
+  // const [imageData, setImageData] = useState("");
   const navigate = useNavigate();
 
   const result = [];
@@ -24,6 +37,7 @@ function TodoList({ ...props }) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("sm"));
 
+  const imageData = useFetchImageData(todoList);
   const handleClickProduct = (todo) => {
     console.log(todo);
     navigate(`/fileDetail/${todo.id}`);
@@ -46,27 +60,75 @@ function TodoList({ ...props }) {
           >
             <Card
               elevation={0}
-              onClick={() => handleClickProduct(todo)}
               sx={{ height: "100%", boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)" }}
             >
-              <CardActionArea sx={{ height: "90%" }}>
-                <CardMedia
-                  component="img"
-                  image={todo.image}
-                  // alt="green iguana"
-                  // sx={{ height: "100%" }}
-                  height={250}
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    Lizard
+              <CardActionArea onClick={() => handleClickProduct(todo)}>
+                <Box
+                  height={200}
+                  sx={{
+                    backgroundImage: `url(${imageData[todo.id]})`,
+                    backdropFilter: "blur(10px)"
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    image={imageData[todo.id] || ""}
+                    alt="green iguana"
+                    height={200}
+                    sx={{
+                      objectFit: "contain",
+                      objectPosition: "center",
+                      background: "gainsboro",
+                      // backgroundImage: `url(${imageData[todo.id]})`,
+                    }}
+                  />
+                </Box>
+
+                <CardContent sx={{ height: "100px", background:"#f8f8f8" }}>
+                  <Typography style={styles.todoName} gutterBottom variant="h6">
+                    {todo.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {todo.name}
+                    <Typography>
+                      {todo.name.length > 50
+                        ? todo.name.slice(0, 50) + "..."
+                        : todo.name}
+                    </Typography>
                   </Typography>
                 </CardContent>
               </CardActionArea>
-              <CardActions>
+              <CardActions
+                style={{
+                  display: "flex",
+                  margin: "0px 1px",
+                  justifyContent: "space-between",
+                  background:"#f8f8f8"
+                }}
+              >
+                <Typography
+                  component={Link}
+                  style={{
+                    marginRight: "auto",
+                    textDecoration: "none",
+                    color: "#1976d2",
+                  }}
+                  onClick={() => {
+                    // setidlink(page.id);
+                    // alert(page.title);
+                  }}
+                  href={`/About/${todo.name}`}
+                  // to={`/About/${todo.userId}`}
+                  key={index}
+                  onMouseEnter={(e) => {
+                    e.target.style.color = "blue";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.color = "1976d2";
+                  }}
+                >
+                  {todo.userName}
+                </Typography>
+                <Typography variant="caption">{todo.view} views</Typography>
                 <Button size="small" color="primary">
                   Share
                 </Button>

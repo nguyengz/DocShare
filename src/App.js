@@ -6,6 +6,7 @@ import NonetLayout from "./components/Layouts/NoneLayout";
 // import Header from "./components/Layouts/Header";
 // // import Home from "./pages/Home";
 // import Slider from "./components/Layouts/Main/Slider";
+import "./App.css"
 function App() {
   return (
     <div className="App">
@@ -26,7 +27,7 @@ function App() {
           );
         })}
         {routes.privateRoutes.map((routes, indexs) => {
-          const Layout = routes.layout ? NonetLayout : OnlyLayout;
+          const Layout = routes.layout ? OnlyLayout : NonetLayout;
           const Page = routes.component;
           return (
             <Route

@@ -2,44 +2,48 @@ import { Box, Grid, Paper, Typography } from "@mui/material";
 import Todo from "./TodoT";
 import { useEffect, useState } from "react";
 
-import { fetchfile } from "~/slices/file";
+import { fetchfile, fetchfileTop } from "~/slices/file";
 
 import { useDispatch, useSelector } from "react-redux";
 
 function Slider() {
   const dispatch = useDispatch();
   const fileData = useSelector((state) => state.file.data);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(fetchfile());
+    dispatch(fetchfileTop())
+      .then(() => setIsLoading(false))
+      .catch((error) => console.log(error));
   }, []);
-
 
   const getAlldata = () => {
     let datas = [];
-    // eslint-disable-next-line array-callback-return
     fileData.map((file) => {
       const data = {
         id: file.id,
+        userId: file.userId,
         name: file.fileName,
-        price: file.descriptio,
-        image: file.link,
+        price: file.description,
+        linkImg: file.linkImg,
+        link: file.link,
+        view: file.view,
+        userName: file.userName
       };
       datas = [...datas, data];
-    });console.log(datas);
+    });
     return datas;
-    
   };
 
-  let todoList = getAlldata();
-  // const titleProduct = 'Những sản phẩm nổi bật';
+  const todoList = isLoading ? [] : getAlldata();
   const numberProduct = [4, 12, 3];
+  
   return (
     <>
       <Box
         sx={{
           width: "auto",
-          height: 300,
+          height: "300px",
           backgroundImage:
             "url(https://public.slidesharecdn.com/v2/images/hp_desktop_header.jpg?cb=fc6a75b2c177cfad98518da43d3b385f38976fb4)",
           backgroundRepeat: "no-repeat",
@@ -83,7 +87,7 @@ function Slider() {
               //   fontFamily: "inherit",
               //   padding: "20px 0 0 0",
             }}
-          > 
+          >
             Today’s Top SlideShares
           </Typography>
         </Grid>

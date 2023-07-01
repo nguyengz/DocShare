@@ -32,11 +32,15 @@ const login = (username, password) => {
 const logout = () => {
   localStorage.removeItem("user");
 };
+const fetchUser = (data) => {
+  return axios.get(API_URL + "/users?user_id=" + data);
+};
 
 const authService = {
   register,
   login,
   logout,
+  fetchUser,
 };
 
 export default authService;

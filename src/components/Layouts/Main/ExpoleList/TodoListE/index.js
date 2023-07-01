@@ -26,7 +26,7 @@ function TodoList({ ...props }) {
 
   const handleClickProduct = (todo) => {
     console.log(todo);
-    navigate(`/chitietsanpham/${todo.id}`);
+    navigate(`/SearchCatory/${todo.name}`);
   };
 
   const handleListProducts = () => {
@@ -59,7 +59,7 @@ function TodoList({ ...props }) {
                   width={"50%"}
                   height={"70%"}
                 />
-                <CardContent sx={{height: "30%"}}>
+                <CardContent sx={{ height: "30%" }}>
                   <Typography variant="body2" color="text.secondary">
                     {todo.name}
                   </Typography>

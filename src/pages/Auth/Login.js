@@ -5,7 +5,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Link as RouterLink } from "react-router-dom";
 import { login } from "~/slices/auth";
-import { clearMessage } from "~/slices/message";
+import { clearMessage, setMessage } from "~/slices/message";
 import "react-toastify/dist/ReactToastify.css";
 
 import {
@@ -23,6 +23,7 @@ import {
   Typography,
   Paper,
   Container,
+  Snackbar,
 } from "@mui/material";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { ToastContainer, toast } from "react-toastify";
@@ -31,44 +32,42 @@ const Login = () => {
   let navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-
+  const [isSubmitting, setSubmitting] = useState(false);
   const { isLoggedIn } = useSelector((state) => state.auth);
-  const { message } = useSelector((state) => state.message);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { message, isError } = useSelector((state) => state.auth);
+
   const [checked, setChecked] = useState(false);
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [showPassword, setShowPassword] = useState(false);
-  //   // eslint-disable-next-line no-unused-vars
-  //   const error = useSelector((state) => state.auth.error);
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     dispatch(clearMessage());
   }, [dispatch]);
 
-  const handleLogin = async (formValue) => {
+  const handleLogin = async (formValue, { setSubmitting }) => {
     const { username, password } = formValue;
     setLoading(true);
-
-    try {
-      await dispatch(login({ username, password }));
-      navigate("/login");
-      window.location.reload();
-      // toast.success("Invalid username or password");
-    } catch (error) {
-      setLoading(false);
-      if (error.response && error.response.status === 400) {
-        toast.error("Invalid username or password");
-      } else {
-        toast.error("An error occurred. Please try again.");
-      }
-    }
+    dispatch(login({ username, password }))
+      .then(() => {
+        setSubmitting(false);
+        const queryParams = new URLSearchParams(window.location.search);
+        const returnUrl = queryParams.get("returnUrl");
+        if (returnUrl) {
+          navigate(returnUrl); // Navigate to the returnUrl directly
+        } else {
+          navigate("/");
+        }
+      })
+      .catch(() => {
+        setSubmitting(false);
+      });
+  };
+  const handleCloseSnackbar = () => {
+    dispatch(clearMessage());
   };
 
-  if (isLoggedIn) {
-    return <Navigate to="/" />;
-  }
+  // if (isLoggedIn) {
+  //   return <Navigate to="/" />;
+  // }
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -80,7 +79,14 @@ const Login = () => {
 
   return (
     <>
-      <ToastContainer />
+      {" "}
+      <Snackbar
+        open={isError && message}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        message={message}
+        severity="error"
+      />
       <Container maxWidth="xs">
         <Grid
           container
@@ -101,7 +107,7 @@ const Login = () => {
               validationSchema={Yup.object().shape({
                 username: Yup.string()
                   .max(255)
-                  .required("username is required"),
+                  .required("Username is required"),
                 password: Yup.string()
                   .max(255)
                   .required("Password is required"),
@@ -118,10 +124,17 @@ const Login = () => {
                         </div>
                       </div>
                     )} */}
+                    {message && (
+                      <div className="form-group">
+                        <div className="alert alert-danger" role="alert">
+                          {message}
+                        </div>
+                      </div>
+                    )}
                     <Grid item xs={12}>
                       <Stack spacing={1}>
                         <InputLabel htmlFor="username-login">
-                          username
+                          Username
                         </InputLabel>
                         <OutlinedInput
                           id="username-login"
@@ -232,13 +245,14 @@ const Login = () => {
                     <Grid item xs={12}>
                       <Button
                         // disableElevation
-                        // disabled={loading}
+                        disabled={loading}
                         fullWidth
                         size="large"
                         type="submit"
                         variant="contained"
+                        onClick={handleLogin}
                       >
-                        Login
+                        {isSubmitting ? "Loading..." : "Login"}
                       </Button>
                       {loading && (
                         <span className="spinner-border spinner-border-sm"></span>
