@@ -31,7 +31,7 @@ const PricingCard = styled(Card)(({ theme }) => ({
 
 const tiers = [
   {
-    tiers_id:1,
+    tiers_id: 1,
     title: "Free",
     price: "0",
     description: ["10 downloads", "1 GB of storage"],
@@ -39,7 +39,7 @@ const tiers = [
     buttonVariant: "outlined",
   },
   {
-    tiers_id:2,
+    tiers_id: 2,
     title: "Pro",
     subheader: "Most popular",
     price: "15",
@@ -48,7 +48,7 @@ const tiers = [
     buttonVariant: "contained",
   },
   {
-    tiers_id:3,
+    tiers_id: 3,
     title: "Enterprise",
     price: "30",
     description: ["50 downloads", "5 GB of storage"],
@@ -56,7 +56,7 @@ const tiers = [
     buttonVariant: "outlined",
   },
 ];
-export default function Pricing({ onBack, fileDetail_id  }) {
+export default function Pricing({ onBack, fileDetail_id }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // const { id } = useParams();

@@ -112,7 +112,7 @@ function SearchResutlt() {
         userId: file.userId,
         name: file.fileName,
         price: file.description,
-        image: file.linkImg,
+        linkImg: file.linkImg,
         link: file.link,
         view: file.view,
         userName: file.userName,

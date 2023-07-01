@@ -116,7 +116,7 @@ function Profile() {
     if (userAbout && userAbout.files) {
       // add a check for userAbout and userAbout.files
       userAbout.files.forEach((todo) => {
-        fetch(`http://localhost:8080/file/image/${todo.linkImg}`)
+        fetch(`http://localhost:8080/file/review/${todo.linkImg}`)
           .then((response) => response.arrayBuffer())
           .then((buffer) =>
             setImageData((prevImageData) => ({
@@ -243,7 +243,7 @@ function Profile() {
               color="initial"
               sx={{ fontSize: 20, fontWeight: 700 }}
             >
-              More Related Content (20)
+              {/* More Related Content (20) */}
             </Typography>
             <Grid
               item

@@ -23,7 +23,7 @@ const fetchFileDetail = (data) => {
   return axios.get(API_URL + "/getFile/id?file_id=" + data);
 };
 const user = JSON.parse(localStorage.getItem("user"));
-const downLoadFile = (link,fileName) => {
+const downLoadFile = (link, fileName) => {
   return axios.get(API_URL + "/download/" + link, {
     responseType: "blob",
     headers: {

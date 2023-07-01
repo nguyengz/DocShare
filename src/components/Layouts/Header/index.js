@@ -175,6 +175,9 @@ export default function Header() {
   // const handleMobileMenuClose = () => {
   //   setMobileMoreAnchorEl(null);
   // };
+  const handleClickOder = (todo) => {
+    navigate(`/${currentUser.name}/oder`);
+  };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -326,6 +329,7 @@ export default function Header() {
                       My account setting
                     </MenuItem>
                     <MenuItem onClick={handleClickMyUpload}>My Upload</MenuItem>
+                    <MenuItem onClick={handleClickOder}>My Oder</MenuItem>
                     <MenuItem onClick={logOut}>Log out</MenuItem>
                   </Menu>
                   {/* {renderMenu} */}

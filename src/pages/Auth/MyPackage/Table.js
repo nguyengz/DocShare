@@ -35,10 +35,16 @@ const Table = (props) => {
     return format(date, "dd/MM/yyyy HH:mm:ss");
   };
 
-  const columnsOrder = ["name", "price", "createdAt", "numOfAccess"];
+  const columnsOrder = [
+    "packages",
+    "price",
+    "numOfAccess",
+    "storageSize",
+    "createdAt",
+  ];
   const columns = useMemo(() => [
     {
-      accessorKey: "name",
+      accessorKey: "packages",
       header: "Package",
       enableColumnOrdering: false,
       enableEditing: false, //disable editing on this column
@@ -49,12 +55,13 @@ const Table = (props) => {
         alignItems: "center",
         justifyContent: "center",
       },
-    //   Cell: ({ cell }) => packageName(cell.row),
+      Cell: ({ row }) => row.original?.packages.name,
     },
     {
       accessorKey: "price",
       header: "Price",
       size: 50,
+      Cell: ({ row }) => row.original?.packages.price,
       muiTableBodyCellStyle: {
         display: "flex",
         alignItems: "center",
@@ -62,21 +69,22 @@ const Table = (props) => {
       },
     },
     {
-      accessorKey: "createdAt",
-      header: "CreatedAt",
-      size: 50,
-      Cell: ({ cell }) => formatDate(cell.value),
-    },
-    {
       accessorKey: "numOfAccess",
       header: "NumOfAccess",
       size: 50,
+      Cell: ({ row }) =>
+        row.original?.numOfAccess + "/" + row.original?.packages.dowloads,
     },
     {
-      accessorKey: "uploadDate",
-      header: "Date Upload",
+      accessorKey: "storageSize",
+      header: "StorageSize",
       size: 50,
-      enableSorting: true,
+      Cell: ({ row }) => row.original?.packages.storageSize,
+    },
+    {
+      accessorKey: "createdAt",
+      header: "CreatedAt",
+      size: 50,
       Cell: ({ cell }) => formatDate(cell.value),
     },
   ]);

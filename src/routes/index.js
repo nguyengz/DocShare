@@ -16,6 +16,7 @@ import MyUpload from "~/pages/Auth/MyUpLoad";
 import Search from "~/pages/Search";
 import SearchResutlt from "~/pages/Search";
 import SearchCatory from "~/pages/Search/SearchCatory";
+import MyOrder from "~/pages/Auth/MyOder";
 // import ProductDetail from "~/pages/ProductDetail";
 
 const publicRoutes = [
@@ -36,8 +37,11 @@ const publicRoutes = [
   { path: "/fileDetail/:id", component: FileDetail, layout: "onlylayout" },
   { path: "/filemore", component: FileListMore, layout: "onlylayout" },
   { path: "/Search", component: SearchResutlt, layout: "onlylayout" },
-  { path: "/SearchCatory/:name", component: SearchCatory, layout: "onlylayout" },
-  
+  {
+    path: "/SearchCatory/:name",
+    component: SearchCatory,
+    layout: "onlylayout",
+  },
 ];
 
 const privateRoutes = [
@@ -49,6 +53,7 @@ const privateRoutes = [
     layout: "onlylayout",
   },
   { path: "/:name/EditUpload", component: MyUpload, layout: "onlylayout" },
+  { path: "/:name/oder", component: MyOrder, layout: "onlylayout" },
 ];
 
 export { publicRoutes, privateRoutes };

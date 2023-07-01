@@ -26,10 +26,9 @@ function MyPackage() {
     <>
       <Box
         sx={{
-          // width: "90%",
+          width: "100%",
           height: "500px",
           margin: "0px auto",
-          border: "1px solid",
           background: "white",
           //   position: "fixed",
         }}
@@ -37,7 +36,7 @@ function MyPackage() {
         <Typography variant="h1" color="initial" fontSize={28} fontWeight={50}>
           My Package
         </Typography>
-        <Table data={listOder}/>
+        <Table data={listOder} />
       </Box>
     </>
   );
