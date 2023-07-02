@@ -68,23 +68,46 @@ function AboutUser() {
       console.log(response); // log the fetched user data
     });
   }, [dispatch, userId]);
+  // useEffect(() => {
+  //   if (userAbout && userAbout.files) {
+  //     // add a check for userAbout and userAbout.files
+  //     userAbout.files.forEach((todo) => {
+  //       fetch(`http://localhost:8080/file/review/${todo.linkImg}`)
+  //         .then((response) => response.arrayBuffer())
+  //         .then((buffer) =>
+  //           setImageData((prevImageData) => ({
+  //             ...prevImageData,
+  //             [todo.id]: `data:image/jpeg;base64,${btoa(
+  //               new Uint8Array(buffer).reduce(
+  //                 (data, byte) => data + String.fromCharCode(byte),
+  //                 ""
+  //               )
+  //             )}`,
+  //           }))
+  //         );
+  //     });
+  //   }
+  // }, [userAbout]);
+  function fetchImage(link) {
+    return fetch(`http://localhost:8080/file/review/${link}`).then((response) =>
+      response.blob()
+    );
+  }
+
+  function loadImageData(todo) {
+    fetchImage(todo.linkImg).then((blob) => {
+      const url = URL.createObjectURL(blob);
+      setImageData((prevImageData) => ({
+        ...prevImageData,
+        [todo.id]: url,
+      }));
+    });
+  }
+
   useEffect(() => {
     if (userAbout && userAbout.files) {
-      // add a check for userAbout and userAbout.files
       userAbout.files.forEach((todo) => {
-        fetch(`http://localhost:8080/file/image/${todo.linkImg}`)
-          .then((response) => response.arrayBuffer())
-          .then((buffer) =>
-            setImageData((prevImageData) => ({
-              ...prevImageData,
-              [todo.id]: `data:image/jpeg;base64,${btoa(
-                new Uint8Array(buffer).reduce(
-                  (data, byte) => data + String.fromCharCode(byte),
-                  ""
-                )
-              )}`,
-            }))
-          );
+        loadImageData(todo);
       });
     }
   }, [userAbout]);

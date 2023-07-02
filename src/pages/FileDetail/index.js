@@ -316,6 +316,7 @@ function FileDetail() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.4)",
                 }}
               >
                 {isLoading ? (
@@ -360,7 +361,7 @@ function FileDetail() {
                 item
                 sx={{
                   height: 300,
-                  margin: 1,
+                  marginTop: 2,
                 }}
                 spacing={4}
               >
@@ -449,11 +450,8 @@ function FileDetail() {
                       </Button>
                     ))}
                 </Stack>
-                <Stack direction="row" spacing={2}>
-                  <Typography>
-                    Take time to reflect on your career path. It's worth the
-                    effort. Full LinkedIn article: http://bit.ly/4Strategies
-                  </Typography>
+                <Stack direction="row" spacing={2} sx={{ margin: "10px" }}>
+                  <Typography>{fileDetail.description}</Typography>
                 </Stack>
                 <Stack direction="row" spacing={2} sx={{ margin: "10px 10px" }}>
                   <Stack item>

@@ -23,6 +23,7 @@ import { logout } from "~/slices/auth";
 import EventBus from "~/common/EventBus";
 import { unstable_HistoryRouter, useNavigate } from "react-router-dom";
 import SearchResutlt from "~/pages/Search";
+import Swal from "sweetalert2";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: "20px",
@@ -147,7 +148,23 @@ export default function Header() {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const logOut = useCallback(() => {
-    dispatch(logout());
+    try {
+      Swal.fire({
+        title: "Logout",
+        text: "Are you sure you want to log out?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, log out!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          dispatch(logout());
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }, [dispatch]);
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
