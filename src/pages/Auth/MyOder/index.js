@@ -5,6 +5,8 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Pagination,
+  Stack,
   Switch,
   TextField,
   Tooltip,
@@ -23,6 +25,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import CircleIcon from "@mui/icons-material/Circle";
 import { BuildTwoTone } from "@mui/icons-material";
+import usePagination from "~/utils/PaginatedList";
 // import { addPackage, fetchPackages } from "store/reducers/slices/package";
 // import { useDispatch, useSelector } from 'react-redux';
 // import { registerPackage } from '~/slices/paypal';
@@ -86,6 +89,10 @@ function MyOrder() {
   const [showDialog, setShowDialog] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [listOder, setlistOder] = useState([]);
+  let [page, setPage] = useState(1);
+  const PER_PAGE = 10;
+  const count = Math.ceil(listOder.length / PER_PAGE);
+  const _DATA = usePagination(listOder, PER_PAGE);
   // let totalOrderPrice = 0;
   useEffect(() => {
     axios
@@ -102,6 +109,10 @@ function MyOrder() {
   useEffect(() => {
     console.log(listOder);
   }, [currentUser.id, listOder]);
+  const handleChange = (e, p) => {
+    setPage(p);
+    _DATA.jump(p);
+  };
   const handleDialogClose = () => {
     setShowDialog(false);
     // hide the dialog box
@@ -160,6 +171,7 @@ function MyOrder() {
 
   return (
     <Container
+      minHeight="1000px"
       maxWidth="12"
       component="main"
       spacing={2}
@@ -192,7 +204,7 @@ function MyOrder() {
             Total Order: {listOder.length} * Total price: {totalOrderPrice}
           </Typography>
         </Grid>
-        {listOder?.map((listOder) => (
+        {_DATA?.currentData().map((listOder) => (
           <>
             <Grid
               container
@@ -215,6 +227,7 @@ function MyOrder() {
                   boxShadow: listOder.orderStatus
                     ? "0 0 10px rgba(0, 255, 0, 0.5)"
                     : "0 0 10px rgb(255 1 1)",
+                  fontSize: "14px",
                 }}
               >
                 <CardHeader
@@ -228,19 +241,26 @@ function MyOrder() {
                   subheaderTypographyProps={{
                     align: "center",
                   }}
+                  sx={{
+                    padding: "1px",
+                  }}
                 />
-                <CardContent>
+                <CardContent
+                  sx={{
+                    padding: "1px",
+                  }}
+                >
                   <Box
                     sx={{
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "baseline",
-                      mb: 2,
+                      padding: "0px",
                     }}
                   >
                     <Typography
-                      component="h2"
-                      variant="h3"
+                      component="body1"
+                      variant="h4"
                       color="text.primary"
                     >
                       ${listOder.packages.price}
@@ -296,6 +316,24 @@ function MyOrder() {
             </Grid>
           </>
         ))}
+        <Grid
+          sm={12}
+          mt={2}
+          width="100%"
+          justifyContent="center"
+          justifyItems="center"
+        >
+          <Stack my="auto" alignItems="center">
+            <Pagination
+              count={count}
+              size="large"
+              page={page}
+              variant="outlined"
+              onChange={handleChange}
+              color="primary"
+            />
+          </Stack>
+        </Grid>
       </Grid>
     </Container>
   );

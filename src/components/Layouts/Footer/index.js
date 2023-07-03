@@ -10,6 +10,7 @@ function Footer() {
         backgroundColor: "black",
         height: "200px",
         width: "100%",
+        mt: 20,
         // position: "absolute",
         bottom: 0,
         color: "white",

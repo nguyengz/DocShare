@@ -42,10 +42,10 @@ function UploadFile() {
     try {
       setIsLoading(true);
       const file = event.target.files[0];
-      if (file.size > 1 * 1024 * 1024) {
+      if (file.size > 50 * 1024 * 1024) {
         await Swal.fire({
           title: "Error!",
-          text: "File size should not exceed 1MB",
+          text: "File size should not exceed 50MB",
           icon: "error",
           confirmButtonText: "OK",
         });
@@ -57,10 +57,10 @@ function UploadFile() {
       const uri = URL.createObjectURL(file);
       const _pdf = await pdfjs.getDocument({ url: uri }).promise;
       setPdf(_pdf);
-
       setFileUrl(uri);
-      console.log(fileUrl);
-      console.log(selectedFile.type);
+
+      // console.log(fileUrl);
+      // console.log(selectedFile.type);
     } catch (error) {
       setIsLoading(false);
       await Swal.fire({
@@ -83,15 +83,14 @@ function UploadFile() {
   return (
     <>
       <>
-        {isFilePicked && fileUrl && (
+        {isFilePicked && fileUrl ? (
           <InfomationUpload
             url={fileUrl}
             nameFile={selectedFile.name}
             selectedFile={selectedFile}
             pdf={pdf}
           />
-        )}{" "}
-        {!isFilePicked && (
+        ) : (
           <Box
             container
             sx={{

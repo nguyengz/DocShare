@@ -42,7 +42,7 @@ function SearchResutlt() {
   const dispatch = useDispatch();
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedOption, setSelectedOption] = useState("relevant");
+  const [selectedOption, setSelectedOption] = useState("Filter");
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -190,20 +190,24 @@ function SearchResutlt() {
                 <Select
                   value={selectedOption}
                   onChange={handleOptionChange}
+                  displayEmpty
+                  // MenuProps={{
+                  //   MenuListProps: {
+                  //     disableRadio: true,
+                  //   },
+                  // }}
+                  renderValue={() => renderSelectedOption(selectedOption)}
                   sx={{
                     border: "none",
                     width: "100px",
-                    height: "20px",
+                    height: "30px",
                     alignContent: "center",
                     ml: "150px",
                   }}
-                  MenuProps={{
-                    MenuListProps: {
-                      disableRadio: true,
-                    },
-                  }}
-                  renderValue={() => renderSelectedOption(selectedOption)}
                 >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
                   <MenuItem value="newest">newest</MenuItem>
                   <MenuItem value="oldest">oldest</MenuItem>
                 </Select>

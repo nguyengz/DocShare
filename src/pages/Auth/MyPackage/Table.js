@@ -55,13 +55,13 @@ const Table = (props) => {
         alignItems: "center",
         justifyContent: "center",
       },
-      Cell: ({ row }) => row.original?.packages.name,
+      Cell: ({ row }) => row.original?.packages?.name,
     },
     {
       accessorKey: "price",
       header: "Price",
       size: 50,
-      Cell: ({ row }) => row.original?.packages.price,
+      Cell: ({ row }) => row.original?.packages?.price,
       muiTableBodyCellStyle: {
         display: "flex",
         alignItems: "center",
@@ -73,13 +73,13 @@ const Table = (props) => {
       header: "NumOfAccess",
       size: 50,
       Cell: ({ row }) =>
-        row.original?.numOfAccess + "/" + row.original?.packages.dowloads,
+        row.original?.numOfAccess + "/" + row.original?.packages?.dowloads,
     },
     {
       accessorKey: "storageSize",
       header: "StorageSize",
       size: 50,
-      Cell: ({ row }) => row.original?.packages.storageSize,
+      Cell: ({ row }) => row.original?.packages?.storageSize,
     },
     {
       accessorKey: "createdAt",
