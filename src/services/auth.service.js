@@ -1,6 +1,5 @@
-import { Alert } from "@mui/material";
 import axios from "axios";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 const API_URL = "http://localhost:8080/api/auth/";
 
@@ -22,8 +21,20 @@ const login = (username, password) => {
     .then((response) => {
       if (response.data.token) {
         localStorage.setItem("user", JSON.stringify(response.data));
+        Swal.fire({
+          icon: "success",
+          title: "Welcome",
+          timer: 1000,
+          showConfirmButton: false,
+        });
       } else if (response.data.error) {
-        alert("Sai tên tài khoản hoặc mật khẩu");
+        Swal.fire({
+          icon: "error",
+          title: "Password or Username failed",
+          text: "Please check infomation again!",
+          timer: 2000,
+          showConfirmButton: false,
+        });
       }
       return response.data;
     });

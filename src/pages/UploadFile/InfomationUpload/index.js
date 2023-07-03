@@ -9,6 +9,7 @@ import {
   FormHelperText,
   Grid,
   InputLabel,
+  LinearProgress,
   MenuItem,
   OutlinedInput,
   Select,
@@ -40,6 +41,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCategory } from "~/slices/category";
 import { uploadfile } from "~/slices/file";
 import { useNavigate } from "react-router-dom";
+import LinearProgressWithLabel from "~/utils/LinearProgressWithLabel";
 const Item = styled(Grid)(({ theme }) => ({
   ...theme.typography.body2,
   margin: 1,
@@ -118,16 +120,27 @@ function InfomationUpload(props) {
 
   // const [numPages, setNumPages] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [width, setWidth] = React.useState(0);
-  const [height, setHeight] = React.useState(0);
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
   const [images, setImages] = useState([]);
   const [firstImage, setfirstImage] = useState(null);
   // const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  // const [pdfRendering, setPdfRendering] = React.useState("");
-  const [pageRendering, setPageRendering] = React.useState("");
+  const [progress, setProgress] = useState(10);
+  // const [pdfRendering, setPdfRendering] = useState("");
+  const [pageRendering, setPageRendering] = useState("");
   const canvasRef = useRef(null);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((prevProgress) =>
+        prevProgress >= 100 ? 10 : prevProgress + 10
+      );
+    }, 800);
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
   const pdf = props.pdf;
   const handleDelete = (tag) => {
     const newTags = tags.filter((t) => t !== tag);
@@ -209,10 +222,10 @@ function InfomationUpload(props) {
     formData.append("fileImg", firstImageBlob, "firstImage.png");
     try {
       // dispatch the uploadfile action
-      await dispatch(uploadfile(formData));
-      setIsUploading(false);
-      navigate(`/currentUser.name/EditUpload`);
-      // set isUploading state to false after upload is complete
+      await dispatch(uploadfile(formData)).then(() => {
+        setIsUploading(false);
+        navigate(`/currentUser.name/EditUpload`);
+      });
     } catch (error) {
       console.log(error);
       setIsUploading(false); // set isUploading state to false if there is an error
@@ -238,11 +251,11 @@ function InfomationUpload(props) {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            backgroundColor: "white",
             zIndex: 9999,
           }}
         >
-          <CircularProgress color="primary" />
+          <LinearProgressWithLabel value={progress} />
         </div>
       )}
       <Container minHeight="1000px">
