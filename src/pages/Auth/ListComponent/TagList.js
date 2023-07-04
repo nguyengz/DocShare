@@ -11,19 +11,21 @@ function TagList({ userAbout }) {
 
   const handleListTags = () => {
     if (userAbout && userAbout.files) {
-      const tagsSet = new Set();
+      const tagsArr = [];
+      const seenTags = new Set();
       userAbout.files.forEach((file) => {
         if (file.tags) {
           file.tags.forEach((tag) => {
-            tagsSet.add(tag);
+            if (!seenTags.has(tag.tagId)) {
+              tagsArr.push(tag);
+              seenTags.add(tag.tagId);
+            }
           });
         }
       });
-      const tagsArr = Array.from(tagsSet);
       setTags(tagsArr);
     }
   };
-
   return (
     <Stack item>
       <Typography variant="h5" color="initial">

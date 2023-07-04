@@ -213,7 +213,7 @@ function SearchCatory() {
                     width: "100px",
                     height: "20px",
                     alignContent: "center",
-                    ml: "150px"
+                    ml: "150px",
                   }}
                   MenuProps={{
                     MenuListProps: {

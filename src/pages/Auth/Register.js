@@ -65,8 +65,7 @@ const Register = () => {
       .unwrap()
       .then(() => {
         // message === ""
-        // navigate("/verify");
-
+        navigate("/verify");
         setSuccessful(true);
       })
       .catch(() => {
@@ -105,13 +104,20 @@ const Register = () => {
               submit: null,
             }}
             validationSchema={Yup.object().shape({
-              name: Yup.string().max(255).required("name is required"),
-              username: Yup.string().max(255).required("username is required"),
+              name: Yup.string().max(255).required("Name is required"),
+              username: Yup.string().max(255).required("Username is required"),
               email: Yup.string()
                 .email("Must be a valid email")
                 .max(255)
                 .required("Email is required"),
-              password: Yup.string().max(255).required("Password is required"),
+              password: Yup.string()
+                .min(8)
+                .max(255)
+                .matches(
+                  "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})",
+                  "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
+                )
+                .required("Password is required"),
             })}
             onSubmit={handleRegister}
           >

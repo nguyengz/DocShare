@@ -108,13 +108,33 @@ function FileDetail() {
 
   const buttonColor = isFollowing ? "paleturquoise" : "primary";
   const iconColor = isLiked ? "#FF0000" : "#000000";
-  const tags = fileDetail.tags;
+  const [tags, setTags] = useState([]);
   // const link = state.link;
   // const file_id = id;
   useEffect(() => {
     dispatch(fetchFileDetail(id));
     dispatch(fetchfile());
   }, []);
+
+  useEffect(() => {
+    if (fileDetail && fileDetail.tags) {
+      const tagsArr = fileDetail.tags.reduce((accumulator, tag) => {
+        if (!accumulator.some((t) => t.tagId === tag.tagId)) {
+          accumulator.push(tag);
+        }
+        return accumulator;
+      }, []);
+      setTags(tagsArr);
+    }
+  }, [fileDetail]);
+  useEffect(() => {
+    console.log("link: " + fileDetail.link);
+    const pdfUrl = "http://localhost:8080/file/review/" + fileDetail.link;
+    console.log(pdfUrl);
+    if (pdfUrl && currentPage) {
+      renderPage(pdfUrl, currentPage); // pass currentPage to renderPage function
+    }
+  }, [currentPage, fileDetail.link, fileDetail.userId, fileDetail.id]);
   async function renderPage(pdfUrl, pageNumber) {
     setPageRendering(true);
     setIsLoading(true);
@@ -141,7 +161,6 @@ function FileDetail() {
     setPageRendering(false);
     setIsLoading(false); // set isLoading to false when pages are rendered
   }
-
   const handleDownload = () => {
     const userLc = JSON.parse(localStorage.getItem("user"));
     // Check if the user has an active subscription
@@ -160,10 +179,10 @@ function FileDetail() {
       });
       return;
     }
-    const adminRole = userLc.roles.find((role) => role.authority === "ADMIN");
+    const adminRole = userLc.roles.find((role) => role.authority === "USER");
     const adminAuthority = adminRole ? adminRole.authority : null;
     // const adminAuthority = "";
-    const hasSubscription = adminAuthority === "ADMIN";
+    const hasSubscription = adminAuthority === "USER";
     if (hasSubscription) {
       const fileName = fileDetail.fileName;
       const fileUrl = `${fileDetail.link}/${currentUser.id}/${fileDetail.id}`;
@@ -175,14 +194,6 @@ function FileDetail() {
     }
   };
 
-  useEffect(() => {
-    console.log("link: " + fileDetail.link);
-    const pdfUrl = "http://localhost:8080/file/review/" + fileDetail.link;
-    console.log(pdfUrl);
-    if (pdfUrl && currentPage) {
-      renderPage(pdfUrl, currentPage); // pass currentPage to renderPage function
-    }
-  }, [currentPage, fileDetail.link, fileDetail.userId, fileDetail.id]);
   const handleLikeFile = () => {
     fetch("http://localhost:8080/file/like", {
       method: "POST",
@@ -260,7 +271,7 @@ function FileDetail() {
       console.log(currentUser);
       const user = JSON.parse(localStorage.getItem("user"));
       // const user = { ...currentUser }; // Lấy thông tin user từ Redux store
-      user.roles = [{ authority: "ADMIN" }];
+      user.roles = [{ authority: "USER" }];
       localStorage.setItem("user", JSON.stringify(user)); // Cập nhật giá trị roles
       // dispatch(updateRoles({ roles: user.roles })); // Gửi action updateRoles đến reducer của slice auth
       // Lưu giá trị mới vào localStorage // Lưu thông tin user vào localStorage
@@ -312,7 +323,7 @@ function FileDetail() {
               <Grid
                 item
                 sx={{
-                  height: 400,
+                  height: 500,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -430,13 +441,18 @@ function FileDetail() {
                   <ShareRoundedIcon />
                   <MoreHorizRoundedIcon />
                 </Stack>
-                <Stack direction="row" spacing={2} sx={{ margin: "10px" }}>
+                <Stack
+                  direction="row"
+                  sm={6}
+                  spacing={2}
+                  sx={{ margin: "10px", width: "50%" }}
+                >
                   {tags &&
-                    tags.map((tag, index) => (
+                    tags.slice(0, 6).map((tag, index) => (
                       <Button
                         key={index}
                         component={Link}
-                        href={`/`}
+                        href={`/Search?tagName=${tag.tagName}`}
                         sx={{
                           border: "1px solid",
                           borderRadius: "56px",
@@ -525,7 +541,7 @@ function FileDetail() {
               >
                 List of similar tags
               </Typography>
-              <FileListTags fileMore={fileList} />
+              <FileListTags id={fileDetail.id} />
             </Grid>
           </Grid>
         </Card>
@@ -550,7 +566,7 @@ function FileDetail() {
               color="initial"
               sx={{ fontSize: 40, fontWeight: 700 }}
             >
-              More Related Content
+              More Related Category
             </Typography>
           </Grid>
           <Grid
@@ -560,12 +576,7 @@ function FileDetail() {
               marginBottom: "20px",
             }}
           >
-            <FileListMore fileMore={fileList} />
-            {/* <FileList
-                file={userAbout?.files}
-                imageData={imageData}
-                handleClickFile={handleClickFile}
-              /> */}
+            <FileListMore category={fileDetail.category} />
           </Grid>
           {/* <Grid
             item

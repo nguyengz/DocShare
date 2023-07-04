@@ -87,6 +87,8 @@ const styles = {
     gap: "1px",
     width: "300px",
     height: "300px",
+    border: "2px inset",
+    boxShadow: "2px 2px 10px #aaaaaa",
   },
   imageWrapper: {
     display: "block",
@@ -97,6 +99,8 @@ const styles = {
     boxShadow: "0 2px 5px 0 rgba(0,0,0,0.25)",
     padding: "0",
     overflowX: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
   },
 };
 
@@ -106,6 +110,7 @@ function InfomationUpload(props) {
 
   const { user: currentUser } = useSelector((state) => state.auth);
   const categoryData = useSelector((state) => state.category.data);
+
   const fileType = props.selectedFile
     ? props.selectedFile.type.split("/").pop()
     : "";
@@ -117,7 +122,7 @@ function InfomationUpload(props) {
   const [alignment, setAlignment] = useState("true");
   const [title, setTitle] = useState(props.nameFile);
   const [description, setDescription] = useState("");
-
+  const [error, setError] = useState("");
   // const [numPages, setNumPages] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [width, setWidth] = useState(0);
@@ -126,22 +131,39 @@ function InfomationUpload(props) {
   const [firstImage, setfirstImage] = useState(null);
   // const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [progress, setProgress] = useState(10);
+
+  const [progress, setProgress] = useState(0);
+  const [buffer, setBuffer] = React.useState(10);
+
   // const [pdfRendering, setPdfRendering] = useState("");
   const [pageRendering, setPageRendering] = useState("");
+  const progressRef = useRef(() => {});
   const canvasRef = useRef(null);
 
+  const pdf = props.pdf;
+  useEffect(() => {
+    progressRef.current = () => {
+      if (progress > 100) {
+        setProgress(0);
+        setBuffer(10);
+      } else {
+        const diff = Math.random() * 10;
+        const diff2 = Math.random() * 10;
+        setProgress(progress + diff);
+        setBuffer(progress + diff + diff2);
+      }
+    };
+  });
   useEffect(() => {
     const timer = setInterval(() => {
-      setProgress((prevProgress) =>
-        prevProgress >= 100 ? 10 : prevProgress + 10
-      );
-    }, 800);
+      progressRef.current();
+    }, 500);
+
     return () => {
       clearInterval(timer);
     };
   }, []);
-  const pdf = props.pdf;
+
   const handleDelete = (tag) => {
     const newTags = tags.filter((t) => t !== tag);
     setSelectedTags(newTags);
@@ -231,6 +253,14 @@ function InfomationUpload(props) {
       setIsUploading(false); // set isUploading state to false if there is an error
     }
   };
+  function handleChangeTag(tags) {
+    if (tags.length >= 1 && tags.length <= 20) {
+      setSelectedTags(tags);
+      setError("");
+    } else {
+      setError("Tags must have between 1 and 20 elements");
+    }
+  }
   function formatBytes(bytes) {
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
@@ -240,24 +270,6 @@ function InfomationUpload(props) {
   }
   return (
     <>
-      {isUploading && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "white",
-            zIndex: 9999,
-          }}
-        >
-          <LinearProgressWithLabel value={progress} />
-        </div>
-      )}
       <Container minHeight="1000px">
         <Box
           container
@@ -304,294 +316,335 @@ function InfomationUpload(props) {
             }}
           >
             {/* <input type="file" name="file" /> */}
-            <Formik
-              initialValues={{
-                filePath: "",
-                shared: "",
-                title: props.nameFile,
-                description: "",
-                category: "",
-                tags: [],
-              }}
-              validationSchema={Yup.object().shape({
-                title: Yup.string().max(200).required("FileName is required"),
-                description: Yup.string()
-                  .min(10)
-                  .max(255)
-                  .required("Description is required"),
-                tags: Yup.array().required("Tags is required"),
-              })}
-              // onSubmit={handleLogin}
-            >
-              {({ errors, handleBlur, handleChange, touched, values }) => (
-                <Form>
-                  <Grid container>
-                    <Grid item xs={12}>
-                      <Stack
-                        direction={{ xs: "row" }}
-                        spacing={3}
-                        justifyContent=""
-                      >
-                        <Item>
-                          <Swiper
-                            pagination={{
-                              type: "progressbar",
-                            }}
-                            navigation={true}
-                            modules={[Pagination, Navigation]}
-                            className="mySwiper"
-                            style={styles.wrapper}
+            {isUploading ? (
+              <>
+                <Typography variant="caption" color="initial">
+                  Please wait until the file is uploaded.......
+                </Typography>
+                <LinearProgress
+                  variant="buffer"
+                  value={progress}
+                  valueBuffer={buffer}
+                />
+              </>
+            ) : (
+              <>
+                <Formik
+                  initialValues={{
+                    filePath: "",
+                    shared: "",
+                    title: props.nameFile,
+                    description: "",
+                    category: "",
+                    tags: [],
+                  }}
+                  validationSchema={Yup.object().shape({
+                    title: Yup.string()
+                      .min(10)
+                      .max(200)
+                      .required("FileName is required"),
+                    description: Yup.string()
+                      .min(10)
+                      .max(255)
+                      .required("Description is required"),
+                    tags: Yup.array().of(Yup.string()),
+                    selectedCategory: Yup.string().required(
+                      "Please select a category"
+                    ),
+                    // .min(1, "At least one tag is required")
+                    // .max(5, "You can add up to 5 tags"),
+                  })}
+                  onSubmit={handleFileUpload}
+                >
+                  {({ errors, handleBlur, handleChange, touched, values }) => (
+                    <Form>
+                      <Grid container>
+                        <Grid item xs={12}>
+                          <Stack
+                            direction={{ xs: "row" }}
+                            spacing={3}
+                            justifyContent=""
                           >
-                            {images.map((image, idx) => (
-                              <SwiperSlide
-                                key={idx}
-                                style={styles.imageWrapper}
-                                // direction={"vertical"}
-                                // slidesPerView={"auto"}
+                            <Item>
+                              <Swiper
+                                pagination={{
+                                  type: "progressbar",
+                                }}
+                                navigation={true}
+                                modules={[Pagination, Navigation]}
+                                className="mySwiper"
+                                style={styles.wrapper}
                               >
-                                <img
-                                  id="image-generated"
-                                  src={image}
-                                  alt="pdfImage"
-                                  style={{
-                                    width: width,
-                                    height: height,
-                                    margin: "auto",
-                                    display: "block",
-                                    // width: "100%",
-                                    // height: "100%",
-                                    objectFit: "cover",
+                                {pageRendering ? (
+                                  <Box
+                                    sx={{
+                                      height: "400px",
+                                      margin: "0px auto",
+                                    }}
+                                  >
+                                    {" "}
+                                    <CircularProgress />
+                                  </Box>
+                                ) : (
+                                  images.map((image, idx) => (
+                                    <SwiperSlide
+                                      key={idx}
+                                      style={styles.imageWrapper}
+                                    >
+                                      <img
+                                        id="image-generated"
+                                        src={image}
+                                        alt="pdfImage"
+                                        style={{
+                                          width: width,
+                                          height: height,
+                                          margin: "auto",
+                                          display: "block",
+                                          // width: "100%",
+                                          // height: "100%",
+                                          objectFit: "cover",
+                                        }}
+                                      />
+                                    </SwiperSlide>
+                                  ))
+                                )}
+                              </Swiper>
+                            </Item>
+                            <Item>
+                              {/* <p style={{fontSize: "20px", display: "block"}}> {props.nameFile}<br/></p> */}
+                              <Typography
+                                variant="caption"
+                                color="initial"
+                                wordBreak="break-all"
+                                whiteSpace="pre-line"
+                                style={{
+                                  fontSize: "20px",
+                                  overflowWrap: "break-word",
+                                }}
+                              >
+                                {props.nameFile}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                style={{
+                                  fontSize: "15px",
+                                  marginLeft: "5px",
+                                }}
+                              >
+                                Type: {fileType}
+                                <br />
+                                Size: {formatBytes(fileSize)}
+                              </Typography>
+                            </Item>
+                          </Stack>
+                          <Stack xs={2}></Stack>
+                        </Grid>
+                        <Grid item xs={12} mt={2} direction="row">
+                          <Stack
+                            direction={{ xs: "column", sm: "row" }}
+                            spacing={1}
+                            justifyContent="space-between"
+                          >
+                            <Stack direction="column" spacing={4}>
+                              <Item>
+                                <InputLabel htmlFor="Title-login">
+                                  FileName
+                                </InputLabel>
+                                <OutlinedInput
+                                  className={classes.input}
+                                  type="text"
+                                  name="title"
+                                  onBlur={handleBlur}
+                                  placeholder="Enter FileName"
+                                  error={Boolean(touched.title && errors.title)}
+                                  value={title}
+                                  onChange={(e) => {
+                                    handleChange(e);
+                                    setTitle(e.target.value);
+                                  }}
+                                  fullWidth
+                                />
+                                {touched.title && errors.title && (
+                                  <FormHelperText
+                                    error
+                                    id="standard-weight-helper-text-email-login"
+                                  >
+                                    {errors.title}
+                                  </FormHelperText>
+                                )}
+                              </Item>
+                              <Item>
+                                <InputLabel htmlFor="description-login">
+                                  Description*
+                                </InputLabel>
+                                <TextareaAutosize
+                                  style={{ height: "100px", width: "100%" }}
+                                  name="description"
+                                  onBlur={handleBlur}
+                                  placeholder="Enter FileName"
+                                  error={Boolean(
+                                    touched.description && errors.description
+                                  )}
+                                  value={description}
+                                  onChange={(e) => {
+                                    handleChange(e);
+                                    setDescription(e.target.value);
                                   }}
                                 />
+                                {touched.description && errors.description && (
+                                  <FormHelperText
+                                    error
+                                    id="standard-weight-helper-text-email-login"
+                                  >
+                                    {errors.description}
+                                  </FormHelperText>
+                                )}
+                              </Item>
+                            </Stack>
+                            <Stack direction="column" spacing={4}>
+                              <Item>
+                                <InputLabel>Category</InputLabel>
+                                <Select
+                                  className={classes.input}
+                                  name="selectedCategory"
+                                  onBlur={handleBlur}
+                                  error={Boolean(
+                                    touched.selectedCategory &&
+                                      errors.selectedCategory
+                                  )}
+                                  value={selectedCategory}
+                                  onChange={(e) => {
+                                    handleChange(e);
+                                    setSelectedCategory(e.target.value);
+                                  }}
+                                  sx={{ width: "100%" }}
+                                  // autoWidth
+                                  required
+                                  placeholder="Select Category"
+                                >
+                                  <MenuItem value="" disabled>
+                                    Select a Category
+                                  </MenuItem>
+                                  {categoryData.map((category) => (
+                                    <MenuItem
+                                      sx={{}}
+                                      key={category.id}
+                                      value={category.categoryName}
+                                    >
+                                      {category.categoryName}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                                {touched.selectedCategory &&
+                                  errors.selectedCategory && (
+                                    <FormHelperText
+                                      error
+                                      id="standard-weight-helper-text-email-login"
+                                    >
+                                      {errors.selectedCategory}
+                                    </FormHelperText>
+                                  )}
+                              </Item>
+                              <Item>
+                                <InputLabel htmlFor="Title-login">
+                                  Tags
+                                </InputLabel>
+                                <TagsInput
+                                  className={classes.input}
+                                  name="tags"
+                                  onBlur={handleBlur}
+                                  error={Boolean(touched.tags && errors.tags)}
+                                  value={tags}
+                                  onChange={(tags) => {
+                                    console.log(tags); // add this line to check the tags state
 
-                                {/* </div> */}
-                              </SwiperSlide>
-                            ))}
-                          </Swiper>
-                        </Item>
-                        <Item>
-                          {/* <p style={{fontSize: "20px", display: "block"}}> {props.nameFile}<br/></p> */}
-                          <Typography
-                            variant="caption"
-                            color="initial"
-                            wordBreak="break-all"
-                            whiteSpace="pre-line"
-                            style={{
-                              fontSize: "20px",
-                              overflowWrap: "break-word",
-                            }}
-                          >
-                            {props.nameFile}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            style={{
-                              fontSize: "15px",
-                              marginLeft: "5px",
-                            }}
-                          >
-                            Type: {fileType}
-                            <br />
-                            Size: {formatBytes(fileSize)}
-                          </Typography>
-                        </Item>
-                      </Stack>
-                      <Stack xs={2}></Stack>
-                    </Grid>
-                    <Grid item xs={12} direction="row">
-                      <Stack
-                        direction={{ xs: "column", sm: "row" }}
-                        spacing={1}
-                        justifyContent="space-between"
-                      >
-                        <Stack direction="column" spacing={4}>
-                          <Item>
-                            <InputLabel htmlFor="Title-login">
-                              FileName
-                            </InputLabel>
-                            <OutlinedInput
-                              className={classes.input}
-                              type="text"
-                              name="title"
-                              onBlur={handleBlur}
-                              placeholder="Enter FileName"
-                              error={Boolean(touched.title && errors.title)}
-                              value={title}
-                              onChange={(e) => {
-                                handleChange(e);
-                                setTitle(e.target.value);
-                              }}
-                              fullWidth
-                            />
-                            {touched.title && errors.title && (
-                              <FormHelperText
-                                error
-                                id="standard-weight-helper-text-email-login"
-                              >
-                                {errors.title}
-                              </FormHelperText>
-                            )}
-                          </Item>
-                          <Item>
-                            <InputLabel htmlFor="description-login">
-                              Description*
-                            </InputLabel>
-                            <TextareaAutosize
-                              style={{ height: "100px", width: "100%" }}
-                              name="description"
-                              onBlur={handleBlur}
-                              placeholder="Enter FileName"
-                              error={Boolean(
-                                touched.description && errors.description
-                              )}
-                              value={description}
-                              onChange={(e) => {
-                                handleChange(e);
-                                setDescription(e.target.value);
-                              }}
-                            />
-                            {touched.description && errors.description && (
-                              <FormHelperText
-                                error
-                                id="standard-weight-helper-text-email-login"
-                              >
-                                {errors.description}
-                              </FormHelperText>
-                            )}
-                          </Item>
-                        </Stack>
-                        <Stack direction="column" spacing={4}>
-                          <Item>
-                            <InputLabel>Category</InputLabel>
-                            <Select
-                              className={classes.input}
-                              value={selectedCategory}
-                              name="selectedCategory"
-                              onBlur={handleBlur}
-                              error={Boolean(
-                                touched.selectedCategory &&
-                                  errors.selectedCategory
-                              )}
-                              onChange={(e) => {
-                                setSelectedCategory(e.target.value);
-                              }}
-                              sx={{ width: "100%" }}
-                              // autoWidth
-                              displayEmpty
-                              required
-                            >
-                              <MenuItem value="Select a Category" disabled>
-                                Select a Category
-                              </MenuItem>
-                              {categoryData.map((category) => (
-                                <MenuItem
-                                  sx={{}}
-                                  key={category.id}
-                                  value={category.categoryName}
+                                    // handleChange(tags);
+                                    setSelectedTags(tags);
+                                  }}
+                                  placeHolder="enter tags"
+                                  required
+                                />
+                                {touched.tags && errors.tags && (
+                                  <FormHelperText
+                                    error
+                                    id="standard-weight-helper-text-email-login"
+                                  >
+                                    {errors.tags}
+                                  </FormHelperText>
+                                )}
+                              </Item>
+                              <Item>
+                                <InputLabel htmlFor="Privacy">
+                                  Privacy
+                                </InputLabel>
+                                <ToggleButtonGroup
+                                  color="primary"
+                                  backgroundColor="primary"
+                                  value={alignment}
+                                  exclusive
+                                  onChange={handleChangePrivacy}
+                                  aria-label="Platform"
                                 >
-                                  {category.categoryName}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                            {touched.selectedCategory &&
-                              errors.selectedCategory && (
-                                <FormHelperText
-                                  error
-                                  id="standard-weight-helper-text-email-login"
-                                >
-                                  {errors.selectedCategory}
-                                </FormHelperText>
-                              )}
-                          </Item>
-                          <Item>
-                            <InputLabel htmlFor="Title-login">Tags</InputLabel>
-                            <TagsInput
-                              className={classes.input}
-                              name="tags"
-                              onBlur={handleBlur}
-                              error={Boolean(touched.tags && errors.tags)}
-                              value={tags}
-                              onChange={(tags) => setSelectedTags(tags)}
-                              placeHolder="enter tags"
-                              required
-                            />
-                            {touched.tags && errors.tags && (
-                              <FormHelperText
-                                error
-                                id="standard-weight-helper-text-email-login"
-                              >
-                                {errors.tags}
-                              </FormHelperText>
-                            )}
-                          </Item>
-                          <Item>
-                            <InputLabel htmlFor="Privacy">Privacy</InputLabel>
-                            <ToggleButtonGroup
+                                  <ToggleButton value="true">
+                                    Public
+                                  </ToggleButton>
+                                  <ToggleButton value="false">
+                                    Private
+                                  </ToggleButton>
+                                </ToggleButtonGroup>
+                              </Item>
+                            </Stack>
+                          </Stack>
+                        </Grid>
+
+                        <Grid
+                          item
+                          xs={12}
+                          sx={{ padding: 2, alignItems: "right" }}
+                          justifyItems="right"
+                        >
+                          <Stack
+                            direction={{ xs: "column", sm: "row" }}
+                            spacing={2}
+                            justifyContent="flex-end"
+                          >
+                            {" "}
+                            <Button
+                              // disableElevation
+                              // disabled={loading}
+                              size="large"
+                              type="submit"
+                              variant="outlined"
                               color="primary"
-                              backgroundColor="primary"
-                              value={alignment}
-                              exclusive
-                              onChange={handleChangePrivacy}
-                              aria-label="Platform"
                             >
-                              <ToggleButton value="true">Public</ToggleButton>
-                              <ToggleButton value="false">Private</ToggleButton>
-                            </ToggleButtonGroup>
-                          </Item>
-                        </Stack>
-                      </Stack>
-                    </Grid>
-
-                    <Grid
-                      item
-                      xs={12}
-                      sx={{ padding: 2, alignItems: "right" }}
-                      justifyItems="right"
-                    >
-                      <Stack
-                        direction={{ xs: "column", sm: "row" }}
-                        spacing={2}
-                        justifyContent="flex-end"
-                      >
-                        {" "}
-                        <Button
-                          // disableElevation
-                          // disabled={loading}
-
-                          size="large"
-                          type="submit"
-                          variant="outlined"
-                          color="primary"
-                        >
-                          Delete
-                        </Button>
-                        <Button
-                          // disableElevation
-                          // disabled={loading}
-
-                          size="large"
-                          type="submit"
-                          variant="contained"
-                          color="primary"
-                          onClick={handleFileUpload}
-                        >
-                          Publish
-                        </Button>
-                      </Stack>
-                    </Grid>
-                  </Grid>
-                </Form>
-              )}
-            </Formik>
-
-            <Grid
-              item
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "8px",
-              }}
-            ></Grid>
+                              Delete
+                            </Button>
+                            <Button
+                              // disableElevation
+                              // disabled={loading}
+                              size="large"
+                              type="submit"
+                              variant="contained"
+                              color="primary"
+                            >
+                              Publish
+                            </Button>
+                          </Stack>
+                        </Grid>
+                      </Grid>
+                    </Form>
+                  )}
+                </Formik>
+                <Grid
+                  item
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                  }}
+                ></Grid>
+              </>
+            )}
           </Card>
         </Box>
       </Container>

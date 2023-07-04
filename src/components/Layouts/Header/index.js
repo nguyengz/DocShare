@@ -193,7 +193,7 @@ export default function Header() {
   //   setMobileMoreAnchorEl(null);
   // };
   const handleClickOder = (todo) => {
-    navigate(`/${currentUser.name}/oder`);
+    navigate(`/${currentUser.name}/order`);
   };
 
   const handleMenuClose = () => {

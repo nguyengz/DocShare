@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Swal from "sweetalert2";
 import fileService from "~/services/file.service";
 import { setMessage } from "./message";
@@ -45,11 +45,9 @@ export const uploadfile = createAsyncThunk(
     try {
       const response = await fileService.uploadFile(formdata);
       thunkAPI.dispatch(setMessage(response.data.message));
-      // Dispatch the success message using dispatch() function
       thunkAPI.dispatch(
         fileSlice.actions.setSuccessMessage("File uploaded successfully")
       );
-      // Display the success message using Swal.fire()
       Swal.fire({
         icon: "success",
         title: "File uploaded successfully",
@@ -67,9 +65,23 @@ export const uploadfile = createAsyncThunk(
     }
   }
 );
-
-
-
+export const deletedFile = createAsyncThunk(
+  "file/deletedFile",
+  async (dataDelete, thunkAPI) => {
+    try {
+      const response = await fileService.deletedFile(dataDelete);
+      thunkAPI.dispatch(setMessage(response.data.message));
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data.message
+        : "An error occurred while deleting the file";
+      thunkAPI.dispatch(setMessage(errorMessage));
+      throw error;
+    }
+  }
+);
+export const setRequestTime = createAction("user/setRequestTime");
 const fileSlice = createSlice({
   name: "file",
   initialState: {
@@ -162,6 +174,17 @@ const fileSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(uploadfile.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(deletedFile.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(deletedFile.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.data = action.payload;
+      })
+      .addCase(deletedFile.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });

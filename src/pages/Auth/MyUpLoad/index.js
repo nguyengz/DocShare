@@ -143,13 +143,19 @@ function MyUpload() {
               justifyContent: "center",
               justifyItems: "center",
               padding: 2,
+              justify: "center",
+              alignItems: "center",
+              //   alignContent="center"
+              wrap: "nowrap",
             }}
           >
             {" "}
             {showPackage && showPackage ? (
               <MyPackage />
             ) : (
-              <Example data={userAbout?.files} />
+              <Box width="100%">
+                <Example data={userAbout?.files} />
+              </Box>
             )}
           </Grid>
         </Grid>

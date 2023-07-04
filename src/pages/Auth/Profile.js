@@ -4,23 +4,15 @@ import {
   Avatar,
   Box,
   Button,
-  Card,
-  CardActionArea,
-  CardActions,
-  CardContent,
-  Chip,
   Grid,
   Link,
   Stack,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
-import { AccountCircle } from "@mui/icons-material";
+import randomColor from "randomcolor";
 
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper";
 import "swiper/swiper.css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -65,6 +57,7 @@ const style = {
     width: "100px",
     height: "100px",
     fontSize: "50px",
+    background: randomColor(),
   },
   gridUser: {
     margin: "auto",
@@ -107,6 +100,7 @@ function Profile() {
   const { user: currentUser } = useSelector((state) => state.auth);
   let userAbout = useSelector((state) => state.userAbout.userAbout);
   const [imageData, setImageData] = useState("");
+  const firstLetter = userAbout?.username.charAt(0).toUpperCase();
 
   useEffect(() => {
     dispatch(fetchUser(currentUser.id));
@@ -154,9 +148,7 @@ function Profile() {
           <Stack direction="row">
             <Stack item>
               <Item>
-                <Avatar style={style.largeAvatar}>
-                  <AccountCircle />
-                </Avatar>
+                <Avatar style={style.largeAvatar}>{firstLetter}</Avatar>
               </Item>
             </Stack>
             <Stack item sx={{ marginLeft: "5px" }}>

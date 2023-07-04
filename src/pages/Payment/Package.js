@@ -56,7 +56,7 @@ const tiers = [
     buttonVariant: "outlined",
   },
 ];
-export default function Pricing({ onBack, fileDetail_id }) {
+export default function Pricing({ onBack, fileDetail_id, name }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // const { id } = useParams();
@@ -68,7 +68,8 @@ export default function Pricing({ onBack, fileDetail_id }) {
     const data = {
       user_id: currentUser.id,
       package_id: tier.tiers_id,
-      file_id: parseInt(fileDetail_id),
+      file_id: parseInt(fileDetail_id) ? parseInt(fileDetail_id) : "",
+      name: name,
     };
 
     try {

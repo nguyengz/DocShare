@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { AccountCircle } from "@mui/icons-material";
+import randomColor from "randomcolor";
 
 import { fetchUser } from "~/slices/user";
 import FileList from "./ListComponent/FileList";
@@ -38,6 +38,7 @@ const style = {
     width: "100px",
     height: "100px",
     fontSize: "50px",
+    background: randomColor(),
   },
   gridUser: {
     margin: "auto",
@@ -61,8 +62,10 @@ function AboutUser() {
   const navigate = useNavigate();
 
   const { userId } = useParams();
-  let userAbout = useSelector((state) => state.userAbout.userAbout);
+  const userAbout = useSelector((state) => state.userAbout.userAbout);
   const [imageData, setImageData] = useState("");
+
+  const firstLetter = userAbout?.username.charAt(0).toUpperCase();
   useEffect(() => {
     dispatch(fetchUser(userId)).then((response) => {
       console.log(response); // log the fetched user data
@@ -88,36 +91,33 @@ function AboutUser() {
   //     });
   //   }
   // }, [userAbout]);
+  useEffect(() => {
+    if (userAbout && userAbout.files) {
+      userAbout.files.forEach((file) => {
+        loadImageData(file);
+      });
+    }
+  }, []);
+  useEffect(() => {
+    dispatch(fetchUser(userId));
+    // call handleListTags to get list of tags
+  }, [dispatch, userId]);
   function fetchImage(link) {
     return fetch(`http://localhost:8080/file/review/${link}`).then((response) =>
       response.blob()
     );
   }
 
-  function loadImageData(todo) {
-    fetchImage(todo.linkImg).then((blob) => {
+  function loadImageData(file) {
+    fetchImage(file.linkImg).then((blob) => {
       const url = URL.createObjectURL(blob);
       setImageData((prevImageData) => ({
         ...prevImageData,
-        [todo.id]: url,
+        [file.id]: url,
       }));
     });
   }
 
-  useEffect(() => {
-    if (userAbout && userAbout.files) {
-      userAbout.files.forEach((todo) => {
-        loadImageData(todo);
-      });
-    }
-  }, [userAbout]);
-  useEffect(() => {
-    dispatch(fetchUser(userId)).then((response) => {
-      console.log(response); // log the fetched user data
-    });
-
-    // call handleListTags to get list of tags
-  }, [dispatch, userId]);
   const handleClickFile = (todo) => {
     // console.log(todo.link);
     // const state = { link: todo.link };
@@ -133,12 +133,10 @@ function AboutUser() {
           <Stack direction="row">
             <Stack item>
               <Item>
-                <Avatar style={style.largeAvatar}>
-                  <AccountCircle />
-                </Avatar>
+                <Avatar style={style.largeAvatar}>{firstLetter}</Avatar>
               </Item>
             </Stack>
-            <Stack item sx={{ marginLeft: "10px" }}>
+            <Stack item sx={{ marginLeft: "15px" }}>
               <Item>
                 <Typography variant="h5">{userAbout?.username}</Typography>
               </Item>

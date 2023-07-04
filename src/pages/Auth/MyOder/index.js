@@ -26,6 +26,8 @@ import { useEffect, useState } from "react";
 import CircleIcon from "@mui/icons-material/Circle";
 import { BuildTwoTone } from "@mui/icons-material";
 import usePagination from "~/utils/PaginatedList";
+import Pricing from "~/pages/Payment/Package";
+import { setShowPricing } from "~/slices/download";
 // import { addPackage, fetchPackages } from "store/reducers/slices/package";
 // import { useDispatch, useSelector } from 'react-redux';
 // import { registerPackage } from '~/slices/paypal';
@@ -78,6 +80,7 @@ function MyOrder() {
   const dispatch = useDispatch();
   // const { id } = useParams();
   const { user: currentUser } = useSelector((state) => state.auth);
+  const showPricing = useSelector((state) => state.download.showPricing);
   //   const [isUploading, setIsUploading] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -154,26 +157,19 @@ function MyOrder() {
     setShowForm(true); // show the form when the button is clicked
   };
 
-  const handleDialogSubmit = async (id) => {
-    try {
-      const updatedPackage = { id };
-      await axios.put(`http://localhost:8080/package/active`, updatedPackage);
-      // setIsActive(!isActive);
-      setShowDialog(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
   const totalOrderPrice = listOder.reduce(
     (total, order) => total + order.orderDetail.price,
     0
   );
-
+  const data = {
+    user_id: currentUser.id,
+    name: name,
+  };
   return (
     <Container
       minHeight="1000px"
       maxWidth="12"
-      component="main"
+      // component="main"
       spacing={2}
       justify="center"
       alignItems="center"
@@ -189,6 +185,7 @@ function MyOrder() {
         alignContent="center"
         wrap="wrap"
         sx={{ margin: "20px auto" }}
+        minHeight="1000px"
       >
         <Grid item xs={12} md={8}>
           <Button
@@ -204,6 +201,34 @@ function MyOrder() {
             Total Order: {listOder.length} * Total price: {totalOrderPrice}
           </Typography>
         </Grid>
+        {showForm && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              alignItems: "center ",
+              justifyContent: "center",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              zIndex: 9999,
+            }}
+          >
+            <Pricing
+              onBack={() => {
+                if (showForm) {
+                  setShowForm(false);
+                } else {
+                  dispatch(setShowPricing(false));
+                }
+              }}
+              fileDetail_id={undefined}
+              name={currentUser.name}
+            />
+          </div>
+        )}
         {_DATA?.currentData().map((listOder) => (
           <>
             <Grid

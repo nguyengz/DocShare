@@ -19,6 +19,9 @@ const uploadFile = (formData) => {
     },
   });
 };
+const deletedFile = (dataDelete) => {
+  return axios.delete(API_URL + "/delete/user", { data: dataDelete });
+};
 const fetchFileDetail = (data) => {
   return axios.get(API_URL + "/getFile/id?file_id=" + data);
 };
@@ -31,6 +34,7 @@ const downLoadFile = (link, fileName) => {
     },
   });
 };
+
 const fileService = {
   fetchFileList,
   fetchFileTop,
@@ -38,6 +42,7 @@ const fileService = {
   uploadFile,
   fetchFileDetail,
   downLoadFile,
+  deletedFile,
 };
 
 export default fileService;

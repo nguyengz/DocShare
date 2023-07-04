@@ -18,8 +18,10 @@ import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchfile } from "~/slices/file";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useFetchImageData from "~/utils/useEffectIamge";
+import axios from "axios";
+import LazyLoad from "react-lazyload";
 const style = {
   todoName: {
     whiteSpace: "nowrap",
@@ -50,111 +52,122 @@ const style = {
 
 function FileListMore(props) {
   const dispatch = useDispatch();
-  const imageData = useFetchImageData(props.fileMore);
+  const navigate = useNavigate();
+  const [listcategory, setListCategory] = useState([]);
+  const imageData = useFetchImageData(listcategory);
 
   const [matches] = useState(false);
   const number = [4, 2];
   const options = { year: "numeric", month: "short", day: "numeric" };
   // const result = [];
-  useEffect(() => {
-    dispatch(fetchfile());
-  }, [dispatch]);
 
   const handleClickFile = (todo) => {
     // Define the handleClickFile function here
+    navigate(`/fileDetail/${todo.id}`);
+    window.location.reload();
   };
-  
-  const result = Array.isArray(props.fileMore)
-    ? props.fileMore.slice(0, number[2])?.map((todo, index) => {
-        const uploadDate = new Date(todo.uploadDate);
-        const formattedDate = uploadDate.toLocaleDateString("en-US", options);
 
-        return (
-          <Grid
-            item
-            xs={matches ? number[0] : number[1]}
-            key={todo.id}
-            padding={1}
-          >
-            <Card
-              elevation={0}
-              sx={{
-                border: "1px solid",
-                width: "200px",
-              }}
-            >
-              <CardActionArea
-                sx={{ height: "100%" }}
-                // onClick={() => props.handleClickFile(todo)}
-              >
-                <CardMedia
-                  component="img"
-                  image={imageData[todo.id] || ""}
-                  alt="green iguana"
-                  height={200}
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8080/file/list/category?id=${props.category?.id}`)
+      .then((response) => {
+        // Handle successful response
+        setListCategory(response.data);
+        // In ra giá trị mới của listtag
+      })
+      .catch((error) => {
+        // Handle error
+        console.error(error);
+      });
+  }, [props.category?.id]);
+  const result =
+    Array.isArray(listcategory) && listcategory.length > 0
+      ? listcategory.slice(1, 6)?.map((todo, index) => {
+          const uploadDate = new Date(todo.uploadDate);
+          const formattedDate = uploadDate.toLocaleDateString("en-US", options);
+
+          return (
+            <Grid item key={todo.id} padding={1}>
+              <LazyLoad height={200} once>
+                <Card
+                  elevation={0}
                   sx={{
-                    objectFit: "contain",
-                    objectPosition: "top",
-                    background: "gainsboro",
-                  }}
-                />
-                <CardContent sx={{ height: "50px" }}>
-                  <Typography
-                    style={style.todoName}
-                    gutterBottom
-                    variant="body2"
-                  >
-                    {todo.fileName.length > 50
-                      ? todo.fileName.slice(0, 50) + "..."
-                      : todo.fileName}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-              
-                <Typography
-                  component={Link}
-                  style={{
-                    padding: "0px",
-                    margin: "5px",
-                    textDecoration: "none",
-                    color: "#1976d2",
-                  }}
-                  onClick={() => {
-                    // setidlink(page.id);
-                    // alert(page.title);
-                  }}
-                  href={`/About/${todo.userId}`}
-                  key={todo.userId}
-                  onMouseEnter={(e) => {
-                    e.target.style.color = "blue";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.color = "1976d2";
+                    border: "1px solid",
+                    width: "200px",
                   }}
                 >
-                  {todo.userName}
-                </Typography>
-             
+                  <CardActionArea
+                    sx={{ height: "100%" }}
+                    onClick={() => handleClickFile(todo)}
+                  >
+                    <CardMedia
+                      component="img"
+                      image={imageData[todo.id] || ""}
+                      alt="green iguana"
+                      height={200}
+                      sx={{
+                        objectFit: "contain",
+                        objectPosition: "top",
+                        background: "gainsboro",
+                      }}
+                    />
+                    <CardContent sx={{ height: "50px" }}>
+                      <Typography
+                        style={style.todoName}
+                        gutterBottom
+                        variant="body2"
+                      >
+                        {todo.fileName.length > 50
+                          ? todo.fileName.slice(0, 50) + "..."
+                          : todo.fileName}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
 
-              <CardActions
-                style={{
-                  display: "flex",
-                  margin: "0px 1px",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography variant="caption">{todo.view} views</Typography>
-                <Typography variant="caption">{formattedDate}</Typography>
-              </CardActions>
-            </Card>
-          </Grid>
-        );
-      })
-    : null;
+                  <Typography
+                    component={Link}
+                    style={{
+                      padding: "0px",
+                      margin: "5px",
+                      textDecoration: "none",
+                      color: "#1976d2",
+                    }}
+                    onClick={() => {
+                      // setidlink(page.id);
+                      // alert(page.title);
+                    }}
+                    href={`/About/${todo.userId}`}
+                    key={todo.userId}
+                    onMouseEnter={(e) => {
+                      e.target.style.color = "blue";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.color = "1976d2";
+                    }}
+                  >
+                    {todo.userName}
+                  </Typography>
+
+                  <CardActions
+                    style={{
+                      display: "flex",
+                      margin: "0px 1px",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Typography variant="caption">{todo.view} views</Typography>
+                    <Typography variant="caption">{formattedDate}</Typography>
+                  </CardActions>
+                </Card>
+              </LazyLoad>
+            </Grid>
+          );
+        })
+      : null;
 
   return (
     <>
-      {props.fileMore && (
+      {listcategory && (
         <Swiper
           slidesPerView={6}
           slidesPerGroup={3}

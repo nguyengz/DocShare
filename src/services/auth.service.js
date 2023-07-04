@@ -24,7 +24,7 @@ const login = (username, password) => {
         Swal.fire({
           icon: "success",
           title: "Welcome",
-          timer: 1000,
+          timer: 2000,
           showConfirmButton: false,
         });
       } else if (response.data.error) {
@@ -32,7 +32,7 @@ const login = (username, password) => {
           icon: "error",
           title: "Password or Username failed",
           text: "Please check infomation again!",
-          timer: 2000,
+          timer: 3000,
           showConfirmButton: false,
         });
       }

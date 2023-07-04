@@ -53,7 +53,7 @@ const privateRoutes = [
     layout: "onlylayout",
   },
   { path: "/:name/EditUpload", component: MyUpload, layout: "onlylayout" },
-  { path: "/:name/oder", component: MyOrder, layout: "onlylayout" },
+  { path: "/:name/order", component: MyOrder, layout: "onlylayout" },
 ];
 
 export { publicRoutes, privateRoutes };
