@@ -17,9 +17,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import useFetchImageData from "~/utils/useEffectIamge";
 
-const data =[
-  
-]
+const data = [];
 
 const styles = {
   todoName: {
@@ -101,7 +99,7 @@ function TodoListTop({ ...props }) {
                       objectFit: "contain",
                       objectPosition: "center",
                       background: "gainsboro",
-                      position: "absolute"
+                      position: "absolute",
                       // backgroundImage: `url(${imageData[todo.id]})`,
                     }}
                   />

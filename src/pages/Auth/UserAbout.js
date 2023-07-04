@@ -13,7 +13,7 @@ import {
 import { styled } from "@mui/material/styles";
 import randomColor from "randomcolor";
 
-import { fetchUser } from "~/slices/user";
+import { fetchUser, followUser, unFollowUser } from "~/slices/user";
 import FileList from "./ListComponent/FileList";
 import TagList from "./ListComponent/TagList";
 
@@ -63,14 +63,16 @@ function AboutUser() {
 
   const { userId } = useParams();
   const userAbout = useSelector((state) => state.userAbout.userAbout);
+  const { user: currentUser } = useSelector((state) => state.auth);
   const [imageData, setImageData] = useState("");
 
   const firstLetter = userAbout?.username.charAt(0).toUpperCase();
   useEffect(() => {
-    dispatch(fetchUser(userId)).then((response) => {
+    const user_id = parseInt(currentUser.id);
+    dispatch(fetchUser([user_id, userId])).then((response) => {
       console.log(response); // log the fetched user data
     });
-  }, [dispatch, userId]);
+  }, [currentUser.id, dispatch, userId]);
   // useEffect(() => {
   //   if (userAbout && userAbout.files) {
   //     // add a check for userAbout and userAbout.files
@@ -117,7 +119,21 @@ function AboutUser() {
       }));
     });
   }
-
+  const handleFollow = () => {
+    const data = {
+      user_id: parseInt(currentUser.id),
+      friend_id: parseInt(userId),
+    };
+    currentUser.id ? dispatch(followUser(data)) : console.log("err");
+  };
+  const handleUnFollow = () => {
+    const data = {
+      user_id: parseInt(currentUser.id),
+      friend_id: parseInt(userId),
+    };
+    console.log(data);
+    currentUser.id ? dispatch(unFollowUser(data)) : console.log("err");
+  };
   const handleClickFile = (todo) => {
     // console.log(todo.link);
     // const state = { link: todo.link };
@@ -189,9 +205,9 @@ function AboutUser() {
                 <Button
                   variant="outlined"
                   sx={{ margin: "10px" }}
-                  href={"/login"}
+                  onClick={userAbout?.hasFollow ? handleUnFollow : handleFollow}
                 >
-                  Follwer
+                  {userAbout?.hasFollow ? "UnFollow" : "Follow"}
                 </Button>
               </Item>
             </Stack>

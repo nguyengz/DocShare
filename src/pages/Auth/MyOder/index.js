@@ -80,16 +80,7 @@ function MyOrder() {
   const dispatch = useDispatch();
   // const { id } = useParams();
   const { user: currentUser } = useSelector((state) => state.auth);
-  const showPricing = useSelector((state) => state.download.showPricing);
   //   const [isUploading, setIsUploading] = useState(false);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState(0);
-  const [download, setDownload] = useState("");
-  const [cloud, setCloud] = useState(0);
-  const [showDetailsId, setShowDetailsId] = useState(null);
-  // const [isActive, setIsActive] = useState();
-  const [showDialog, setShowDialog] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [listOder, setlistOder] = useState([]);
   let [page, setPage] = useState(1);
@@ -108,50 +99,11 @@ function MyOrder() {
         // Handle error
         console.error(error);
       });
-  }, [currentUser.id]);
-  useEffect(() => {
-    console.log(listOder);
-  }, [currentUser.id, listOder]);
+  }, []);
+
   const handleChange = (e, p) => {
     setPage(p);
     _DATA.jump(p);
-  };
-  const handleDialogClose = () => {
-    setShowDialog(false);
-    // hide the dialog box
-    // reset input value to initial value // reset switch value to initial value
-  };
-  const handleSwitchChange = async () => {
-    setShowDialog(true);
-  };
-  // const payLink = useSelector((state) => state.package.data);
-  const handleResgisterPackage = (tier) => {
-    setShowDetailsId(tier.tiers_id);
-  };
-
-  const handlClickThongKe = () => {
-    setShowDetailsId(null);
-  };
-  const handleNameChange = (event) => {
-    setName(event.target.value);
-  };
-
-  const handleDescriptionChange = (event) => {
-    setDescription(event.target.value);
-  };
-
-  const handlePriceChange = (event) => {
-    setPrice(event.target.value);
-  };
-  const handleDownloadChange = (event) => {
-    setDownload(event.target.value);
-  };
-
-  const handleCouldChange = (event) => {
-    setCloud(event.target.value);
-  };
-  const handleSubmit = () => {
-    alert("Thanh cong");
   };
   const handleAddPackage = () => {
     setShowForm(true); // show the form when the button is clicked
@@ -161,13 +113,9 @@ function MyOrder() {
     (total, order) => total + order.orderDetail.price,
     0
   );
-  const data = {
-    user_id: currentUser.id,
-    name: name,
-  };
+
   return (
     <Container
-      minHeight="1000px"
       maxWidth="12"
       // component="main"
       spacing={2}
@@ -179,27 +127,25 @@ function MyOrder() {
         container
         sm={8}
         spacing={1}
-        direction="row"
-        justify="center"
-        alignItems="center"
-        alignContent="center"
         wrap="wrap"
         sx={{ margin: "20px auto" }}
         minHeight="1000px"
       >
-        <Grid item xs={12} md={8}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleAddPackage}
-          >
-            New oder
-          </Button>
-        </Grid>
-        <Grid item xs={12} md={4} sx={{ textAlign: "center" }}>
-          <Typography variant="caption" color="initial">
-            Total Order: {listOder.length} * Total price: {totalOrderPrice}
-          </Typography>
+        <Grid container direction="row" justifyContent="space-between">
+          <Grid item md={6}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddPackage}
+            >
+              New order
+            </Button>
+          </Grid>
+          <Grid item md={6} sx={{ textAlign: "right" }}>
+            <Typography variant="caption" color="initial">
+              Total Order: {listOder.length} * Total price: {totalOrderPrice}
+            </Typography>
+          </Grid>
         </Grid>
         {showForm && (
           <div

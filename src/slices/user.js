@@ -7,9 +7,9 @@ import fileService from "~/services/file.service";
 
 export const fetchUser = createAsyncThunk(
   "userAbout/fetchUser",
-  async (userId, thunkAPI) => {
+  async ([user_id, friend_id], thunkAPI) => {
     try {
-      const response = await userService.fetchUser(userId);
+      const response = await userService.fetchUser(user_id, friend_id);
       thunkAPI.dispatch(setMessage(response.data.message));
       return response.data;
     } catch (error) {
@@ -57,6 +57,38 @@ export const deletedFile = createAsyncThunk(
     }
   }
 );
+export const unFollowUser = createAsyncThunk(
+  "userAbout/unFollowUser",
+  async (data, thunkAPI) => {
+    try {
+      const response = await userService.unFollowUser(data);
+      thunkAPI.dispatch(setMessage(response.data.message));
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data.message
+        : "Error";
+      thunkAPI.dispatch(setMessage(errorMessage));
+      throw error;
+    }
+  }
+);
+export const followUser = createAsyncThunk(
+  "userAbout/followUser",
+  async (data, thunkAPI) => {
+    try {
+      const response = await userService.followUser(data);
+      thunkAPI.dispatch(setMessage(response.data.message));
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data.message
+        : "Error";
+      thunkAPI.dispatch(setMessage(errorMessage));
+      throw error;
+    }
+  }
+);
 const userSlice = createSlice({
   name: "userAbout",
   initialState: {
@@ -65,30 +97,53 @@ const userSlice = createSlice({
     status: "sidle",
     error: null,
   },
-  extraReducers: {
-    [fetchUser.pending]: (state, action) => {
-      state.status = "loading";
-    },
-    [fetchUser.fulfilled]: (state, action) => {
-      state.status = "succeeded";
-      state.userAbout = action.payload;
-    },
-    [fetchUser.rejected]: (state, action) => {
-      state.status = "failed";
-      state.error = action.error.message;
-    },
-    [deletedFile.pending]: (state) => {
-      state.status = "loading";
-    },
-    [deletedFile.fulfilled]: (state, action) => {
-      state.status = "succeeded";
-      state.data = true;
-    },
-    [deletedFile.rejected]: (state, action) => {
-      state.status = "failed";
-      state.data = false;
-      state.error = action.error.message;
-    },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchUser.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchUser.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.userAbout = action.payload;
+      })
+      .addCase(fetchUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(unFollowUser.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(unFollowUser.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.userAbout.hasFollow = false;
+      })
+      .addCase(unFollowUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(followUser.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(followUser.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.userAbout.hasFollow = true;
+      })
+      .addCase(followUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(deletedFile.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(deletedFile.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.data = true;
+      })
+      .addCase(deletedFile.rejected, (state, action) => {
+        state.status = "failed";
+        state.data = false;
+        state.error = action.error.message;
+      });
   },
 });
 

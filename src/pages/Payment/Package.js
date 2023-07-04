@@ -10,8 +10,9 @@ import Typography from "@mui/material/Typography";
 import { styled } from "@mui/system";
 import { useDispatch, useSelector } from "react-redux";
 import { registerPackage } from "~/slices/paypal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 
 const PricingList = styled("ul")({
   margin: 0,
@@ -29,45 +30,57 @@ const PricingCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-const tiers = [
-  {
-    tiers_id: 1,
-    title: "Free",
-    price: "0",
-    description: ["10 downloads", "1 GB of storage"],
-    buttonText: "Get started",
-    buttonVariant: "outlined",
-  },
-  {
-    tiers_id: 2,
-    title: "Pro",
-    subheader: "Most popular",
-    price: "15",
-    description: ["20 downloads", "2 GB of storage"],
-    buttonText: "Get started",
-    buttonVariant: "contained",
-  },
-  {
-    tiers_id: 3,
-    title: "Enterprise",
-    price: "30",
-    description: ["50 downloads", "5 GB of storage"],
-    buttonText: "Get started",
-    buttonVariant: "outlined",
-  },
-];
+// const tiers = [
+//   {
+//     tiers_id: 1,
+//     title: "Free",
+//     price: "0",
+//     description: ["10 downloads", "1 GB of storage"],
+//     buttonText: "Get started",
+//     buttonVariant: "outlined",
+//   },
+//   {
+//     tiers_id: 2,
+//     title: "Pro",
+//     subheader: "Most popular",
+//     price: "15",
+//     description: ["20 downloads", "2 GB of storage"],
+//     buttonText: "Get started",
+//     buttonVariant: "contained",
+//   },
+//   {
+//     tiers_id: 3,
+//     title: "Enterprise",
+//     price: "30",
+//     description: ["50 downloads", "5 GB of storage"],
+//     buttonText: "Get started",
+//     buttonVariant: "outlined",
+//   },
+// ];
 export default function Pricing({ onBack, fileDetail_id, name }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // const { id } = useParams();
   const [isUploading, setIsUploading] = useState(false);
   const { user: currentUser } = useSelector((state) => state.auth);
+  const [tiers, setTiers] = useState([]);
   // const payLink = useSelector((state) => state.package.data);
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8080/packages`)
+      .then((response) => {
+        const sortedTiers = response.data.sort((a, b) => a.price - b.price);
+        setTiers(sortedTiers);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [setTiers]);
   const handleResgisterPackage = async (tier) => {
     setIsUploading(true);
     const data = {
       user_id: currentUser.id,
-      package_id: tier.tiers_id,
+      package_id: tier.id,
       file_id: parseInt(fileDetail_id) ? parseInt(fileDetail_id) : "",
       name: name,
     };
@@ -90,20 +103,20 @@ export default function Pricing({ onBack, fileDetail_id, name }) {
         {tiers.map((tier) => (
           <Grid
             item
-            key={tier.tiers_id}
+            key={tier.id}
             xs={12}
-            sm={tier.title === "Enterprise" ? 12 : 8}
+            sm={tier.name === "Vip" ? 12 : 8}
             md={4}
           >
             <PricingCard>
               <CardHeader
-                title={tier.title}
-                subheader={tier.subheader}
+                title={tier.name}
+                // subheader={tier.name}
                 titleTypographyProps={{ align: "center" }}
-                action={tier.title === "Pro" ? <StarIcon /> : null}
-                subheaderTypographyProps={{
-                  align: "center",
-                }}
+                action={tier.name === "Pro" ? <StarIcon /> : null}
+                // subheaderTypographyProps={{
+                //   align: "center",
+                // }}
               />
               <CardContent>
                 <Box
@@ -122,25 +135,22 @@ export default function Pricing({ onBack, fileDetail_id, name }) {
                   </Typography>
                 </Box>
                 <PricingList>
-                  {tier.description.map((line) => (
-                    <Typography
-                      component="li"
-                      variant="subtitle1"
-                      align="center"
-                      key={line}
-                    >
-                      {line}
-                    </Typography>
-                  ))}
+                  <Typography component="li" variant="subtitle1" align="center">
+                    {" "}
+                    {tier.dowloads} Download
+                  </Typography>
+                  <Typography component="li" variant="subtitle1" align="center">
+                    {tier.storageSize} GB storageSize
+                  </Typography>
                 </PricingList>
               </CardContent>
               <CardActions>
                 <Button
                   fullWidth
-                  variant={tier.buttonVariant}
+                  variant={tier.name === "Pro" ? "contained" : "outlined"}
                   onClick={() => handleResgisterPackage(tier)}
                 >
-                  {tier.buttonText}
+                  Get started
                 </Button>
               </CardActions>
             </PricingCard>

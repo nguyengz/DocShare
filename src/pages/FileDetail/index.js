@@ -29,12 +29,11 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import DownloadIcon from "@mui/icons-material/Download";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareRoundedIcon from "@mui/icons-material/ShareRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 
-import { fetchFileDetail, fetchfile } from "~/slices/file";
-import { updateRoles } from "~/slices/auth";
+import { LikeFile, fetchFileDetail, fetchfile, unLike } from "~/slices/file";
 import { pdfjs } from "react-pdf";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 import { useDispatch, useSelector } from "react-redux";
@@ -45,6 +44,7 @@ import FileListTags from "./FileListTags";
 import Pricing from "../Payment/Package";
 import Swal from "sweetalert2";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { fetchUser, followUser, unFollowUser } from "~/slices/user";
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -86,36 +86,34 @@ function FileDetail() {
   const [images, setImages] = useState([]);
   const [pdf, setPdf] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [pdfRendering, setPdfRendering] = React.useState("");
+  // const [pdfRendering, setPdfRendering] = React.useState("");
   const [pageRendering, setPageRendering] = React.useState("");
 
   const [isFollowing, setIsFollowing] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
 
-  // const [showPricing, setShowPricing] = useState(false);
-  // const [showPricing, setShowPricing] = useState(false);
   const { user: currentUser } = useSelector((state) => state.auth);
-
+  const userAbout = useSelector((state) => state.userAbout.userAbout);
   const showPricing = useSelector((state) => state.download.showPricing);
   const fileDetail = useSelector((state) => state.file.detailList);
-  const fileList = useSelector((state) => state.file.fileList);
   const uploadDate = new Date(fileDetail.uploadDate);
   const options = { year: "numeric", month: "short", day: "numeric" };
   const formattedDate = uploadDate.toLocaleDateString("en-US", options);
-  const error = useSelector((state) => state.download.error);
-
-  // const [error, setError] = useState(null);
 
   const buttonColor = isFollowing ? "paleturquoise" : "primary";
-  const iconColor = isLiked ? "#FF0000" : "#000000";
   const [tags, setTags] = useState([]);
-  // const link = state.link;
-  // const file_id = id;
-  useEffect(() => {
-    dispatch(fetchFileDetail(id));
-    dispatch(fetchfile());
-  }, []);
 
+  useEffect(() => {
+    const file_id = id;
+    const user_id = parseInt(currentUser.id);
+    dispatch(fetchFileDetail([file_id, user_id]));
+  }, [id, currentUser.id, fileDetail.userId]);
+
+  useEffect(() => {
+    const user_id = parseInt(currentUser.id);
+    const friend_id = fileDetail.userId;
+    dispatch(fetchUser([user_id, friend_id]));
+  }, [currentUser.id, fileDetail.userId]);
   useEffect(() => {
     if (fileDetail && fileDetail.tags) {
       const tagsArr = fileDetail.tags.reduce((accumulator, tag) => {
@@ -194,66 +192,28 @@ function FileDetail() {
     }
   };
 
+  const handleUnLikeFile = () => {
+    const data = { fileid: id, userid: parseInt(currentUser.id) };
+    currentUser.id ? dispatch(unLike(data)) : console.log("err");
+  };
   const handleLikeFile = () => {
-    fetch("http://localhost:8080/file/like", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userid: currentUser.id,
-        fileid: fileDetail.id,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data === true) {
-          setIsLiked(true);
-          // xử lý khi like thành công
-          toast.success("Liked file!", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-        } else {
-          // xử lý khi like thất bại
-          toast.error("Failed to like file.", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    const data = { fileid: id, userid: parseInt(currentUser.id) };
+    currentUser.id ? dispatch(LikeFile(data)) : console.log("err");
   };
   const handleFollow = () => {
-    fetch("http://localhost:8080/api/auth/follow", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user_id: currentUser.id,
-        friend_id: fileDetail.userId,
-      }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          setIsFollowing(!isFollowing);
-          response.json().then((data) => {
-            toast.success(data.message, {
-              position: toast.POSITION.TOP_RIGHT,
-            });
-          });
-        } else {
-          response.json().then((error) => {
-            toast.error(error.message, {
-              position: toast.POSITION.TOP_RIGHT,
-            });
-          });
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    const data = {
+      user_id: parseInt(currentUser.id),
+      friend_id: parseInt(fileDetail.userId),
+    };
+    currentUser.id ? dispatch(followUser(data)) : console.log("err");
+  };
+  const handleUnFollow = () => {
+    const data = {
+      user_id: parseInt(currentUser.id),
+      friend_id: parseInt(fileDetail.userId),
+    };
+    console.log(data);
+    currentUser.id ? dispatch(unFollowUser(data)) : console.log("err");
   };
   useEffect(() => {
     const searchParams = new URLSearchParams(search);
@@ -427,17 +387,12 @@ function FileDetail() {
                   </Stack>
                 </Stack>
                 <Stack direction="row" spacing={2} sx={{ margin: "10px" }}>
-                  {isLiked ? (
-                    <FavoriteBorderIcon
-                      style={{ color: iconColor }}
-                      onClick={handleLikeFile}
-                    />
-                  ) : (
-                    <FavoriteBorderIcon
-                      style={{ color: iconColor }}
-                      onClick={handleLikeFile}
-                    />
-                  )}
+                  <FavoriteIcon
+                    sx={{ color: fileDetail.like ? "red" : "blue" }}
+                    onClick={
+                      fileDetail.like ? handleUnLikeFile : handleLikeFile
+                    }
+                  />
                   <ShareRoundedIcon />
                   <MoreHorizRoundedIcon />
                 </Stack>
@@ -491,8 +446,8 @@ function FileDetail() {
                         // setidlink(page.id);
                         // alert(page.title);
                       }}
-                      href={`/About/${fileDetail.userId}`}
-                      key={fileDetail.userId}
+                      href={`/About/${fileDetail?.userId}`}
+                      key={userAbout?.id}
                       onMouseEnter={(e) => {
                         e.target.style.color = "blue";
                       }}
@@ -500,7 +455,7 @@ function FileDetail() {
                         e.target.style.color = "1976d2";
                       }}
                     >
-                      {fileDetail.userName}
+                      {fileDetail?.userName}
                     </Typography>
                     <Button
                       variant="contained"
@@ -512,10 +467,12 @@ function FileDetail() {
                         padding: "2px",
                         width: "20px",
                       }}
-                      onClick={handleFollow}
+                      onClick={
+                        userAbout?.hasFollow ? handleUnFollow : handleFollow
+                      }
                     >
                       <PersonAddIcon />
-                      {isFollowing ? "UnFollow" : "Follow"}
+                      {userAbout?.hasFollow ? "UnFollow" : "Follow"}
                     </Button>
                   </Stack>
                 </Stack>

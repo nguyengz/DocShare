@@ -23,8 +23,8 @@ export const fetchfileFeatured = createAsyncThunk(
 
 export const fetchFileDetail = createAsyncThunk(
   "file/fetchFileDetail",
-  async (data, thunkAPI) => {
-    const response = await fileService.fetchFileDetail(data);
+  async ([file_id, user_id], thunkAPI) => {
+    const response = await fileService.fetchFileDetail(file_id, user_id);
     thunkAPI.dispatch(setMessage(response.data.message));
     return response.data;
   }
@@ -76,6 +76,38 @@ export const deletedFile = createAsyncThunk(
       const errorMessage = error.response
         ? error.response.data.message
         : "An error occurred while deleting the file";
+      thunkAPI.dispatch(setMessage(errorMessage));
+      throw error;
+    }
+  }
+);
+export const unLike = createAsyncThunk(
+  "file/unLike",
+  async (data, thunkAPI) => {
+    try {
+      const response = await fileService.unLike(data);
+      thunkAPI.dispatch(setMessage(response.data.message));
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data.message
+        : "Error";
+      thunkAPI.dispatch(setMessage(errorMessage));
+      throw error;
+    }
+  }
+);
+export const LikeFile = createAsyncThunk(
+  "file/LikeFile",
+  async (data, thunkAPI) => {
+    try {
+      const response = await fileService.LikeFile(data);
+      thunkAPI.dispatch(setMessage(response.data.message));
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data.message
+        : "Error";
       thunkAPI.dispatch(setMessage(errorMessage));
       throw error;
     }
@@ -185,6 +217,28 @@ const fileSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(deletedFile.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(unLike.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(unLike.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.detailList.like = false;
+      })
+      .addCase(unLike.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(LikeFile.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(LikeFile.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.detailList.like = true;
+      })
+      .addCase(LikeFile.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });
