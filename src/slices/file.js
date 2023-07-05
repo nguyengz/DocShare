@@ -113,6 +113,7 @@ export const LikeFile = createAsyncThunk(
     }
   }
 );
+
 export const setRequestTime = createAction("user/setRequestTime");
 const fileSlice = createSlice({
   name: "file",
@@ -226,6 +227,7 @@ const fileSlice = createSlice({
       .addCase(unLike.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.detailList.like = false;
+        state.detailList.likeFile -= 1;
       })
       .addCase(unLike.rejected, (state, action) => {
         state.status = "failed";
@@ -237,6 +239,7 @@ const fileSlice = createSlice({
       .addCase(LikeFile.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.detailList.like = true;
+        state.detailList.likeFile += 1;
       })
       .addCase(LikeFile.rejected, (state, action) => {
         state.status = "failed";

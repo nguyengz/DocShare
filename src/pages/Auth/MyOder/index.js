@@ -122,6 +122,7 @@ function MyOrder() {
       justify="center"
       alignItems="center"
       alignContent="center"
+      sx={{ minHeight: 1000 }}
     >
       <Grid
         container
@@ -129,7 +130,6 @@ function MyOrder() {
         spacing={1}
         wrap="wrap"
         sx={{ margin: "20px auto" }}
-        minHeight="1000px"
       >
         <Grid container direction="row" justifyContent="space-between">
           <Grid item md={6}>
@@ -175,118 +175,118 @@ function MyOrder() {
             />
           </div>
         )}
-        {_DATA?.currentData().map((listOder) => (
-          <>
-            <Grid
-              container
-              key={listOder.id}
-              xs={12}
-              sm={12}
-              spacing={2}
-              direction="row"
-              sx={{
-                border: "1px dashed #b4bbd1",
-                margin: "5px",
-                padding: "5px",
-                backgroundColor: "white",
-                height: "150px",
-              }}
-            >
-              <PricingCard
+        <Box minHeight="900px" width="90%" mt={5} mx="auto">
+          {_DATA?.currentData().map((listOder) => (
+            <>
+              <Grid
+                container
+                key={listOder.id}
+                xs={12}
+                sm={12}
+                spacing={2}
+                direction="row"
                 sx={{
-                  width: "250px",
-                  boxShadow: listOder.orderStatus
-                    ? "0 0 10px rgba(0, 255, 0, 0.5)"
-                    : "0 0 10px rgb(255 1 1)",
-                  fontSize: "14px",
+                  border: "1px dashed #b4bbd1",
+                  margin: "5px",
+                  padding: "5px",
+                  backgroundColor: "white",
+                  height: "150px",
                 }}
               >
-                <CardHeader
-                  title={listOder.packages.name}
-                  subheader={listOder.packages.subheader}
-                  titleTypographyProps={{ align: "center" }}
-                  height="10%"
-                  action={
-                    listOder.packages.name === "Pro" ? <StarIcon /> : null
-                  }
-                  subheaderTypographyProps={{
-                    align: "center",
-                  }}
+                <PricingCard
                   sx={{
-                    padding: "1px",
-                  }}
-                />
-                <CardContent
-                  sx={{
-                    padding: "1px",
+                    width: "250px",
+                    boxShadow: listOder.orderStatus
+                      ? "0 0 10px rgba(0, 255, 0, 0.5)"
+                      : "0 0 10px rgb(255 1 1)",
+                    fontSize: "14px",
                   }}
                 >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "baseline",
-                      padding: "0px",
+                  <CardHeader
+                    title={listOder.packages.name}
+                    subheader={listOder.packages.subheader}
+                    titleTypographyProps={{ align: "center" }}
+                    height="10%"
+                    action={
+                      listOder.packages.name === "Pro" ? <StarIcon /> : null
+                    }
+                    subheaderTypographyProps={{
+                      align: "center",
                     }}
-                  >
-                    <Typography
-                      component="body1"
-                      variant="h4"
-                      color="text.primary"
-                    >
-                      ${listOder.packages.price}
-                    </Typography>
-                    <Typography variant="h6" color="text.secondary">
-                      /mo
-                    </Typography>
-                  </Box>
-                  <PricingList>
-                    <Typography
-                      component="li"
-                      variant="subtitle1"
-                      align="center"
-                    >
-                      {listOder.packages.dowloads} Download
-                    </Typography>
-                    <Typography
-                      component="li"
-                      variant="subtitle1"
-                      align="center"
-                    >
-                      {listOder.packages.storageSize} GB storageSize
-                    </Typography>
-                  </PricingList>
-                </CardContent>
-              </PricingCard>
-
-              <Grid item xs={12} sm={6} ml={10}>
-                <Typography>
-                  {" "}
-                  Start_date: {listOder.orderDetail.start_date}
-                </Typography>
-                <Typography>
-                  {" "}
-                  End_date: {listOder.orderDetail.end_date}
-                </Typography>
-                <Typography> OrderCode: {listOder.orderCode} </Typography>
-                <Typography>
-                  OrderStatus: {listOder.orderStatus}{" "}
-                  <CircleIcon
                     sx={{
-                      color: listOder.orderStatus ? "green" : "red",
-                      borderRadius: "50%",
-                      width: "10px",
-                      height: "10px",
-                      display: "inline-block",
-                      verticalAlign: "middle",
-                      marginLeft: "5px",
+                      padding: "1px",
                     }}
                   />
-                </Typography>
+                  <CardContent
+                    sx={{
+                      padding: "1px",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "baseline",
+                        padding: "0px",
+                      }}
+                    >
+                      <Typography
+                        component="body1"
+                        variant="h4"
+                        color="text.primary"
+                      >
+                        ${listOder.packages.price}
+                      </Typography>
+                      <Typography variant="h6" color="text.secondary">
+                        /mo
+                      </Typography>
+                    </Box>
+                    <PricingList>
+                      <Typography
+                        component="li"
+                        variant="subtitle1"
+                        align="center"
+                      >
+                        {listOder.packages.dowloads} Download
+                      </Typography>
+                      <Typography
+                        component="li"
+                        variant="subtitle1"
+                        align="center"
+                      >
+                        {listOder.packages.storageSize} GB storageSize
+                      </Typography>
+                    </PricingList>
+                  </CardContent>
+                </PricingCard>
+
+                <Grid item xs={12} sm={6} ml={5} sx={{ paddingTop: "1px" }}>
+                  <Typography>
+                    Start_date: {listOder.orderDetail.start_date}
+                  </Typography>
+                  <Typography>
+                    End_date: {listOder.orderDetail.end_date}
+                  </Typography>
+                  <Typography> OrderCode: {listOder.orderCode} </Typography>
+                  <Typography>
+                    OrderStatus: {listOder.orderStatus}{" "}
+                    <CircleIcon
+                      sx={{
+                        color: listOder.orderStatus ? "green" : "red",
+                        borderRadius: "50%",
+                        width: "10px",
+                        height: "10px",
+                        display: "inline-block",
+                        verticalAlign: "middle",
+                        marginLeft: "5px",
+                      }}
+                    />
+                  </Typography>
+                </Grid>
               </Grid>
-            </Grid>
-          </>
-        ))}
+            </>
+          ))}{" "}
+        </Box>
         <Grid
           sm={12}
           mt={2}

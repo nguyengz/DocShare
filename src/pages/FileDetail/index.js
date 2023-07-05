@@ -1,6 +1,8 @@
 /* eslint-disable no-template-curly-in-string */
 /* eslint-disable jsx-a11y/iframe-has-title */
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   Box,
   Card,
@@ -9,11 +11,9 @@ import {
   Typography,
   Button,
   Avatar,
-  Chip,
   CircularProgress,
   Link,
-  Snackbar,
-  Modal,
+  IconButton,
 } from "@mui/material";
 // import "./styles.css";
 
@@ -25,27 +25,29 @@ import "swiper/css/pagination";
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
 
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 import DownloadIcon from "@mui/icons-material/Download";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import AddReactionIcon from "@mui/icons-material/AddReaction";
+import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import ShareRoundedIcon from "@mui/icons-material/ShareRounded";
+import FlagIcon from "@mui/icons-material/Flag";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
+import randomColor from "randomcolor";
 
-import { LikeFile, fetchFileDetail, fetchfile, unLike } from "~/slices/file";
-import { pdfjs } from "react-pdf";
-import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
-import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { downloadFile, setShowPricing } from "~/slices/download";
 import FileListMore from "./FileList";
 import FileListTags from "./FileListTags";
 import Pricing from "../Payment/Package";
-import Swal from "sweetalert2";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
+
+import { LikeFile, fetchFileDetail, unLike } from "~/slices/file";
+import { downloadFile, setShowPricing } from "~/slices/download";
 import { fetchUser, followUser, unFollowUser } from "~/slices/user";
 
+import { pdfjs } from "react-pdf";
+import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 const styles = {
@@ -102,18 +104,18 @@ function FileDetail() {
 
   const buttonColor = isFollowing ? "paleturquoise" : "primary";
   const [tags, setTags] = useState([]);
-
+  const firstLetter = userAbout?.username.charAt(0).toUpperCase();
   useEffect(() => {
     const file_id = id;
     const user_id = parseInt(currentUser.id);
     dispatch(fetchFileDetail([file_id, user_id]));
-  }, [id, currentUser.id, fileDetail.userId]);
+  }, [id, currentUser.id, fileDetail.userId, dispatch]);
 
   useEffect(() => {
     const user_id = parseInt(currentUser.id);
     const friend_id = fileDetail.userId;
     dispatch(fetchUser([user_id, friend_id]));
-  }, [currentUser.id, fileDetail.userId]);
+  }, [currentUser.id, dispatch, fileDetail.userId]);
   useEffect(() => {
     if (fileDetail && fileDetail.tags) {
       const tagsArr = fileDetail.tags.reduce((accumulator, tag) => {
@@ -278,7 +280,7 @@ function FileDetail() {
             margin: "5px ",
           }}
         >
-          <Grid sm={12} container direction="row">
+          <Grid xs={12} sm={12} container direction="row" height={900}>
             <Grid xs={12} sm={8} direction="column">
               <Grid
                 item
@@ -388,13 +390,19 @@ function FileDetail() {
                 </Stack>
                 <Stack direction="row" spacing={2} sx={{ margin: "10px" }}>
                   <FavoriteIcon
-                    sx={{ color: fileDetail.like ? "red" : "blue" }}
+                    sx={{
+                      color: fileDetail.like ? "red" : "blue",
+                      "&:hover": {
+                        cursor: "pointer",
+                        color: fileDetail.like ? "darkred" : "darkblue",
+                      },
+                    }}
                     onClick={
                       fileDetail.like ? handleUnLikeFile : handleLikeFile
                     }
                   />
                   <ShareRoundedIcon />
-                  <MoreHorizRoundedIcon />
+                  <FlagIcon />
                 </Stack>
                 <Stack
                   direction="row"
@@ -424,15 +432,22 @@ function FileDetail() {
                 <Stack direction="row" spacing={2} sx={{ margin: "10px" }}>
                   <Typography>{fileDetail.description}</Typography>
                 </Stack>
-                <Stack direction="row" spacing={2} sx={{ margin: "10px 10px" }}>
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  sx={{ margin: "10px 10px", height: "200px" }}
+                >
                   <Stack item>
                     {" "}
                     <Avatar
                       sx={{
                         width: "50px",
                         height: "50px",
+                        background: randomColor(),
                       }}
-                    ></Avatar>
+                    >
+                      {firstLetter}
+                    </Avatar>
                   </Stack>
                   <Stack item>
                     <Typography
@@ -449,10 +464,10 @@ function FileDetail() {
                       href={`/About/${fileDetail?.userId}`}
                       key={userAbout?.id}
                       onMouseEnter={(e) => {
-                        e.target.style.color = "blue";
+                        e.target.style.color = "#a1a1ff";
                       }}
                       onMouseLeave={(e) => {
-                        e.target.style.color = "1976d2";
+                        e.target.style.color = "#1976d2";
                       }}
                     >
                       {fileDetail?.userName}
@@ -460,18 +475,25 @@ function FileDetail() {
                     <Button
                       variant="contained"
                       sx={{
-                        margin: "0px",
-                        fontSize: "5px",
+                        margin: "0",
+                        fontSize: "10px",
                         backgroundColor: buttonColor,
                         height: "20px",
-                        padding: "2px",
-                        width: "20px",
+                        padding: "6px 12px",
+                        borderRadius: "15px",
+                        boxShadow: "none",
                       }}
                       onClick={
                         userAbout?.hasFollow ? handleUnFollow : handleFollow
                       }
+                      startIcon={
+                        userAbout?.hasFollow ? (
+                          <EmojiEmotionsIcon />
+                        ) : (
+                          <AddReactionIcon />
+                        )
+                      }
                     >
-                      <PersonAddIcon />
                       {userAbout?.hasFollow ? "UnFollow" : "Follow"}
                     </Button>
                   </Stack>

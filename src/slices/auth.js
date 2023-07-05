@@ -3,10 +3,24 @@ import { setMessage } from "./message";
 
 import AuthService from "../services/auth.service";
 import Swal from "sweetalert2";
-import { useState } from "react";
+import authService from "../services/auth.service";
+import fileService from "~/services/file.service";
 
 const user = JSON.parse(localStorage.getItem("user"));
 
+export const fetchUserAbout = createAsyncThunk(
+  "auth/fetchUserAbout",
+  async (user_id, thunkAPI) => {
+    try {
+      const response = await authService.fetchUserAbout(user_id);
+      thunkAPI.dispatch(setMessage(response.data.message));
+      return response.data;
+    } catch (error) {
+      thunkAPI.dispatch(setMessage(error.response.data));
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
+);
 export const register = createAsyncThunk(
   "auth/register",
   async ({ name, username, email, password }, thunkAPI) => {
@@ -68,6 +82,61 @@ export const login = createAsyncThunk(
     }
   }
 );
+export const updateUser = createAsyncThunk(
+  "auth/updateUser",
+  async (data, thunkAPI) => {
+    try {
+      const response = await authService.updateUser(data);
+      Swal.fire({
+        icon: "success",
+        title: "Infomation updated successfully",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      return response.data;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
+
+export const UpdateFile = createAsyncThunk(
+  "auth/UpdateFile",
+  async (data, thunkAPI) => {
+    try {
+      const response = await fileService.UpdateFile(data);
+      Swal.fire({
+        icon: "success",
+        title: "Infomation updated successfully",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      return response.data;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString("No update file. Please check infomation of file");
+      thunkAPI.dispatch(setMessage(message));
+      Swal.fire({
+        icon: "error",
+        title: message,
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
 // export const fetchUser = createAsyncThunk(
 //   "auth/fetchUser",
 //   async (data, thunkAPI) => {
@@ -85,8 +154,8 @@ export const logout = createAsyncThunk("auth/logout", async () => {
 });
 export const selectRequestTime = (state) => state.auth.requestTime;
 const initialState = user
-  ? { isLoggedIn: true, user }
-  : { isLoggedIn: false, user: null };
+  ? { isLoggedIn: true, user, userAbout: [] }
+  : { isLoggedIn: false, user: null, userAbout: null };
 
 const authSlice = createSlice({
   name: "auth",
@@ -97,6 +166,17 @@ const authSlice = createSlice({
     },
   },
   extraReducers: {
+    [fetchUserAbout.pending]: (state) => {
+      state.status = "loading";
+    },
+    [fetchUserAbout.fulfilled]: (state, action) => {
+      state.status = "succeeded";
+      state.userAbout = action.payload;
+    },
+    [fetchUserAbout.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
+    },
     [register.fulfilled]: (state, action) => {
       state.isLoggedIn = false;
       state.user = action.payload.user;
@@ -117,6 +197,41 @@ const authSlice = createSlice({
       state.isLoggedIn = false;
       state.user = null;
     },
+    [updateUser.pending]: (state) => {
+      state.status = "loading";
+    },
+    // Handle the fulfilled state when updating package
+    [updateUser.fulfilled]: (state, action) => {
+      state.status = "succeeded";
+      state.userAbout = state.userAbout.map((user) =>
+        user.id === action.payload.id ? action.payload : user
+      );
+    },
+    // Handle the rejected state when updating package
+    [updateUser.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
+    },
+    [UpdateFile.pending]: (state) => {
+      state.status = "loading";
+    },
+    // Handle the fulfilled state when updating package
+    [UpdateFile.fulfilled]: (state, action) => {
+      state.status = "succeeded";
+      const updatedFile = action.payload;
+      state.userAbout = {
+        ...state.userAbout,
+        files: state.userAbout.files.map((file) =>
+          file.id === updatedFile.id ? updatedFile : file
+        ),
+      };
+    },
+    // Handle the rejected state when updating package
+    [UpdateFile.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
+    },
+
     [updateRoles.type]: (state, action) => {
       state.user.roles = action.payload.roles.slice();
     },

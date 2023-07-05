@@ -43,15 +43,20 @@ const login = (username, password) => {
 const logout = () => {
   localStorage.removeItem("user");
 };
-const fetchUser = (data) => {
-  return axios.get(API_URL + "/users?user_id=" + data);
+
+const fetchUserAbout = (user_id) => {
+  return axios.get(API_URL + "user/about?user_id=" + user_id);
+};
+const updateUser = (data) => {
+  return axios.put(`${API_URL}update/profile`, data);
 };
 
 const authService = {
   register,
   login,
   logout,
-  fetchUser,
+  fetchUserAbout,
+  updateUser,
 };
 
 export default authService;

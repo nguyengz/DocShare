@@ -36,6 +36,9 @@ const downLoadFile = (link, fileName) => {
     },
   });
 };
+const UpdateFile = (data, fileName) => {
+  return axios.put(API_URL + "/update", data);
+};
 const unLike = (data) => {
   return axios.delete(API_URL + "/delete/like", { data: data });
 };
@@ -53,6 +56,7 @@ const fileService = {
   deletedFile,
   unLike,
   LikeFile,
+  UpdateFile,
 };
 
 export default fileService;

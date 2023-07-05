@@ -12,24 +12,24 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import Example from "./Table";
-import { fetchUser } from "~/slices/user";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import MyPackage from "../MyPackage";
+import { fetchUserAbout } from "~/slices/auth";
 function MyUpload() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   // const { userId } = useParams();
   const { user: currentUser } = useSelector((state) => state.auth);
-  const userAbout = useSelector((state) => state.userAbout.userAbout);
+  const userAbout = useSelector((state) => state.auth.userAbout);
   const [imageData, setImageData] = useState("");
   const [showPackage, setShowPackage] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchUser(currentUser.id));
+    dispatch(fetchUserAbout(currentUser.id));
     // console.log(userAbout);
   }, [currentUser, dispatch]);
   const handlClickPackage = () => {
@@ -122,7 +122,7 @@ function MyUpload() {
               }}
             >
               <FileUploadIcon sx={{ marginRight: "5px" }} /> SizeCloud:{" "}
-              {userAbout?.files.length}
+              {userAbout.files?.length}
             </Typography>
             <Button
               onClick={showPackage ? handlClickFileuploadTb : handlClickPackage}

@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -20,6 +21,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMessage } from "~/slices/message";
 import Swal from "sweetalert2";
 import { deletedFile } from "~/slices/user";
+import FormUpdateFile from "./FormUpdateFile";
+import { Link } from "react-router-dom";
 
 const Example = (props) => {
   const dispatch = useDispatch();
@@ -29,7 +32,7 @@ const Example = (props) => {
   const [openDialogDl, setOpenDialogDl] = useState(false);
   const [dialogDataDl, setDialogDataDl] = useState({});
   const [validationErrors, setValidationErrors] = useState({});
-
+  const [editingRow, setEditingRow] = useState(null);
   useEffect(() => {
     if (props.data) {
       setTableData(props.data);
@@ -69,94 +72,70 @@ const Example = (props) => {
       setMessage(error.message || "An error occurred while deleting the file");
     }
   };
-
-  const getCommonEditTextFieldProps = useCallback(
-    (cell) => {
-      return {
-        error: !!validationErrors[cell.id],
-        helperText: validationErrors[cell.id],
-        onBlur: (event) => {
-          const isValid =
-            cell.column.id === "email"
-              ? validateEmail(event.target.value)
-              : cell.column.id === "age"
-              ? validateAge(+event.target.value)
-              : validateRequired(event.target.value);
-          if (!isValid) {
-            //set validation error for cell if invalid
-            setValidationErrors({
-              ...validationErrors,
-              [cell.id]: `${cell.column.columnDef.header} is required`,
-            });
-          } else {
-            //remove validation error for cell if valid
-            delete validationErrors[cell.id];
-            setValidationErrors({
-              ...validationErrors,
-            });
-          }
-        },
-      };
-    },
-    [validationErrors]
-  );
+  const handleCancelEditRow = () => {
+    setEditingRow(null);
+  };
 
   const formatDate = (dateString) => {
     const date = moment.utc(dateString).toDate();
     return format(date, "dd/MM/yyyy HH:mm:ss");
   };
-  const columnsOrder = ["fileName", "View", "likeFile", "Download"];
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: "fileName",
-        header: "File",
-        enableColumnOrdering: false,
-        width: "20%",
-        enableEditing: false, //disable editing on this column
-        enableSorting: false,
-      },
-      {
-        accessorKey: "likeFile",
-        header: "Like",
-        size: 50,
-        width: "20%",
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-        }),
-      },
-      {
-        accessorKey: "view",
-        header: "View",
-        size: 50,
-        width: "20%",
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-        }),
-      },
-      {
-        accessorKey: "Download",
-        header: "Download",
-        size: 50,
-        width: "20%",
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-        }),
-      },
-      {
-        accessorKey: "uploadDate",
-        header: "Date Upload",
-        size: 50,
-        width: "20%",
-        enableSorting: true,
-        Cell: ({ row }) => formatDate(row.original.uploadDate),
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-        }),
-      },
-    ],
-    [getCommonEditTextFieldProps]
-  );
+  const columnsOrder = [
+    "fileName",
+    "description",
+    "View",
+    "likeFile",
+    "Download",
+  ];
+  const columns = useMemo(() => [
+    {
+      accessorKey: "fileName",
+      header: "File",
+      enableColumnOrdering: false,
+      width: "20%",
+      enableEditing: false, //disable editing on this column
+      enableSorting: false,
+      Cell: ({ row }) => (
+        <Link to={`/fileDetail/${row.original?.id}`} target="_blank">
+          {row.original?.fileName}
+        </Link>
+      ),
+    },
+    {
+      accessorKey: "description",
+      header: "Description",
+      enableColumnOrdering: false,
+      width: "20%",
+      enableEditing: false, //disable editing on this column
+      enableSorting: false,
+    },
+    {
+      accessorKey: "likeFile",
+      header: "Like",
+      size: 50,
+      width: "20%",
+    },
+    {
+      accessorKey: "view",
+      header: "View",
+      size: 50,
+      width: "20%",
+    },
+    {
+      accessorKey: "Download",
+      header: "Download",
+      size: 50,
+      width: "20%",
+    },
+    {
+      accessorKey: "uploadDate",
+      header: "Date Upload",
+      size: 50,
+      width: "20%",
+      enableSorting: true,
+      Cell: ({ row }) => formatDate(row.original.uploadDate),
+    },
+  ]);
 
   return (
     <>
@@ -179,10 +158,10 @@ const Example = (props) => {
         columnsOrder={columnsOrder}
         enableEditing
         enableColumnOrdering
-        renderRowActions={({ table, row }) => (
+        renderRowActions={({ row }) => (
           <Box sx={{ display: "flex", gap: "1rem" }}>
             <Tooltip arrow placement="right" title="Edit">
-              <IconButton onClick={() => table.setEditingRow(row)}>
+              <IconButton onClick={() => setEditingRow(row.original)}>
                 <Edit />
               </IconButton>
             </Tooltip>
@@ -196,7 +175,11 @@ const Example = (props) => {
             </Tooltip>
           </Box>
         )}
+        editingRow={editingRow} // Pass editingRow state variable to the component
       />
+      {editingRow !== null && (
+        <FormUpdateFile row={editingRow} onCancel={handleCancelEditRow} />
+      )}
       <Dialog open={openDialogDl} onClose={handleCloseDialogDl}>
         <DialogTitle>
           <Typography variant="h4" color="red">
@@ -221,19 +204,20 @@ const Example = (props) => {
       </Dialog>
       <style>
         {`
-         .table-files table {
+         table {
           min-height: 500px;
           max-height: 400px;
-          overflow-y: auto;
+          overflow-y: hidden;
         }
         tr > td:{
-          max-width: 50px;
+          max-width: 30px;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
         }
-        tr > td:nth-child(2) {
-          max-width: 300px;
+        tr > td:nth-child(2),
+        tr > td:nth-child(3) {
+          max-width: 250px;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -244,15 +228,5 @@ const Example = (props) => {
     </>
   );
 };
-
-const validateRequired = (value) => !!value.length;
-const validateEmail = (email) =>
-  !!email.length &&
-  email
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
-const validateAge = (age) => age >= 18 && age <= 50;
 
 export default Example;
