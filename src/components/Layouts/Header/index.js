@@ -162,7 +162,6 @@ export default function Header() {
   const [tagName, setTagName] = useState("");
   const isMenuOpen = Boolean(anchorEl);
 
-  const firstLetter = currentUser?.name.charAt(0).toUpperCase();
   // const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const logOut = useCallback(() => {
@@ -339,7 +338,9 @@ export default function Header() {
                       color="inherit"
                       backgroundColor={randomColor()}
                     >
-                      <Avatar>{firstLetter}</Avatar>
+                      <Avatar>
+                        {currentUser.name?.charAt(0).toUpperCase()}
+                      </Avatar>
                       {/* <AccountCircle /> */}
                     </IconButton>
                   </Tooltip>

@@ -102,12 +102,12 @@ function Profile() {
   const userAbout = useSelector((state) => state.auth.userAbout);
   const [imageData, setImageData] = useState("");
   const [avatarUrl, setAvatarUrl] = useState();
-  const firstLetter = userAbout.username?.charAt(0).toUpperCase();
+  
 
   useEffect(() => {
-    dispatch(fetchUserAbout(currentUser.id));
+    dispatch(fetchUserAbout(currentUser?.id));
     // console.log(userAbout);
-  }, [currentUser, dispatch]);
+  }, [currentUser?.id, dispatch]);
   useEffect(() => {
     if (userAbout?.avatar) {
       loadImage(userAbout.avatar).then((url) => {
@@ -115,7 +115,7 @@ function Profile() {
       });
     }
     // console.log(userAbout);
-  }, [dispatch, userAbout.avatar]);
+  }, [dispatch, userAbout?.avatar]);
   useEffect(() => {
     if (userAbout && userAbout.files) {
       // add a check for userAbout and userAbout.files
@@ -164,7 +164,7 @@ function Profile() {
             <Stack item>
               <Item>
                 <Avatar style={style.largeAvatar} src={avatarUrl}>
-                  {firstLetter}
+                
                 </Avatar>
               </Item>
             </Stack>
@@ -176,9 +176,9 @@ function Profile() {
                 <Typography
                   component={Link}
                   // onClick={handleClickMyFile}
-                  href={`/${currentUser.name}/EditUpload`}
+                  href={`/${currentUser?.name}/EditUpload`}
                 >
-                  {userAbout.files?.length} DocShare
+                  {userAbout?.files?.length} DocShare
                 </Typography>
               </Item>
               <Item>
@@ -189,7 +189,7 @@ function Profile() {
                     // alert(page.title);
                   }}
                 >
-                  {userAbout.friends?.length} Followers
+                  {userAbout?.friends?.length} Followers
                 </Typography>
               </Item>
               <Item>
@@ -200,7 +200,7 @@ function Profile() {
                     // alert(page.title);
                   }}
                 >
-                  {userAbout.following?.length} Followings
+                  {userAbout?.following?.length} Followings
                 </Typography>
               </Item>
               <Item>

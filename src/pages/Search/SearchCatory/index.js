@@ -52,21 +52,26 @@ function SearchCatory() {
   const fileData = useSelector((state) => state.file.fileList);
   const [selectedCategory, setSelectedCategory] = useState(name);
   const [selectedDateRange, setSelectedDateRange] = useState(null);
+  const [nameCategory, setNameCategory] = useState(name);
   useEffect(() => {
     dispatch(fetchfile());
     dispatch(fetchCategory());
-    console.log(name);
+    console.log(nameCategory);
     // pdf && renderPage();
   }, []);
+  useEffect(() => {
+    // Cập nhật biến name khi selectedCategory thay đổi
+    setNameCategory(selectedCategory);
+  }, [selectedCategory]);
   useEffect(() => {
     const filteredData = fileData.filter(
       (file) =>
         selectedCategory === "" ||
         file.category?.categoryName === selectedCategory ||
-        ((name === "" ||
+        ((nameCategory === "" ||
           file.category?.categoryName
             .toLowerCase()
-            .includes(name.toLowerCase())) &&
+            .includes(nameCategory.toLowerCase())) &&
           (selectedDateRange === null ||
             (new Date(file.uploadDate) >= selectedDateRange[0] &&
               new Date(file.uploadDate) <= selectedDateRange[1])))
@@ -84,7 +89,13 @@ function SearchCatory() {
     } else {
       setSearchQuery(filteredData);
     }
-  }, [selectedCategory, fileData, name, selectedOption, selectedDateRange]);
+  }, [
+    selectedCategory,
+    fileData,
+    nameCategory,
+    selectedOption,
+    selectedDateRange,
+  ]);
   const renderSelectedOption = (selectedOption) => {
     if (selectedOption === "oldest") {
       return "oldest";

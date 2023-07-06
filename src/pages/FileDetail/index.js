@@ -107,15 +107,15 @@ function FileDetail() {
   const firstLetter = userAbout?.username.charAt(0).toUpperCase();
   useEffect(() => {
     const file_id = id;
-    const user_id = parseInt(currentUser.id);
+    const user_id = parseInt(currentUser?.id);
     dispatch(fetchFileDetail([file_id, user_id]));
-  }, [id, currentUser.id, fileDetail.userId, dispatch]);
+  }, [currentUser?.id, fileDetail?.userId, dispatch]);
 
   useEffect(() => {
-    const user_id = parseInt(currentUser.id);
-    const friend_id = fileDetail.userId;
+    const user_id = parseInt(currentUser?.id);
+    const friend_id = fileDetail?.userId;
     dispatch(fetchUser([user_id, friend_id]));
-  }, [currentUser.id, dispatch, fileDetail.userId]);
+  }, [currentUser?.id, dispatch, fileDetail?.userId]);
   useEffect(() => {
     if (fileDetail && fileDetail.tags) {
       const tagsArr = fileDetail.tags.reduce((accumulator, tag) => {
@@ -180,12 +180,12 @@ function FileDetail() {
       return;
     }
     const adminRole = userLc.roles.find((role) => role.authority === "USER");
-    const adminAuthority = adminRole ? adminRole.authority : null;
+    const adminAuthority = adminRole ? adminRole?.authority : null;
     // const adminAuthority = "";
     const hasSubscription = adminAuthority === "USER";
     if (hasSubscription) {
       const fileName = fileDetail.fileName;
-      const fileUrl = `${fileDetail.link}/${currentUser.id}/${fileDetail.id}`;
+      const fileUrl = `${fileDetail?.link}/${currentUser?.id}/${fileDetail?.id}`;
       console.log(fileUrl);
       dispatch(downloadFile({ link: fileUrl, fileName }));
       setShowPricing(false);
@@ -195,19 +195,19 @@ function FileDetail() {
   };
 
   const handleUnLikeFile = () => {
-    const data = { fileid: id, userid: parseInt(currentUser.id) };
-    currentUser.id ? dispatch(unLike(data)) : console.log("err");
+    const data = { fileid: id, userid: parseInt(currentUser?.id) };
+    currentUser?.id ? dispatch(unLike(data)) : console.log("err");
   };
   const handleLikeFile = () => {
-    const data = { fileid: id, userid: parseInt(currentUser.id) };
-    currentUser.id ? dispatch(LikeFile(data)) : console.log("err");
+    const data = { fileid: id, userid: parseInt(currentUser?.id) };
+    currentUser?.id ? dispatch(LikeFile(data)) : console.log("err");
   };
   const handleFollow = () => {
     const data = {
-      user_id: parseInt(currentUser.id),
-      friend_id: parseInt(fileDetail.userId),
+      user_id: parseInt(currentUser?.id),
+      friend_id: parseInt(fileDetail?.userId),
     };
-    currentUser.id ? dispatch(followUser(data)) : console.log("err");
+    currentUser?.id ? dispatch(followUser(data)) : console.log("err");
   };
   const handleUnFollow = () => {
     const data = {
@@ -215,7 +215,7 @@ function FileDetail() {
       friend_id: parseInt(fileDetail.userId),
     };
     console.log(data);
-    currentUser.id ? dispatch(unFollowUser(data)) : console.log("err");
+    currentUser?.id ? dispatch(unFollowUser(data)) : console.log("err");
   };
   useEffect(() => {
     const searchParams = new URLSearchParams(search);

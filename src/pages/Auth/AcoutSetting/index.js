@@ -25,6 +25,7 @@ import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { fetchUserAbout, updateUser } from "~/slices/auth";
+import FormChangePass from "../FormChangePass";
 
 const Item = styled(Grid)(({ theme }) => ({
   ...theme.typography.body2,
@@ -120,14 +121,14 @@ function AcountSetting() {
   const [avatarUrl, setAvatarUrl] = useState();
   const [image, setImage] = useState();
   const [preAvatarUrl, setPreAvatarUrl] = useState();
-
+  const [openFormPass, setOpenFormPass] = useState(false);
   useEffect(() => {
     try {
       dispatch(fetchUserAbout(currentUser.id));
     } catch (error) {
       console.log(error);
     }
-  }, [currentUser.id, dispatch]);
+  }, [currentUser?.id, dispatch]);
   useEffect(() => {
     if (userAbout?.name) {
       const { firstName, lastName } = splitName(userAbout.name);
@@ -197,7 +198,7 @@ function AcountSetting() {
   const hanleUpdateInfomation = async () => {
     const data = {
       fileImg: image,
-      user_id: currentUser.id,
+      user_id: currentUser?.id,
       name: `${firtName} ${lastName}`,
       about: about,
       phone: numberPhone,
@@ -216,6 +217,12 @@ function AcountSetting() {
     } catch (error) {
       console.error(error);
     }
+  };
+  const handleCloseForm = () => {
+    setOpenFormPass(false);
+  };
+  const handleOpenForm = () => {
+    setOpenFormPass(true);
   };
   return (
     <>
@@ -467,6 +474,7 @@ function AcountSetting() {
                               variant="contained"
                               color="primary"
                               sx={{ borderRadius: "10px" }}
+                              onClick={handleOpenForm}
                             >
                               Change Password
                             </Button>
@@ -607,6 +615,7 @@ function AcountSetting() {
           </Grid>
         </Grid>
       </Box>
+      {openFormPass && <FormChangePass onCancel={handleCloseForm} />}
     </>
   );
 }

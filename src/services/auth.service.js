@@ -50,6 +50,32 @@ const fetchUserAbout = (user_id) => {
 const updateUser = (data) => {
   return axios.put(`${API_URL}update/profile`, data);
 };
+const changePass = (username, password) => {
+  return axios
+    .put(API_URL + "user/password", {
+      username,
+      password,
+    })
+    .then((response) => {
+      if (response.data) {
+        Swal.fire({
+          icon: "success",
+          title: "Please check email to change password",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+      } else if (response.data.error) {
+        Swal.fire({
+          icon: "error",
+          title: "Password or Username failed",
+          text: "Please check infomation again!",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+      }
+      return response.data;
+    });
+};
 
 const authService = {
   register,
@@ -57,6 +83,7 @@ const authService = {
   logout,
   fetchUserAbout,
   updateUser,
+  changePass,
 };
 
 export default authService;

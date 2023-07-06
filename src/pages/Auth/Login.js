@@ -28,6 +28,7 @@ import {
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { ToastContainer, toast } from "react-toastify";
 import { Window } from "@mui/icons-material";
+import FormChangePass from "./FormChangePass";
 const Login = () => {
   let navigate = useNavigate();
   const dispatch = useDispatch();
@@ -37,6 +38,7 @@ const Login = () => {
   const { user: currentUser } = useSelector((state) => state.auth);
   const [checked, setChecked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [openFormPass, setOpenFormPass] = useState(false);
 
   useEffect(() => {
     dispatch(clearMessage());
@@ -62,7 +64,6 @@ const Login = () => {
   const handleCloseSnackbar = () => {
     dispatch(clearMessage());
   };
-
   // if (isLoggedIn) {
   //   return <Navigate to="/" />;
   // }
@@ -74,7 +75,12 @@ const Login = () => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-
+  const handleCloseForm = () => {
+    setOpenFormPass(false);
+  };
+  const handleOpenForm = () => {
+    setOpenFormPass(true);
+  };
   return (
     <>
       {" "}
@@ -230,6 +236,7 @@ const Login = () => {
                           to=""
                           color="text.primary"
                           fontSize={15}
+                          onClick={handleOpenForm}
                         >
                           Forgot Password?
                         </Link>
@@ -259,6 +266,7 @@ const Login = () => {
                 </Form>
               )}
             </Formik>
+            {openFormPass && <FormChangePass onCancel={handleCloseForm} />}
           </Paper>
         </Grid>
       </Container>

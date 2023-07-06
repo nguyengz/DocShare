@@ -40,7 +40,6 @@ export const register = createAsyncThunk(
         icon: response.data.message === "Create success!" ? "success" : "error",
         title: response.data.message,
         timer: requestTime > 1000 ? requestTime : 1000,
-        showConfirmButton: false,
       });
       return response.data;
     } catch (error) {
@@ -55,7 +54,6 @@ export const register = createAsyncThunk(
         icon: "error",
         title: message,
         timer: 2000,
-        showConfirmButton: false,
       });
       return thunkAPI.rejectWithValue();
     }
@@ -90,8 +88,7 @@ export const updateUser = createAsyncThunk(
       Swal.fire({
         icon: "success",
         title: "Infomation updated successfully",
-        timer: 2000,
-        showConfirmButton: false,
+        timer: 3000,
       });
       return response.data;
     } catch (error) {
@@ -132,6 +129,36 @@ export const UpdateFile = createAsyncThunk(
         title: message,
         timer: 2000,
         showConfirmButton: false,
+      });
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
+export const changePass = createAsyncThunk(
+  "auth/changePass",
+  async ({ username, password }, thunkAPI) => {
+    try {
+      const response = await authService.changePass(username, password);
+      Swal.fire({
+        icon: "success",
+        title: "Infomation updated successfully",
+        text: "Please check your email to confirm the password change",
+        timer: 3000,
+      });
+      return response.data;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      thunkAPI.dispatch(setMessage(message));
+      Swal.fire({
+        icon: "error",
+        title: "Infomation updated error",
+        text: "Please check your infomation",
+        timer: 3000,
       });
       return thunkAPI.rejectWithValue();
     }
@@ -234,6 +261,17 @@ const authSlice = createSlice({
 
     [updateRoles.type]: (state, action) => {
       state.user.roles = action.payload.roles.slice();
+    },
+    [changePass.fulfilled]: (state, action) => {
+      // state.isLoggedIn = true;
+      state.status = true;
+      state.user = null;
+    },
+    [changePass.rejected]: (state, action) => {
+      state.status = false;
+      state.isLoggedIn = false;
+      state.user = null;
+      state.error = action.payload.user;
     },
   },
 });

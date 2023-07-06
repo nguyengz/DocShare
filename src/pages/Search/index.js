@@ -50,6 +50,7 @@ function SearchResutlt() {
   const categoryData = useSelector((state) => state.category.data);
   const [selectedCategory, setSelectedCategory] = useState("Select a Category");
   const [selectedDateRange, setSelectedDateRange] = useState(null);
+  const [nameCategory, setNameCategory] = useState();
   useEffect(() => {
     fetch(`http://localhost:8080/file/search?tagName=${tagName}`)
       .then((response) => response.json())
@@ -191,11 +192,6 @@ function SearchResutlt() {
                   value={selectedOption}
                   onChange={handleOptionChange}
                   displayEmpty
-                  // MenuProps={{
-                  //   MenuListProps: {
-                  //     disableRadio: true,
-                  //   },
-                  // }}
                   renderValue={() => renderSelectedOption(selectedOption)}
                   sx={{
                     border: "none",
@@ -205,8 +201,8 @@ function SearchResutlt() {
                     ml: "150px",
                   }}
                 >
-                  <MenuItem value="">
-                    <em>None</em>
+                  <MenuItem value="Filter" disabled>
+                  Filter
                   </MenuItem>
                   <MenuItem value="newest">newest</MenuItem>
                   <MenuItem value="oldest">oldest</MenuItem>
