@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/iframe-has-title */
 import React, { useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
   Button,
@@ -37,7 +38,6 @@ import "swiper/css/scrollbar";
 
 // import "./styles1.css";
 
-import { useDispatch, useSelector } from "react-redux";
 import { fetchCategory } from "~/slices/category";
 import { uploadfile } from "~/slices/file";
 import { useNavigate } from "react-router-dom";
@@ -85,8 +85,8 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     gap: "1px",
-    width: "300px",
-    height: "300px",
+    width: "100%",
+    height: "400px",
     border: "2px inset",
     boxShadow: "2px 2px 10px #aaaaaa",
   },
@@ -131,7 +131,8 @@ function InfomationUpload(props) {
   const [firstImage, setfirstImage] = useState(null);
   // const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-
+  const [isTagsInputValid, setIsTagsInputValid] = useState(false);
+  const [isCategoryInputValid, setIsCategoryInputValid] = useState(false);
   const [progress, setProgress] = useState(0);
   const [buffer, setBuffer] = React.useState(10);
 
@@ -187,7 +188,6 @@ function InfomationUpload(props) {
     const imagesList = [];
     const canvas = document.createElement("canvas");
     canvas.setAttribute("className", "canv");
-    let canv = document.querySelector(".canv");
 
     for (let i = 1; i <= pdf.numPages; i++) {
       var page = await pdf.getPage(i);
@@ -204,8 +204,9 @@ function InfomationUpload(props) {
       await page.render(render_context).promise;
       let img = canvas.toDataURL("image/png");
       imagesList.push(img);
+      setImages(imagesList.slice()); // cập nhật state để hiển thị hình ảnh trên giao diện
     }
-    setImages(imagesList);
+
     setPageRendering(false);
     addFirstImage(imagesList[0]);
   }
@@ -356,16 +357,25 @@ function InfomationUpload(props) {
                   })}
                   onSubmit={handleFileUpload}
                 >
-                  {({ errors, handleBlur, handleChange, touched, values }) => (
+                  {({
+                    errors,
+                    handleBlur,
+                    handleChange,
+                    touched,
+                    values,
+                    isValid,
+                    isSubmitting,
+                  }) => (
                     <Form>
                       <Grid container>
                         <Grid item xs={12}>
                           <Stack
-                            direction={{ xs: "row" }}
+                            direction={{ xs: "colunm" }}
                             spacing={3}
                             justifyContent=""
+                            height={500}
                           >
-                            <Item>
+                            <Grid sm={12} height={500}>
                               <Swiper
                                 pagination={{
                                   type: "progressbar",
@@ -399,7 +409,7 @@ function InfomationUpload(props) {
                                           width: width,
                                           height: height,
                                           margin: "auto",
-                                          display: "block",
+                                          // display: "block",
                                           // width: "100%",
                                           // height: "100%",
                                           objectFit: "cover",
@@ -409,33 +419,32 @@ function InfomationUpload(props) {
                                   ))
                                 )}
                               </Swiper>
-                            </Item>
-                            <Item>
-                              {/* <p style={{fontSize: "20px", display: "block"}}> {props.nameFile}<br/></p> */}
-                              <Typography
-                                variant="caption"
-                                color="initial"
-                                wordBreak="break-all"
-                                whiteSpace="pre-line"
-                                style={{
-                                  fontSize: "20px",
-                                  overflowWrap: "break-word",
-                                }}
-                              >
-                                {props.nameFile}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                style={{
-                                  fontSize: "15px",
-                                  marginLeft: "5px",
-                                }}
-                              >
-                                Type: {fileType}
-                                <br />
-                                Size: {formatBytes(fileSize)}
-                              </Typography>
-                            </Item>
+                            </Grid>
+
+                            {/* <p style={{fontSize: "20px", display: "block"}}> {props.nameFile}<br/></p> */}
+                            <Typography
+                              variant="caption"
+                              color="initial"
+                              wordBreak="break-all"
+                              whiteSpace="pre-line"
+                              style={{
+                                fontSize: "20px",
+                                overflowWrap: "break-word",
+                              }}
+                            >
+                              {props.nameFile}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              style={{
+                                fontSize: "15px",
+                                marginLeft: "5px",
+                              }}
+                            >
+                              Type: {fileType} Pages: {pdf?.numPages}
+                              <br />
+                              Size: {formatBytes(fileSize)}
+                            </Typography>
                           </Stack>
                           <Stack xs={2}></Stack>
                         </Grid>
@@ -516,13 +525,16 @@ function InfomationUpload(props) {
                                   onChange={(e) => {
                                     handleChange(e);
                                     setSelectedCategory(e.target.value);
+                                    setIsCategoryInputValid(
+                                      e !== "Select a Category"
+                                    );
                                   }}
                                   sx={{ width: "100%" }}
                                   // autoWidth
                                   required
                                   placeholder="Select Category"
                                 >
-                                  <MenuItem value="" disabled>
+                                  <MenuItem value="Select a Category" disabled>
                                     Select a Category
                                   </MenuItem>
                                   {categoryData.map((category) => (
@@ -536,12 +548,20 @@ function InfomationUpload(props) {
                                   ))}
                                 </Select>
                                 {touched.selectedCategory &&
-                                  errors.selectedCategory && (
+                                  ((errors.selectedCategory && (
                                     <FormHelperText
                                       error
                                       id="standard-weight-helper-text-email-login"
                                     >
                                       {errors.selectedCategory}
+                                    </FormHelperText>
+                                  )) ||
+                                    !isCategoryInputValid) && (
+                                    <FormHelperText
+                                      error
+                                      id="standard-weight-helper-text-email-login"
+                                    >
+                                      The "Category" field is required.
                                     </FormHelperText>
                                   )}
                               </Item>
@@ -557,21 +577,31 @@ function InfomationUpload(props) {
                                   value={tags}
                                   onChange={(tags) => {
                                     console.log(tags); // add this line to check the tags state
-
+                                    handleChange(tags);
                                     // handleChange(tags);
                                     setSelectedTags(tags);
+                                    setIsTagsInputValid(tags !== "");
                                   }}
                                   placeHolder="enter tags"
                                   required
                                 />
-                                {touched.tags && errors.tags && (
-                                  <FormHelperText
-                                    error
-                                    id="standard-weight-helper-text-email-login"
-                                  >
-                                    {errors.tags}
-                                  </FormHelperText>
-                                )}
+                                {touched.tags &&
+                                  ((errors.tags && (
+                                    <FormHelperText
+                                      error
+                                      id="standard-weight-helper-text-email-login"
+                                    >
+                                      {errors.tags}
+                                    </FormHelperText>
+                                  )) ||
+                                    !isTagsInputValid) && (
+                                    <FormHelperText
+                                      error
+                                      id="standard-weight-helper-text-email-login"
+                                    >
+                                      The "tags" field is required.
+                                    </FormHelperText>
+                                  )}
                               </Item>
                               <Item>
                                 <InputLabel htmlFor="Privacy">
@@ -609,7 +639,7 @@ function InfomationUpload(props) {
                             justifyContent="flex-end"
                           >
                             {" "}
-                            <Button
+                            {/* <Button
                               // disableElevation
                               // disabled={loading}
                               size="large"
@@ -618,7 +648,7 @@ function InfomationUpload(props) {
                               color="primary"
                             >
                               Delete
-                            </Button>
+                            </Button> */}
                             <Button
                               // disableElevation
                               // disabled={loading}
@@ -626,6 +656,7 @@ function InfomationUpload(props) {
                               type="submit"
                               variant="contained"
                               color="primary"
+                              disabled={!isValid || isSubmitting}
                             >
                               Publish
                             </Button>

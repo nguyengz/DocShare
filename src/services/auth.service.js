@@ -1,7 +1,7 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 
-const API_URL = "http://localhost:8080/api/auth/";
+const API_URL = "/api/auth/";
 
 const register = (name, username, email, password) => {
   return axios.post(API_URL + "signup", {

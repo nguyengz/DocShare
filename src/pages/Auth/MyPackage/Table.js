@@ -83,9 +83,9 @@ const Table = (props) => {
     },
     {
       accessorKey: "createdAt",
-      header: "CreatedAt",
+      header: "End Date",
       size: 50,
-      Cell: ({ cell }) => formatDate(cell.value),
+      Cell: ({ row }) => formatDate(row.original?.createdAt),
     },
   ]);
   const centeredColumns = columns.map((column) => column.accessorKey); // danh sách tất cả các cột

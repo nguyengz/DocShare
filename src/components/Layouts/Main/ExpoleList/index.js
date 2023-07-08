@@ -27,22 +27,21 @@ function ExpoleList() {
   const [isLoading, setIsLoading] = useState(true);
 
   const images = [
-    { id: 1, url: "~/assets/images/cntt.jpg" },
-    { id: 2, url: luanvan },
-    { id: 3, url: kinangmem },
+    { id: 1, url: luanvan },
+    { id: 2, url: kinangmem },
     { id: 3, url: business },
-    { id: 5, url: kinhte },
-    { id: 6, url: nganhang },
-    { id: 7, url: giaoducdaotao },
-    { id: 8, url: giaoan },
-    { id: 9, url: cntt },
-    { id: 10, url: kythuat },
-    { id: 11, url: ngoaingu },
-    { id: 12, url: khoahoctunhien },
-    { id: 13, url: ytesuckhoe },
-    { id: 14, url: vanhoa },
+    { id: 4, url: kinhte },
+    { id: 5, url: nganhang },
+    { id: 6, url: giaoducdaotao },
+    { id: 7, url: giaoan },
+    { id: 8, url: cntt },
+    { id: 9, url: kythuat },
+    { id: 10, url: ngoaingu },
+    { id: 11, url: khoahoctunhien },
+    { id: 12, url: ytesuckhoe },
+    { id: 13, url: vanhoa },
     { id: 14, url: nonglamngu },
-    { id: 14, url: khac },
+    { id: 15, url: khac },
   ];
   useEffect(() => {
     dispatch(fetchCategory())

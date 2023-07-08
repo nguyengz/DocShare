@@ -102,7 +102,6 @@ function Profile() {
   const userAbout = useSelector((state) => state.auth.userAbout);
   const [imageData, setImageData] = useState("");
   const [avatarUrl, setAvatarUrl] = useState();
-  
 
   useEffect(() => {
     dispatch(fetchUserAbout(currentUser?.id));
@@ -163,12 +162,10 @@ function Profile() {
           <Stack direction="row">
             <Stack item>
               <Item>
-                <Avatar style={style.largeAvatar} src={avatarUrl}>
-                
-                </Avatar>
+                <Avatar style={style.largeAvatar} src={avatarUrl}></Avatar>
               </Item>
             </Stack>
-            <Stack item sx={{ marginLeft: "5px" }}>
+            <Stack item sx={{ marginLeft: "5px", width: 200 }}>
               <Item>
                 <Typography variant="h5">{userAbout?.username}</Typography>
               </Item>
@@ -183,35 +180,48 @@ function Profile() {
               </Item>
               <Item>
                 <Typography
-                  component={Link}
                   onClick={() => {
                     // setidlink(page.id);
                     // alert(page.title);
                   }}
                 >
-                  {userAbout?.friends?.length} Followers
+                  {userAbout.friends?.length} Followers
                 </Typography>
               </Item>
               <Item>
                 <Typography
-                  component={Link}
                   onClick={() => {
                     // setidlink(page.id);
                     // alert(page.title);
                   }}
                 >
-                  {userAbout?.following?.length} Followings
+                  {userAbout.following?.length} Followings
                 </Typography>
               </Item>
               <Item>
                 <Typography
-                  component={Link}
                   onClick={() => {
                     // setidlink(page.id);
                     // alert(page.title);
                   }}
                 >
-                  Likes
+                  0 Likes
+                </Typography>
+              </Item>
+              <Item>
+                <Typography
+                  sx={{
+                    overflow: "hidden",
+                  }}
+                >
+                  LinkSocial:{" "}
+                  <a
+                    href={userAbout?.linksocial}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {userAbout?.linksocial}
+                  </a>
                 </Typography>
               </Item>
               <Item>
@@ -224,6 +234,15 @@ function Profile() {
                 </Button>
               </Item>
             </Stack>
+          </Stack>
+          <Stack item>
+            <Typography variant="h5" color="initial">
+              About:
+            </Typography>
+            <Typography variant="body2" color="initial">
+              {" "}
+              {userAbout?.about}
+            </Typography>
           </Stack>
           <Stack item>
             <TagList userAbout={userAbout} />

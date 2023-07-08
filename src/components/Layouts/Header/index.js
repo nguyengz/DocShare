@@ -31,7 +31,7 @@ import {
 } from "@mui/material";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 
-import { logout } from "~/slices/auth";
+import { fetchUserAbout, logout } from "~/slices/auth";
 import EventBus from "~/common/EventBus";
 import { unstable_HistoryRouter, useNavigate } from "react-router-dom";
 import SearchResutlt from "~/pages/Search";
@@ -155,13 +155,13 @@ export default function Header() {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const { user: currentUser } = useSelector((state) => state.auth);
-
+  const userAbout = useSelector((state) => state.auth.userAbout);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   // const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [tagName, setTagName] = useState("");
   const isMenuOpen = Boolean(anchorEl);
-
+  const [avatarUrl, setAvatarUrl] = useState();
   // const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const logOut = useCallback(() => {
@@ -188,7 +188,22 @@ export default function Header() {
     return () => {
       EventBus.remove("logout");
     };
-  }, [currentUser, logOut]);
+  }, [logOut]);
+
+  useEffect(() => {
+    dispatch(fetchUserAbout(currentUser?.id));
+    if (userAbout?.avatar) {
+      loadImage(userAbout?.avatar).then((url) => {
+        setAvatarUrl(url);
+      });
+    }
+    // console.log(userAbout);
+  }, [currentUser?.id, dispatch, userAbout?.avatar]);
+  function loadImage(link) {
+    return fetch(`http://localhost:8080/file/review/${link}`)
+      .then((response) => response.blob())
+      .then((blob) => URL.createObjectURL(blob));
+  }
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -214,7 +229,8 @@ export default function Header() {
   //   setMobileMoreAnchorEl(null);
   // };
   const handleClickOder = (todo) => {
-    navigate(`/${currentUser.name}/order`);
+    // alert(encodeURIComponent(currentUser?.name));
+    navigate(`/${encodeURIComponent(currentUser?.name)}/order`);
   };
 
   // const handleMobileMenuOpen = (event) => {
@@ -338,9 +354,13 @@ export default function Header() {
                       color="inherit"
                       backgroundColor={randomColor()}
                     >
-                      <Avatar>
-                        {currentUser.name?.charAt(0).toUpperCase()}
-                      </Avatar>
+                      {avatarUrl ? (
+                        <Avatar src={avatarUrl}></Avatar>
+                      ) : (
+                        <Avatar>
+                          {currentUser.name?.charAt(0).toUpperCase()}
+                        </Avatar>
+                      )}
                       {/* <AccountCircle /> */}
                     </IconButton>
                   </Tooltip>
@@ -379,7 +399,10 @@ export default function Header() {
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
                     <MenuItem onClick={handleClickProfile}>
-                      <Avatar /> {currentUser.name}
+                      <Avatar src={avatarUrl}>
+                        {currentUser.name?.charAt(0).toUpperCase()}
+                      </Avatar>{" "}
+                      {currentUser.name}
                     </MenuItem>
                     <Divider />
                     <MenuItem onClick={handleClickAcountSetting}>

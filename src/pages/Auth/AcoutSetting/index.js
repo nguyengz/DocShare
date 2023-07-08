@@ -32,7 +32,7 @@ const Item = styled(Grid)(({ theme }) => ({
   margin: 1,
   textAlign: "left",
   minHeight: "30px",
-  width: "300px",
+  // width: "300px",
   color: theme.palette.text.secondary,
 }));
 const style = {
@@ -81,7 +81,7 @@ const style = {
 };
 const useStyles = makeStyles({
   input: {
-    with: "300px",
+    // with: "350px",
     height: "40px",
   },
   TextareaAutosize: {
@@ -226,7 +226,14 @@ function AcountSetting() {
   };
   return (
     <>
-      <Box sx={{ minHeight: "1000px", margin: "1px", background: "white" }}>
+      <Box
+        sx={{
+          minHeight: "1000px",
+          margin: "1px",
+          background: "white",
+          width: "100%",
+        }}
+      >
         <Grid
           container
           sm={8}
@@ -235,7 +242,6 @@ function AcountSetting() {
           justify="center"
           alignItems="center"
           //   alignContent="center"
-          wrap="nowrap"
           margin="auto"
         >
           <Typography
@@ -253,7 +259,6 @@ function AcountSetting() {
             container
             sm={8}
             sx={{
-              display: "flex",
               flexDirection: "column",
               border: "1px dashed #b4bbd1",
               justifyContent: "center",
@@ -287,8 +292,8 @@ function AcountSetting() {
                     <Grid item xs={12}>
                       <Stack
                         direction={{ xs: "row" }}
-                        spacing={3}
-                        justifyContent="left"
+                        spacing={1}
+                        // justifyContent="left"
                         justifyItems="center"
                         height="200px"
                       >
@@ -345,7 +350,7 @@ function AcountSetting() {
                               color="primary"
                               sx={{
                                 marginBottom: 0,
-                                mt: 10,
+                                mt: 8,
                                 mr: 2,
 
                                 borderRadius: "10px",
@@ -367,7 +372,7 @@ function AcountSetting() {
                               color="secondary"
                               sx={{
                                 marginBottom: 0,
-                                mt: 10,
+                                mt: 8,
                                 borderRadius: "10px",
                                 textTransform: "none",
                               }}
@@ -395,10 +400,10 @@ function AcountSetting() {
                     >
                       <Stack
                         direction={{ xs: "column", sm: "row" }}
-                        spacing={1}
-                        justifyContent="space-between"
+                        spacing={2}
+                        justifyContent="space-around"
                       >
-                        <Stack direction="column" spacing={4}>
+                        <Stack direction="column" spacing={4} md={5}>
                           <Item>
                             <InputLabel htmlFor="Email">Email</InputLabel>
                             <OutlinedInput

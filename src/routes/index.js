@@ -28,14 +28,8 @@ const publicRoutes = [
 
   { path: "/About/:userId", component: AboutUser, layout: "onlylayout" },
 
-  { path: "/uploadfile", component: UploadFile, layout: "onlylayout" },
-  {
-    path: "/infomationUpload",
-    component: InfomationUpload,
-    layout: "onlylayout",
-  },
   { path: "/fileDetail/:id", component: FileDetail, layout: "onlylayout" },
-  { path: "/filemore", component: FileListMore, layout: "onlylayout" },
+  // { path: "/filemore", component: FileListMore, layout: "onlylayout" },
   { path: "/Search", component: SearchResutlt, layout: "onlylayout" },
   {
     path: "/SearchCatory/:name",
@@ -43,9 +37,8 @@ const publicRoutes = [
     layout: "onlylayout",
   },
 ];
-
+const verifyRouter = [{ path: "/verify", component: Verify }];
 const privateRoutes = [
-  { path: "/verify", component: Verify },
   { path: "/profile/:name", component: Profile, layout: "onlylayout" },
   {
     path: "/AcountSetting/:name",
@@ -54,6 +47,12 @@ const privateRoutes = [
   },
   { path: "/:name/EditUpload", component: MyUpload, layout: "onlylayout" },
   { path: "/:name/order", component: MyOrder, layout: "onlylayout" },
+  { path: "/uploadfile", component: UploadFile, layout: "onlylayout" },
+  {
+    path: "/infomationUpload",
+    component: InfomationUpload,
+    layout: "onlylayout",
+  },
 ];
 
-export { publicRoutes, privateRoutes };
+export { publicRoutes, privateRoutes, verifyRouter };

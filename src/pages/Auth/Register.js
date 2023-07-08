@@ -118,7 +118,11 @@ const Register = () => {
             }}
             validationSchema={Yup.object().shape({
               name: Yup.string().max(255).required("Name is required"),
-              username: Yup.string().max(255).required("Username is required"),
+              username: Yup.string()
+                .min(6)
+                .max(255)
+                .matches(/^\S+$/, "Username cannot contain spaces")
+                .required("Username is required"),
               email: Yup.string()
                 .email("Must be a valid email")
                 .max(255)

@@ -82,7 +82,7 @@ export default function Pricing({ onBack, fileDetail_id, name }) {
       user_id: currentUser.id,
       package_id: tier.id,
       file_id: parseInt(fileDetail_id) ? parseInt(fileDetail_id) : "",
-      name: name,
+      name: encodeURIComponent(name),
     };
 
     try {

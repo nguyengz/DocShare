@@ -99,6 +99,11 @@ export const updateUser = createAsyncThunk(
         error.message ||
         error.toString();
       thunkAPI.dispatch(setMessage(message));
+      Swal.fire({
+        icon: "error",
+        title: message,
+        timer: 3000,
+      });
       return thunkAPI.rejectWithValue();
     }
   }

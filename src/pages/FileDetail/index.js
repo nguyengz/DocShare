@@ -18,7 +18,7 @@ import {
 // import "./styles.css";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper";
+import { Pagination, Navigation, HashNavigation } from "swiper";
 import "swiper/swiper.css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -109,7 +109,7 @@ function FileDetail() {
     const file_id = id;
     const user_id = parseInt(currentUser?.id);
     dispatch(fetchFileDetail([file_id, user_id]));
-  }, [currentUser?.id, fileDetail?.userId, dispatch]);
+  }, [currentUser?.id, dispatch, id]);
 
   useEffect(() => {
     const user_id = parseInt(currentUser?.id);
@@ -134,7 +134,7 @@ function FileDetail() {
     if (pdfUrl && currentPage) {
       renderPage(pdfUrl, currentPage); // pass currentPage to renderPage function
     }
-  }, [currentPage, fileDetail.link, fileDetail.userId, fileDetail.id]);
+  }, [fileDetail.link, fileDetail.userId, fileDetail.id]);
   async function renderPage(pdfUrl, pageNumber) {
     setPageRendering(true);
     setIsLoading(true);
@@ -145,7 +145,8 @@ function FileDetail() {
     canvas.className = "canv";
     const context = canvas.getContext("2d");
 
-    for (let i = 1; i <= _pdf.numPages; i++) {
+    const numPagesToRender = Math.ceil(_pdf.numPages * 0.3); // render 30% của số lượng trang
+    for (let i = 1; i <= numPagesToRender; i++) {
       const page = await _pdf.getPage(i);
       const viewport = page.getViewport({ scale: 1 });
       canvas.height = viewport.height;
@@ -160,6 +161,23 @@ function FileDetail() {
     setImages(imagesList);
     setPageRendering(false);
     setIsLoading(false); // set isLoading to false when pages are rendered
+  }
+  function handleSlideChange(swiper) {
+    const nextPage = swiper.activeIndex + 1;
+    setCurrentPage(nextPage);
+    if (nextPage === Math.ceil(pdf.numPages * 0.3)) {
+      Swal.fire({
+        text: "Please download the document to continue viewing!",
+        icon: "info",
+        confirmButtonText: "OK",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp",
+        },
+      });
+    }
   }
   const handleDownload = () => {
     const userLc = JSON.parse(localStorage.getItem("user"));
@@ -292,36 +310,62 @@ function FileDetail() {
                   boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.4)",
                 }}
               >
+                {" "}
                 {isLoading ? (
                   <CircularProgress /> // show CircularProgress when isLoading is true
                 ) : images && images.length > 0 ? (
-                  <Swiper
-                    pagination={{
-                      type: "progressbar",
-                    }}
-                    navigation={true}
-                    modules={[Pagination, Navigation]}
-                    className="mySwiper"
-                    style={styles.wrapper}
-                  >
-                    {images.map((image, idx) => (
-                      <SwiperSlide key={idx} style={styles.imageWrapper}>
-                        <img
-                          id="image-generated"
-                          src={image}
-                          alt="pdfImage"
-                          style={{
-                            display: "block",
-                            width: width,
-                            height: height,
-                            border: "2px ridge  ",
-                            margin: "5px auto",
-                            boxShadow: "0px 4px 5px 5px rgb(194 219 246)",
+                  pdf && (
+                    <>
+                      <Swiper
+                        spaceBetween={30}
+                        hashNavigation={{
+                          watchState: true,
+                        }}
+                        pagination={{
+                          clickable: true,
+                        }}
+                        navigation={true}
+                        modules={[Pagination, Navigation, HashNavigation]}
+                        className="mySwiper"
+                        style={styles.wrapper}
+                        onSlideChange={handleSlideChange}
+                      >
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            bottom: "5px",
+                            right: "20px",
+                            zIndex: 1,
+                            // backgroundColor: "rgba(255, 255, 255, 0.8)",
+                            // boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.4)",
+                            borderRadius: "4px",
+                            padding: "8px",
                           }}
-                        />
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
+                        >
+                          <Typography variant="body1" color="initial">
+                            {currentPage}/{pdf.numPages}
+                          </Typography>
+                        </Box>
+                        {images.map((image, idx) => (
+                          <SwiperSlide key={idx} style={styles.imageWrapper}>
+                            <img
+                              id="image-generated"
+                              src={image}
+                              alt="pdfImage"
+                              style={{
+                                display: "block",
+                                width: width,
+                                height: height,
+                                border: "2px ridge  ",
+                                margin: "5px auto",
+                                boxShadow: "0px 4px 5px 5px rgb(194 219 246)",
+                              }}
+                            />
+                          </SwiperSlide>
+                        ))}
+                      </Swiper>
+                    </>
+                  )
                 ) : (
                   <Typography variant="h1" color="initial">
                     None
@@ -408,7 +452,7 @@ function FileDetail() {
                   direction="row"
                   sm={6}
                   spacing={2}
-                  sx={{ margin: "10px", width: "50%" }}
+                  sx={{ margin: "10px" }}
                 >
                   {tags &&
                     tags.slice(0, 6).map((tag, index) => (
@@ -422,6 +466,7 @@ function FileDetail() {
                           background: "",
                           padding: "0 16px",
                           lineHeight: "24px",
+                          whiteSpace: "nowrap", // add this CSS property
                         }}
                         label={tag.tagName}
                       >

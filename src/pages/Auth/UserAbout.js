@@ -68,11 +68,11 @@ function AboutUser() {
 
   const firstLetter = userAbout?.username.charAt(0).toUpperCase();
   useEffect(() => {
-    const user_id = parseInt(currentUser.id);
+    const user_id = parseInt(currentUser?.id);
     dispatch(fetchUser([user_id, userId])).then((response) => {
       console.log(response); // log the fetched user data
     });
-  }, [currentUser.id, dispatch, userId]);
+  }, [currentUser?.id, dispatch, userId]);
   // useEffect(() => {
   //   if (userAbout && userAbout.files) {
   //     // add a check for userAbout and userAbout.files
@@ -94,12 +94,19 @@ function AboutUser() {
   //   }
   // }, [userAbout]);
   useEffect(() => {
-    if (userAbout && userAbout.files) {
-      userAbout.files.forEach((file) => {
-        loadImageData(file);
+    if (userAbout && userAbout?.files) {
+      userAbout.files?.forEach((file) => {
+        // loadImageData(file);
+        fetchImage(file.linkImg).then((blob) => {
+          const url = URL.createObjectURL(blob);
+          setImageData((prevImageData) => ({
+            ...prevImageData,
+            [file.id]: url,
+          }));
+        });
       });
     }
-  }, []);
+  }, [userAbout]);
   useEffect(() => {
     dispatch(fetchUser(userId));
     // call handleListTags to get list of tags
@@ -110,29 +117,29 @@ function AboutUser() {
     );
   }
 
-  function loadImageData(file) {
-    fetchImage(file.linkImg).then((blob) => {
-      const url = URL.createObjectURL(blob);
-      setImageData((prevImageData) => ({
-        ...prevImageData,
-        [file.id]: url,
-      }));
-    });
-  }
+  // function loadImageData(file) {
+  //   fetchImage(file.linkImg).then((blob) => {
+  //     const url = URL.createObjectURL(blob);
+  //     setImageData((prevImageData) => ({
+  //       ...prevImageData,
+  //       [file.id]: url,
+  //     }));
+  //   });
+  // }
   const handleFollow = () => {
     const data = {
-      user_id: parseInt(currentUser.id),
+      user_id: parseInt(currentUser?.id),
       friend_id: parseInt(userId),
     };
-    currentUser.id ? dispatch(followUser(data)) : console.log("err");
+    currentUser?.id ? dispatch(followUser(data)) : console.log("err");
   };
   const handleUnFollow = () => {
     const data = {
-      user_id: parseInt(currentUser.id),
+      user_id: parseInt(currentUser?.id),
       friend_id: parseInt(userId),
     };
     console.log(data);
-    currentUser.id ? dispatch(unFollowUser(data)) : console.log("err");
+    currentUser?.id ? dispatch(unFollowUser(data)) : console.log("err");
   };
   const handleClickFile = (todo) => {
     // console.log(todo.link);
@@ -165,7 +172,7 @@ function AboutUser() {
                   }}
                   href={`/`}
                 >
-                  {userAbout?.files.length} DocShare
+                  {userAbout?.files?.length} DocShare
                 </Typography>
               </Item>
               <Item>
@@ -176,7 +183,7 @@ function AboutUser() {
                     // alert(page.title);
                   }}
                 >
-                  {userAbout?.friends.length} Followers
+                  {userAbout?.friends?.length} Followers
                 </Typography>
               </Item>
               <Item>
@@ -187,6 +194,7 @@ function AboutUser() {
                     // alert(page.title);
                   }}
                 >
+                  {userAbout?.following ? userAbout?.following?.length : 0}{" "}
                   Followings
                 </Typography>
               </Item>
@@ -198,7 +206,18 @@ function AboutUser() {
                     // alert(page.title);
                   }}
                 >
-                  Likes
+                  {userAbout?.linksocial}0 Likes
+                </Typography>
+              </Item>
+              <Item>
+                <Typography
+                  component={Link}
+                  onClick={() => {
+                    // setidlink(page.id);
+                    // alert(page.title);
+                  }}
+                >
+                  {userAbout?.linksocial} LinkSocial
                 </Typography>
               </Item>
               <Item>
@@ -213,6 +232,15 @@ function AboutUser() {
             </Stack>
           </Stack>
           <Stack item>
+            <Typography variant="h5" color="initial">
+              About:
+            </Typography>
+            <Typography variant="body2" color="initial">
+              {" "}
+              {userAbout?.about}
+            </Typography>
+          </Stack>
+          <Stack item>
             <TagList userAbout={userAbout} />
           </Stack>
         </Grid>
@@ -223,7 +251,7 @@ function AboutUser() {
               color="initial"
               sx={{ fontSize: 20, fontWeight: 700 }}
             >
-              More Related Content ({userAbout?.files.length})
+              More Related Content ({userAbout?.files?.length})
             </Typography>
             <Grid xs={12} sx={{ width: "100%", margin: "auto" }}>
               <FileList
@@ -233,15 +261,15 @@ function AboutUser() {
               />
             </Grid>
           </Grid>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Typography
               variant="h2"
               color="initial"
               sx={{ fontSize: 20, fontWeight: 700 }}
             >
-              More Related Content ( {userAbout?.files.length})
+              More Related Content ( {userAbout?.files?.length})
             </Typography>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Grid>
     </Box>

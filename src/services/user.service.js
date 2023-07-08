@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/auth";
+const API_URL = "/api/auth";
 
 const fetchUser = (user_id, friend_id) => {
   return axios.get(
@@ -13,10 +13,7 @@ const deletedFile = (dataDelete) => {
   });
 };
 const unFollowUser = (data) => {
-  const config = {
-    data: data,
-  };
-  return axios.delete(API_URL + "/unfollow", config);
+  return axios.delete(API_URL + "/unfollow", { data: data });
 };
 const followUser = (data) => {
   return axios.post(API_URL + "/follow", data);

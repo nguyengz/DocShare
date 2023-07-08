@@ -205,11 +205,12 @@ const Example = (props) => {
       <style>
         {`
          table {
-          min-height: 500px;
+          
           max-height: 400px;
           overflow-y: hidden;
         }
         tr > td:{
+          max-height: 50px;
           max-width: 30px;
           overflow: hidden;
           text-overflow: ellipsis;

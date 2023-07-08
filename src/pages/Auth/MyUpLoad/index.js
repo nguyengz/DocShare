@@ -81,7 +81,7 @@ function MyUpload() {
               fontWeight={50}
               padding="0"
             >
-              My Upload
+              {showPackage ? "My Package" : "My Upload"}
             </Typography>
           </Grid>
           <Grid
@@ -108,7 +108,7 @@ function MyUpload() {
                 alignItems: "center", //Thêm thuộc tính align-items vào đây
               }}
             >
-              <CloudUploadIcon sx={{ marginRight: "5px" }} /> SizeCloud: 1GB
+              <CloudUploadIcon sx={{ marginRight: "5px" }} /> SizeCloud: {}
             </Typography>
             <Typography
               variant="body"
