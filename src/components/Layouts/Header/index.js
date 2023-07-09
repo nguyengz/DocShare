@@ -179,6 +179,7 @@ export default function Header() {
           dispatch(logout());
         }
       });
+      setAnchorEl(null);
     } catch (error) {
       console.log(error);
     }
@@ -220,15 +221,18 @@ export default function Header() {
     navigate(`/profile/${currentUser.name}`);
   };
   const handleClickAcountSetting = (todo) => {
+    setAnchorEl(null);
     navigate(`/AcountSetting/${currentUser.name}`);
   };
   const handleClickMyUpload = (todo) => {
+    setAnchorEl(null);
     navigate(`/${currentUser.name}/EditUpload`);
   };
   // const handleMobileMenuClose = () => {
   //   setMobileMoreAnchorEl(null);
   // };
   const handleClickOder = (todo) => {
+    setAnchorEl(null);
     // alert(encodeURIComponent(currentUser?.name));
     navigate(`/${encodeURIComponent(currentUser?.name)}/order`);
   };
@@ -442,7 +446,7 @@ export default function Header() {
               )}
             </Box>
 
-            <Box sx={{ display: { xs: "flex", md: "none" } }}>
+            {/* <Box sx={{ display: { xs: "flex", md: "none" } }}>
               <IconButton
                 size="large"
                 aria-label="show more"
@@ -453,7 +457,7 @@ export default function Header() {
               >
                 <MoreIcon />
               </IconButton>
-            </Box>
+            </Box> */}
           </Toolbar>
         </AppBar>
         {/* {renderMobileMenu} */}

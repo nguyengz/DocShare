@@ -205,8 +205,9 @@ function SearchResutlt() {
               ))}
             </Select>
             <Button
+              marginLeft="5px"
               variant="contained"
-              color="secondary"
+              backgroundColor="#0d91fe"
               size="small"
               onClick={() => setSelectedCategory("Select a Category")}
             >

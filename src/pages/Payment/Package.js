@@ -99,7 +99,12 @@ export default function Pricing({ onBack, fileDetail_id, name }) {
 
   return (
     <Container maxWidth="md" component="main" sx={{}}>
-      <Grid container spacing={5} alignItems="flex-end">
+      <Grid
+        container
+        spacing={5}
+        alignItems="flex-end"
+        sx={{ justifyContent: "center", alignItems: "center" }}
+      >
         {tiers.map((tier) => (
           <Grid
             item
@@ -156,17 +161,21 @@ export default function Pricing({ onBack, fileDetail_id, name }) {
             </PricingCard>
           </Grid>
         ))}
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={onBack}
+        <Grid
+          item
+          xs={12}
           sx={{
-            margin: "auto",
-            marginTop: "50px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            bottom: 0,
+            width: "100%",
           }}
         >
-          X
-        </Button>
+          <Button variant="contained" color="primary" onClick={onBack}>
+            X
+          </Button>
+        </Grid>
       </Grid>
     </Container>
   );

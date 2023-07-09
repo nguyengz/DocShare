@@ -18,12 +18,12 @@ import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 import { strengthColor, strengthIndicator } from "~/utils/password-strength";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
-import { changePass } from "~/slices/auth";
+import { changePass, logout } from "~/slices/auth";
 import Swal from "sweetalert2";
 import message from "~/slices/message";
 import { useNavigate } from "react-router-dom";
 
-const FormChangePass = ({ onCancel }) => {
+const FormChangePass = ({ onCancel, email }) => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const [level, setLevel] = useState();
@@ -48,6 +48,7 @@ const FormChangePass = ({ onCancel }) => {
       });
       await dispatch(changePass({ username, password }));
       onCancel();
+      dispatch(logout());
       navigate("/login");
     } catch (error) {
       Swal.fire({
@@ -96,7 +97,7 @@ const FormChangePass = ({ onCancel }) => {
     >
       <Formik
         initialValues={{
-          username: "",
+          username: email,
           password: "",
         }}
         validationSchema={Yup.object().shape({
@@ -150,6 +151,9 @@ const FormChangePass = ({ onCancel }) => {
                     placeholder="Enter Username or Email"
                     fullWidth
                     error={Boolean(touched.username && errors.username)}
+                    defaultValue={email}
+                    readOnly
+                    disabled={true}
                   />
                   {touched.username && errors.username && (
                     <FormHelperText

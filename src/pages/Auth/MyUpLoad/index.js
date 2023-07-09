@@ -122,7 +122,6 @@ function MyUpload() {
               }}
             >
               <FileUploadIcon sx={{ marginRight: "5px" }} /> SizeCloud:{" "}
-              {userAbout.files?.length}
             </Typography>
             <Button
               onClick={showPackage ? handlClickFileuploadTb : handlClickPackage}

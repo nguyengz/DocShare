@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Card,
+  Checkbox,
   CircularProgress,
   Container,
   FormHelperText,
@@ -509,6 +510,18 @@ function InfomationUpload(props) {
                                   </FormHelperText>
                                 )}
                               </Item>
+                              {/* <Item>
+                                <Checkbox
+                                  // checked={checked}
+                                  onChange={handleChange}
+                                  inputProps={{ "aria-label": "controlled" }}
+
+                                />
+                                <Typography variant="body2" color="initial">
+                                  Bạn chắc chắn đã đọc và chấp thuận những điều
+                                  khoản của chúng tôi?{" "}
+                                </Typography>
+                              </Item> */}
                             </Stack>
                             <Stack direction="column" spacing={4}>
                               <Item>
@@ -577,7 +590,7 @@ function InfomationUpload(props) {
                                   value={tags}
                                   onChange={(tags) => {
                                     console.log(tags); // add this line to check the tags state
-                                    handleChange(tags);
+                                    // handleChange(tags);
                                     // handleChange(tags);
                                     setSelectedTags(tags);
                                     setIsTagsInputValid(tags !== "");

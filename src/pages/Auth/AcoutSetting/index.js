@@ -620,7 +620,9 @@ function AcountSetting() {
           </Grid>
         </Grid>
       </Box>
-      {openFormPass && <FormChangePass onCancel={handleCloseForm} />}
+      {openFormPass && (
+        <FormChangePass onCancel={handleCloseForm} email={email} />
+      )}
     </>
   );
 }

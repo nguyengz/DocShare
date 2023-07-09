@@ -145,8 +145,14 @@ function FileDetail() {
     canvas.className = "canv";
     const context = canvas.getContext("2d");
 
-    const numPagesToRender = Math.ceil(_pdf.numPages * 0.3); // render 30% của số lượng trang
-    for (let i = 1; i <= numPagesToRender; i++) {
+    let maxPagesToRender;
+    if (_pdf.numPages > 30) {
+      maxPagesToRender = 15; // Giới hạn số trang render là 15 nếu tài liệu có hơn 30 trang
+    } else {
+      maxPagesToRender = Math.ceil(_pdf.numPages * 0.3); // Giới hạn số trang render là 30% nếu tài liệu có ít hơn hoặc bằng 30 trang
+    }
+
+    for (let i = 1; i <= maxPagesToRender; i++) {
       const page = await _pdf.getPage(i);
       const viewport = page.getViewport({ scale: 1 });
       canvas.height = viewport.height;
@@ -165,7 +171,15 @@ function FileDetail() {
   function handleSlideChange(swiper) {
     const nextPage = swiper.activeIndex + 1;
     setCurrentPage(nextPage);
-    if (nextPage === Math.ceil(pdf.numPages * 0.3)) {
+
+    let maxPagesToShow;
+    if (pdf.numPages > 30) {
+      maxPagesToShow = 15; // Giới hạn số trang hiển thị là 15 nếu tài liệu có hơn 30 trang
+    } else {
+      maxPagesToShow = Math.ceil(pdf.numPages * 0.3); // Giới hạn số trang hiển thị là 30% nếu tài liệu có ít hơn hoặc bằng 30 trang
+    }
+
+    if (nextPage === maxPagesToShow) {
       Swal.fire({
         text: "Please download the document to continue viewing!",
         icon: "info",

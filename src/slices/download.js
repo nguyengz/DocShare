@@ -17,7 +17,8 @@ export const downloadFile = createAsyncThunk(
     try {
       const response = await fileService.downLoadFile(link);
       const data = await response.data.arrayBuffer();
-      const file = new Blob([data], { type: response.headers["content-type"] });
+      // const file = new Blob([data], { type: response.headers["content-type"] });
+      const file = new Blob([data], { type: "application/pdf" });
       saveAs(file, fileName);
       return { fileName };
     } catch (error) {
