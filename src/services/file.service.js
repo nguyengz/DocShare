@@ -28,12 +28,10 @@ const fetchFileDetail = (file_id, user_id) => {
     `${API_URL}/getFile/id?file_id=${file_id}&user_id=${user_id ? user_id : 0}`
   );
 };
-const downLoadFile = (link, fileName) => {
+const downLoadFile = (link) => {
   return axios.get(API_URL + "/download/" + link, {
     responseType: "blob",
-    headers: {
-      Authorization: `Bearer ${user.token}`,
-    },
+    headers: authHeader(),
   });
 };
 const UpdateFile = (data, fileName) => {

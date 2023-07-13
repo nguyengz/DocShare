@@ -215,6 +215,7 @@ function FileDetail() {
     const adminAuthority = adminRole ? adminRole?.authority : null;
     // const adminAuthority = "";
     const hasSubscription = adminAuthority === "USER";
+    console.log(adminAuthority);
     if (hasSubscription) {
       const fileName = fileDetail.fileName;
       const fileUrl = `${fileDetail?.link}/${currentUser?.id}/${fileDetail?.id}`;

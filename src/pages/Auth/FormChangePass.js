@@ -152,8 +152,8 @@ const FormChangePass = ({ onCancel, email }) => {
                     fullWidth
                     error={Boolean(touched.username && errors.username)}
                     defaultValue={email}
-                    readOnly
-                    disabled={true}
+                    // readOnly
+                    // disabled={true}
                   />
                   {touched.username && errors.username && (
                     <FormHelperText
