@@ -23,7 +23,7 @@ import Swal from "sweetalert2";
 import message from "~/slices/message";
 import { useNavigate } from "react-router-dom";
 
-const FormChangePass = ({ onCancel, email }) => {
+const FormChangePassLogin = ({ onCancel, email }) => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const [level, setLevel] = useState();
@@ -97,7 +97,7 @@ const FormChangePass = ({ onCancel, email }) => {
     >
       <Formik
         initialValues={{
-          username: email,
+          username: "",
           password: "",
         }}
         validationSchema={Yup.object().shape({
@@ -152,8 +152,8 @@ const FormChangePass = ({ onCancel, email }) => {
                     fullWidth
                     error={Boolean(touched.username && errors.username)}
                     defaultValue={email}
-                    readOnly
-                    disabled={true}
+                    // readOnly
+                    // disabled={true}
                   />
                   {touched.username && errors.username && (
                     <FormHelperText
@@ -299,4 +299,4 @@ const FormChangePass = ({ onCancel, email }) => {
   );
 };
 
-export default FormChangePass;
+export default FormChangePassLogin;

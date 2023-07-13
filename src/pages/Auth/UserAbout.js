@@ -38,7 +38,6 @@ const style = {
     width: "100px",
     height: "100px",
     fontSize: "50px",
-    background: randomColor(),
   },
   gridUser: {
     margin: "auto",
@@ -65,6 +64,7 @@ function AboutUser() {
   const userAbout = useSelector((state) => state.userAbout.userAbout);
   const { user: currentUser } = useSelector((state) => state.auth);
   const [imageData, setImageData] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState();
 
   const firstLetter = userAbout?.username.charAt(0).toUpperCase();
   useEffect(() => {
@@ -73,6 +73,11 @@ function AboutUser() {
       console.log(response); // log the fetched user data
     });
   }, [currentUser?.id, dispatch, userId]);
+  function loadImage(link) {
+    return fetch(`http://localhost:8080/file/review/${link}`)
+      .then((response) => response.blob())
+      .then((blob) => URL.createObjectURL(blob));
+  }
   // useEffect(() => {
   //   if (userAbout && userAbout.files) {
   //     // add a check for userAbout and userAbout.files
@@ -111,6 +116,14 @@ function AboutUser() {
     dispatch(fetchUser(userId));
     // call handleListTags to get list of tags
   }, [dispatch, userId]);
+  useEffect(() => {
+    if (userAbout?.avatar) {
+      loadImage(userAbout.avatar).then((url) => {
+        setAvatarUrl(url);
+      });
+    }
+    // console.log(userAbout);
+  }, [dispatch, userAbout?.avatar]);
   function fetchImage(link) {
     return fetch(`http://localhost:8080/file/review/${link}`).then((response) =>
       response.blob()
@@ -156,7 +169,17 @@ function AboutUser() {
           <Stack direction="row">
             <Stack item>
               <Item>
-                <Avatar style={style.largeAvatar}>{firstLetter}</Avatar>
+                {avatarUrl ? (
+                  <Avatar src={avatarUrl} style={style.largeAvatar}></Avatar>
+                ) : (
+                  <Avatar
+                    style={style.largeAvatar}
+                    sx={{ background: randomColor() }}
+                  >
+                    {currentUser.name?.charAt(0).toUpperCase()}
+                  </Avatar>
+                )}
+                {/* <Avatar style={style.largeAvatar} src={avatarUrl}></Avatar> */}
               </Item>
             </Stack>
             <Stack item sx={{ marginLeft: "15px" }}>

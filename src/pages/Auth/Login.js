@@ -29,6 +29,7 @@ import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { ToastContainer, toast } from "react-toastify";
 import { Window } from "@mui/icons-material";
 import FormChangePass from "./FormChangePass";
+import FormChangePassLogin from "./FormChangePassLogin";
 const Login = () => {
   let navigate = useNavigate();
   const dispatch = useDispatch();
@@ -266,7 +267,7 @@ const Login = () => {
                 </Form>
               )}
             </Formik>
-            {openFormPass && <FormChangePass onCancel={handleCloseForm} />}
+            {openFormPass && <FormChangePassLogin onCancel={handleCloseForm} />}
           </Paper>
         </Grid>
       </Container>

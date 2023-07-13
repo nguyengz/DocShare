@@ -149,7 +149,7 @@ const mobileMenuId = "search-account-menu-mobile";
 // );
 const titlePages = [
   { id: "", title: "Home" },
-  { id: "expole", title: "Expole" },
+  { id: "expole", title: "Category" },
 ];
 export default function Header() {
   const dispatch = useDispatch();

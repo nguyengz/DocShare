@@ -49,7 +49,7 @@ function Expole() {
                 sx={{}}
                 light={true}
               >
-                Expole
+               Category
               </Divider>
             </Typography>
             <Typography

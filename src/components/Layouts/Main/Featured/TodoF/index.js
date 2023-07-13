@@ -27,7 +27,7 @@ function Todo({ ...props }) {
         <Grid container display={"flex"}>
           <Grid xs={3} item>
             <Typography variant="h5" color={"black"}>
-              Featured SlideShares
+              Featured DocShare
             </Typography>
           </Grid>
           <Grid xs={6} item></Grid>
@@ -37,9 +37,7 @@ function Todo({ ...props }) {
               color={"black"}
               display="block"
               sx={{ marginRight: "-10px" }}
-            >
-              See all
-            </Typography>
+            ></Typography>
           </Grid>
         </Grid>
 

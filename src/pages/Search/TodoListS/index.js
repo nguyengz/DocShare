@@ -28,15 +28,13 @@ const styles = {
 
 function TodoListSearch({ ...props }) {
   const { todoList, number } = props;
- 
+
   const navigate = useNavigate();
   const imageData = useFetchImageData(todoList);
   const result = [];
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("sm"));
-
-  
 
   const handleClickProduct = (todo) => {
     console.log(todo);
@@ -107,7 +105,7 @@ function TodoListSearch({ ...props }) {
                     // setidlink(page.id);
                     // alert(page.title);
                   }}
-                  href={`/About/${todo.name}`}
+                  href={`/About/${todo.userId}`}
                   // to={`/About/${todo.userId}`}
                   key={index}
                   onMouseEnter={(e) => {
