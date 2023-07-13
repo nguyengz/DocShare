@@ -43,22 +43,12 @@ function Footer() {
             <Link href="https://www.facebook.com/" color="inherit">
               <Facebook />
             </Link>
-            <Link
-              href="https://www.instagram.com/"
-              color="inherit"
-              sx={{ pl: 1, pr: 1 }}
-            >
-              <Instagram />
-            </Link>
-            <Link href="https://www.twitter.com/" color="inherit">
-              <Twitter />
-            </Link>
           </Grid>
         </Grid>
         <Box mt={5}>
           <Typography variant="body2" align="center">
             {"Copyright © "}
-            <Link color="inherit" href="https://your-website.com/">
+            <Link color="inherit" href="">
               Your Website
             </Link>{" "}
             {new Date().getFullYear()}

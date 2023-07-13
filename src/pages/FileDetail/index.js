@@ -86,6 +86,7 @@ function FileDetail() {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const [images, setImages] = useState([]);
+  const [avatarUrl, setAvatarUrl] = useState();
   const [pdf, setPdf] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   // const [pdfRendering, setPdfRendering] = React.useState("");
@@ -115,7 +116,12 @@ function FileDetail() {
     const user_id = parseInt(currentUser?.id);
     const friend_id = fileDetail?.userId;
     dispatch(fetchUser([user_id, friend_id]));
-  }, [currentUser?.id, dispatch, fileDetail?.userId]);
+    if (userAbout?.avatar) {
+      loadImage(userAbout?.avatar).then((url) => {
+        setAvatarUrl(url);
+      });
+    }
+  }, [currentUser?.id, dispatch, fileDetail?.userId, userAbout?.avatar]);
   useEffect(() => {
     if (fileDetail && fileDetail.tags) {
       const tagsArr = fileDetail.tags.reduce((accumulator, tag) => {
@@ -135,6 +141,11 @@ function FileDetail() {
       renderPage(pdfUrl, currentPage); // pass currentPage to renderPage function
     }
   }, [fileDetail.link, fileDetail.userId, fileDetail.id]);
+  function loadImage(link) {
+    return fetch(`http://localhost:8080/file/review/${link}`)
+      .then((response) => response.blob())
+      .then((blob) => URL.createObjectURL(blob));
+  }
   async function renderPage(pdfUrl, pageNumber) {
     setPageRendering(true);
     setIsLoading(true);
@@ -499,15 +510,25 @@ function FileDetail() {
                 >
                   <Stack item>
                     {" "}
-                    <Avatar
-                      sx={{
-                        width: "50px",
-                        height: "50px",
-                        background: randomColor(),
-                      }}
-                    >
-                      {firstLetter}
-                    </Avatar>
+                    {avatarUrl ? (
+                      <Avatar
+                        sx={{
+                          width: "50px",
+                          height: "50px",
+                        }}
+                        src={avatarUrl}
+                      ></Avatar>
+                    ) : (
+                      <Avatar
+                        sx={{
+                          width: "50px",
+                          height: "50px",
+                          background: randomColor(),
+                        }}
+                      >
+                        {firstLetter}
+                      </Avatar>
+                    )}
                   </Stack>
                   <Stack item>
                     <Typography

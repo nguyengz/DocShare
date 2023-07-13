@@ -88,7 +88,7 @@ function Slider() {
               //   padding: "20px 0 0 0",
             }}
           >
-            Today’s Top SlideShares
+            View Top DocShare
           </Typography>
         </Grid>
         <Todo todoList={todoList} number={numberProduct} />

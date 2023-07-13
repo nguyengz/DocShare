@@ -118,7 +118,7 @@ export default function Pricing({ onBack, fileDetail_id, name }) {
                 title={tier.name}
                 // subheader={tier.name}
                 titleTypographyProps={{ align: "center" }}
-                action={tier.name === "Pro" ? <StarIcon /> : null}
+                action={tier.name === "Vip" ? <StarIcon /> : null}
                 // subheaderTypographyProps={{
                 //   align: "center",
                 // }}
@@ -141,8 +141,7 @@ export default function Pricing({ onBack, fileDetail_id, name }) {
                 </Box>
                 <PricingList>
                   <Typography component="li" variant="subtitle1" align="center">
-                    {" "}
-                    {tier.dowloads} Download
+                    {tier.dowloads === 0 ? "Unlimit" : tier.dowloads} Download
                   </Typography>
                   <Typography component="li" variant="subtitle1" align="center">
                     {tier.storageSize} GB storageSize

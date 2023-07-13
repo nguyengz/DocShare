@@ -58,7 +58,6 @@ const style = {
     width: "100px",
     height: "100px",
     fontSize: "50px",
-    background: randomColor(),
   },
   gridUser: {
     margin: "auto",
@@ -162,7 +161,16 @@ function Profile() {
           <Stack direction="row">
             <Stack item>
               <Item>
-                <Avatar style={style.largeAvatar} src={avatarUrl}></Avatar>
+                {avatarUrl ? (
+                  <Avatar src={avatarUrl} style={style.largeAvatar}></Avatar>
+                ) : (
+                  <Avatar
+                    style={style.largeAvatar}
+                    sx={{ background: randomColor() }}
+                  >
+                    {currentUser.name?.charAt(0).toUpperCase()}
+                  </Avatar>
+                )}
               </Item>
             </Stack>
             <Stack item sx={{ marginLeft: "5px", width: 200 }}>
