@@ -12,24 +12,24 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import Example from "./Table";
-import { fetchUser } from "~/slices/user";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import MyPackage from "../MyPackage";
+import { fetchUserAbout } from "~/slices/auth";
 function MyUpload() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   // const { userId } = useParams();
   const { user: currentUser } = useSelector((state) => state.auth);
-  const userAbout = useSelector((state) => state.userAbout.userAbout);
+  const userAbout = useSelector((state) => state.auth.userAbout);
   const [imageData, setImageData] = useState("");
   const [showPackage, setShowPackage] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchUser(currentUser.id));
+    dispatch(fetchUserAbout(currentUser.id));
     // console.log(userAbout);
   }, [currentUser, dispatch]);
   const handlClickPackage = () => {
@@ -81,7 +81,7 @@ function MyUpload() {
               fontWeight={50}
               padding="0"
             >
-              My Upload
+              {showPackage ? "My Package" : "My Upload"}
             </Typography>
           </Grid>
           <Grid
@@ -108,7 +108,7 @@ function MyUpload() {
                 alignItems: "center", //Thêm thuộc tính align-items vào đây
               }}
             >
-              <CloudUploadIcon sx={{ marginRight: "5px" }} /> SizeCloud: 1GB
+              <CloudUploadIcon sx={{ marginRight: "5px" }} /> SizeCloud: {}
             </Typography>
             <Typography
               variant="body"
@@ -122,7 +122,6 @@ function MyUpload() {
               }}
             >
               <FileUploadIcon sx={{ marginRight: "5px" }} /> SizeCloud:{" "}
-              {userAbout?.files.length}
             </Typography>
             <Button
               onClick={showPackage ? handlClickFileuploadTb : handlClickPackage}
@@ -143,13 +142,19 @@ function MyUpload() {
               justifyContent: "center",
               justifyItems: "center",
               padding: 2,
+              justify: "center",
+              alignItems: "center",
+              //   alignContent="center"
+              wrap: "nowrap",
             }}
           >
             {" "}
             {showPackage && showPackage ? (
               <MyPackage />
             ) : (
-              <Example data={userAbout?.files} />
+              <Box width="100%">
+                <Example data={userAbout?.files} />
+              </Box>
             )}
           </Grid>
         </Grid>

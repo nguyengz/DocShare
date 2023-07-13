@@ -192,7 +192,7 @@ function UploadFile() {
                     </Typography>
                   </Button>
                   <Typography variant="caption" color="initial">
-                    or Drag & Drop here
+                    Size &lt;= 50MB
                   </Typography>{" "}
                 </Grid>
               </Grid>
@@ -206,31 +206,7 @@ function UploadFile() {
                 alignContent="center"
                 wrap="nowrap"
                 margin="auto"
-              >
-                <Grid
-                  item
-                  xs={5}
-                  sx={{ padding: "0", gap: "8px", textAlign: "right" }}
-                >
-                  <Typography variant="caption" color="initial">
-                    or upload documents from the cloud:
-                  </Typography>
-                </Grid>
-                <Grid
-                  item
-                  xs={4}
-                  sx={{
-                    padding: "",
-                    height: "25px",
-                    background:
-                      "url(https://public.slidesharecdn.com/images/upload-background-sprite.png)",
-
-                    backgroundPosition: "-20px -130px",
-                  }}
-                >
-                  <Link></Link>
-                </Grid>
-              </Grid>
+              ></Grid>
             </Card>
           </Box>
         )}

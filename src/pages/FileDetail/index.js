@@ -1,6 +1,8 @@
 /* eslint-disable no-template-curly-in-string */
 /* eslint-disable jsx-a11y/iframe-has-title */
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   Box,
   Card,
@@ -9,43 +11,43 @@ import {
   Typography,
   Button,
   Avatar,
-  Chip,
   CircularProgress,
   Link,
-  Snackbar,
-  Modal,
+  IconButton,
 } from "@mui/material";
 // import "./styles.css";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper";
+import { Pagination, Navigation, HashNavigation } from "swiper";
 import "swiper/swiper.css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
 
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 import DownloadIcon from "@mui/icons-material/Download";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import AddReactionIcon from "@mui/icons-material/AddReaction";
+import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import ShareRoundedIcon from "@mui/icons-material/ShareRounded";
+import FlagIcon from "@mui/icons-material/Flag";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
+import randomColor from "randomcolor";
 
-import { fetchFileDetail, fetchfile } from "~/slices/file";
-import { updateRoles } from "~/slices/auth";
-import { pdfjs } from "react-pdf";
-import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
-import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { downloadFile, setShowPricing } from "~/slices/download";
 import FileListMore from "./FileList";
 import FileListTags from "./FileListTags";
 import Pricing from "../Payment/Package";
-import Swal from "sweetalert2";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
+import { LikeFile, fetchFileDetail, unLike } from "~/slices/file";
+import { downloadFile, setShowPricing } from "~/slices/download";
+import { fetchUser, followUser, unFollowUser } from "~/slices/user";
+
+import { pdfjs } from "react-pdf";
+import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 const styles = {
@@ -86,35 +88,53 @@ function FileDetail() {
   const [images, setImages] = useState([]);
   const [pdf, setPdf] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [pdfRendering, setPdfRendering] = React.useState("");
+  // const [pdfRendering, setPdfRendering] = React.useState("");
   const [pageRendering, setPageRendering] = React.useState("");
 
   const [isFollowing, setIsFollowing] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
 
-  // const [showPricing, setShowPricing] = useState(false);
-  // const [showPricing, setShowPricing] = useState(false);
   const { user: currentUser } = useSelector((state) => state.auth);
-
+  const userAbout = useSelector((state) => state.userAbout.userAbout);
   const showPricing = useSelector((state) => state.download.showPricing);
   const fileDetail = useSelector((state) => state.file.detailList);
-  const fileList = useSelector((state) => state.file.fileList);
   const uploadDate = new Date(fileDetail.uploadDate);
   const options = { year: "numeric", month: "short", day: "numeric" };
   const formattedDate = uploadDate.toLocaleDateString("en-US", options);
-  const error = useSelector((state) => state.download.error);
-
-  // const [error, setError] = useState(null);
 
   const buttonColor = isFollowing ? "paleturquoise" : "primary";
-  const iconColor = isLiked ? "#FF0000" : "#000000";
-  const tags = fileDetail.tags;
-  // const link = state.link;
-  // const file_id = id;
+  const [tags, setTags] = useState([]);
+  const firstLetter = userAbout?.username.charAt(0).toUpperCase();
   useEffect(() => {
-    dispatch(fetchFileDetail(id));
-    dispatch(fetchfile());
-  }, []);
+    const file_id = id;
+    const user_id = parseInt(currentUser?.id);
+    dispatch(fetchFileDetail([file_id, user_id]));
+  }, [currentUser?.id, dispatch, id]);
+
+  useEffect(() => {
+    const user_id = parseInt(currentUser?.id);
+    const friend_id = fileDetail?.userId;
+    dispatch(fetchUser([user_id, friend_id]));
+  }, [currentUser?.id, dispatch, fileDetail?.userId]);
+  useEffect(() => {
+    if (fileDetail && fileDetail.tags) {
+      const tagsArr = fileDetail.tags.reduce((accumulator, tag) => {
+        if (!accumulator.some((t) => t.tagId === tag.tagId)) {
+          accumulator.push(tag);
+        }
+        return accumulator;
+      }, []);
+      setTags(tagsArr);
+    }
+  }, [fileDetail]);
+  useEffect(() => {
+    console.log("link: " + fileDetail.link);
+    const pdfUrl = "http://localhost:8080/file/review/" + fileDetail.link;
+    console.log(pdfUrl);
+    if (pdfUrl && currentPage) {
+      renderPage(pdfUrl, currentPage); // pass currentPage to renderPage function
+    }
+  }, [fileDetail.link, fileDetail.userId, fileDetail.id]);
   async function renderPage(pdfUrl, pageNumber) {
     setPageRendering(true);
     setIsLoading(true);
@@ -125,7 +145,14 @@ function FileDetail() {
     canvas.className = "canv";
     const context = canvas.getContext("2d");
 
-    for (let i = 1; i <= _pdf.numPages; i++) {
+    let maxPagesToRender;
+    if (_pdf.numPages > 30) {
+      maxPagesToRender = 15; // Giới hạn số trang render là 15 nếu tài liệu có hơn 30 trang
+    } else {
+      maxPagesToRender = Math.ceil(_pdf.numPages * 0.3); // Giới hạn số trang render là 30% nếu tài liệu có ít hơn hoặc bằng 30 trang
+    }
+
+    for (let i = 1; i <= maxPagesToRender; i++) {
       const page = await _pdf.getPage(i);
       const viewport = page.getViewport({ scale: 1 });
       canvas.height = viewport.height;
@@ -141,7 +168,31 @@ function FileDetail() {
     setPageRendering(false);
     setIsLoading(false); // set isLoading to false when pages are rendered
   }
+  function handleSlideChange(swiper) {
+    const nextPage = swiper.activeIndex + 1;
+    setCurrentPage(nextPage);
 
+    let maxPagesToShow;
+    if (pdf.numPages > 30) {
+      maxPagesToShow = 15; // Giới hạn số trang hiển thị là 15 nếu tài liệu có hơn 30 trang
+    } else {
+      maxPagesToShow = Math.ceil(pdf.numPages * 0.3); // Giới hạn số trang hiển thị là 30% nếu tài liệu có ít hơn hoặc bằng 30 trang
+    }
+
+    if (nextPage === maxPagesToShow) {
+      Swal.fire({
+        text: "Please download the document to continue viewing!",
+        icon: "info",
+        confirmButtonText: "OK",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp",
+        },
+      });
+    }
+  }
   const handleDownload = () => {
     const userLc = JSON.parse(localStorage.getItem("user"));
     // Check if the user has an active subscription
@@ -160,13 +211,13 @@ function FileDetail() {
       });
       return;
     }
-    const adminRole = userLc.roles.find((role) => role.authority === "ADMIN");
-    const adminAuthority = adminRole ? adminRole.authority : null;
+    const adminRole = userLc.roles.find((role) => role.authority === "USER");
+    const adminAuthority = adminRole ? adminRole?.authority : null;
     // const adminAuthority = "";
-    const hasSubscription = adminAuthority === "ADMIN";
+    const hasSubscription = adminAuthority === "USER";
     if (hasSubscription) {
       const fileName = fileDetail.fileName;
-      const fileUrl = `${fileDetail.link}/${currentUser.id}/${fileDetail.id}`;
+      const fileUrl = `${fileDetail?.link}/${currentUser?.id}/${fileDetail?.id}`;
       console.log(fileUrl);
       dispatch(downloadFile({ link: fileUrl, fileName }));
       setShowPricing(false);
@@ -175,74 +226,28 @@ function FileDetail() {
     }
   };
 
-  useEffect(() => {
-    console.log("link: " + fileDetail.link);
-    const pdfUrl = "http://localhost:8080/file/review/" + fileDetail.link;
-    console.log(pdfUrl);
-    if (pdfUrl && currentPage) {
-      renderPage(pdfUrl, currentPage); // pass currentPage to renderPage function
-    }
-  }, [currentPage, fileDetail.link, fileDetail.userId, fileDetail.id]);
+  const handleUnLikeFile = () => {
+    const data = { fileid: id, userid: parseInt(currentUser?.id) };
+    currentUser?.id ? dispatch(unLike(data)) : console.log("err");
+  };
   const handleLikeFile = () => {
-    fetch("http://localhost:8080/file/like", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userid: currentUser.id,
-        fileid: fileDetail.id,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data === true) {
-          setIsLiked(true);
-          // xử lý khi like thành công
-          toast.success("Liked file!", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-        } else {
-          // xử lý khi like thất bại
-          toast.error("Failed to like file.", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    const data = { fileid: id, userid: parseInt(currentUser?.id) };
+    currentUser?.id ? dispatch(LikeFile(data)) : console.log("err");
   };
   const handleFollow = () => {
-    fetch("http://localhost:8080/api/auth/follow", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user_id: currentUser.id,
-        friend_id: fileDetail.userId,
-      }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          setIsFollowing(!isFollowing);
-          response.json().then((data) => {
-            toast.success(data.message, {
-              position: toast.POSITION.TOP_RIGHT,
-            });
-          });
-        } else {
-          response.json().then((error) => {
-            toast.error(error.message, {
-              position: toast.POSITION.TOP_RIGHT,
-            });
-          });
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    const data = {
+      user_id: parseInt(currentUser?.id),
+      friend_id: parseInt(fileDetail?.userId),
+    };
+    currentUser?.id ? dispatch(followUser(data)) : console.log("err");
+  };
+  const handleUnFollow = () => {
+    const data = {
+      user_id: parseInt(currentUser.id),
+      friend_id: parseInt(fileDetail.userId),
+    };
+    console.log(data);
+    currentUser?.id ? dispatch(unFollowUser(data)) : console.log("err");
   };
   useEffect(() => {
     const searchParams = new URLSearchParams(search);
@@ -260,7 +265,7 @@ function FileDetail() {
       console.log(currentUser);
       const user = JSON.parse(localStorage.getItem("user"));
       // const user = { ...currentUser }; // Lấy thông tin user từ Redux store
-      user.roles = [{ authority: "ADMIN" }];
+      user.roles = [{ authority: "USER" }];
       localStorage.setItem("user", JSON.stringify(user)); // Cập nhật giá trị roles
       // dispatch(updateRoles({ roles: user.roles })); // Gửi action updateRoles đến reducer của slice auth
       // Lưu giá trị mới vào localStorage // Lưu thông tin user vào localStorage
@@ -307,48 +312,74 @@ function FileDetail() {
             margin: "5px ",
           }}
         >
-          <Grid sm={12} container direction="row">
+          <Grid xs={12} sm={12} container direction="row" height={900}>
             <Grid xs={12} sm={8} direction="column">
               <Grid
                 item
                 sx={{
-                  height: 400,
+                  height: 500,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.4)",
                 }}
               >
+                {" "}
                 {isLoading ? (
                   <CircularProgress /> // show CircularProgress when isLoading is true
                 ) : images && images.length > 0 ? (
-                  <Swiper
-                    pagination={{
-                      type: "progressbar",
-                    }}
-                    navigation={true}
-                    modules={[Pagination, Navigation]}
-                    className="mySwiper"
-                    style={styles.wrapper}
-                  >
-                    {images.map((image, idx) => (
-                      <SwiperSlide key={idx} style={styles.imageWrapper}>
-                        <img
-                          id="image-generated"
-                          src={image}
-                          alt="pdfImage"
-                          style={{
-                            display: "block",
-                            width: width,
-                            height: height,
-                            border: "2px ridge  ",
-                            margin: "5px auto",
-                            boxShadow: "0px 4px 5px 5px rgb(194 219 246)",
+                  pdf && (
+                    <>
+                      <Swiper
+                        spaceBetween={30}
+                        hashNavigation={{
+                          watchState: true,
+                        }}
+                        pagination={{
+                          clickable: true,
+                        }}
+                        navigation={true}
+                        modules={[Pagination, Navigation, HashNavigation]}
+                        className="mySwiper"
+                        style={styles.wrapper}
+                        onSlideChange={handleSlideChange}
+                      >
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            bottom: "5px",
+                            right: "20px",
+                            zIndex: 1,
+                            // backgroundColor: "rgba(255, 255, 255, 0.8)",
+                            // boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.4)",
+                            borderRadius: "4px",
+                            padding: "8px",
                           }}
-                        />
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
+                        >
+                          <Typography variant="body1" color="initial">
+                            {currentPage}/{pdf.numPages}
+                          </Typography>
+                        </Box>
+                        {images.map((image, idx) => (
+                          <SwiperSlide key={idx} style={styles.imageWrapper}>
+                            <img
+                              id="image-generated"
+                              src={image}
+                              alt="pdfImage"
+                              style={{
+                                display: "block",
+                                width: width,
+                                height: height,
+                                border: "2px ridge  ",
+                                margin: "5px auto",
+                                boxShadow: "0px 4px 5px 5px rgb(194 219 246)",
+                              }}
+                            />
+                          </SwiperSlide>
+                        ))}
+                      </Swiper>
+                    </>
+                  )
                 ) : (
                   <Typography variant="h1" color="initial">
                     None
@@ -416,33 +447,40 @@ function FileDetail() {
                   </Stack>
                 </Stack>
                 <Stack direction="row" spacing={2} sx={{ margin: "10px" }}>
-                  {isLiked ? (
-                    <FavoriteBorderIcon
-                      style={{ color: iconColor }}
-                      onClick={handleLikeFile}
-                    />
-                  ) : (
-                    <FavoriteBorderIcon
-                      style={{ color: iconColor }}
-                      onClick={handleLikeFile}
-                    />
-                  )}
+                  <FavoriteIcon
+                    sx={{
+                      color: fileDetail.like ? "red" : "blue",
+                      "&:hover": {
+                        cursor: "pointer",
+                        color: fileDetail.like ? "darkred" : "darkblue",
+                      },
+                    }}
+                    onClick={
+                      fileDetail.like ? handleUnLikeFile : handleLikeFile
+                    }
+                  />
                   <ShareRoundedIcon />
-                  <MoreHorizRoundedIcon />
+                  <FlagIcon />
                 </Stack>
-                <Stack direction="row" spacing={2} sx={{ margin: "10px" }}>
+                <Stack
+                  direction="row"
+                  sm={6}
+                  spacing={2}
+                  sx={{ margin: "10px" }}
+                >
                   {tags &&
-                    tags.map((tag, index) => (
+                    tags.slice(0, 6).map((tag, index) => (
                       <Button
                         key={index}
                         component={Link}
-                        href={`/`}
+                        href={`/Search?tagName=${tag.tagName}`}
                         sx={{
                           border: "1px solid",
                           borderRadius: "56px",
                           background: "",
                           padding: "0 16px",
                           lineHeight: "24px",
+                          whiteSpace: "nowrap", // add this CSS property
                         }}
                         label={tag.tagName}
                       >
@@ -453,15 +491,22 @@ function FileDetail() {
                 <Stack direction="row" spacing={2} sx={{ margin: "10px" }}>
                   <Typography>{fileDetail.description}</Typography>
                 </Stack>
-                <Stack direction="row" spacing={2} sx={{ margin: "10px 10px" }}>
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  sx={{ margin: "10px 10px", height: "200px" }}
+                >
                   <Stack item>
                     {" "}
                     <Avatar
                       sx={{
                         width: "50px",
                         height: "50px",
+                        background: randomColor(),
                       }}
-                    ></Avatar>
+                    >
+                      {firstLetter}
+                    </Avatar>
                   </Stack>
                   <Stack item>
                     <Typography
@@ -475,31 +520,40 @@ function FileDetail() {
                         // setidlink(page.id);
                         // alert(page.title);
                       }}
-                      href={`/About/${fileDetail.userId}`}
-                      key={fileDetail.userId}
+                      href={`/About/${fileDetail?.userId}`}
+                      key={userAbout?.id}
                       onMouseEnter={(e) => {
-                        e.target.style.color = "blue";
+                        e.target.style.color = "#a1a1ff";
                       }}
                       onMouseLeave={(e) => {
-                        e.target.style.color = "1976d2";
+                        e.target.style.color = "#1976d2";
                       }}
                     >
-                      {fileDetail.userName}
+                      {fileDetail?.userName}
                     </Typography>
                     <Button
                       variant="contained"
                       sx={{
-                        margin: "0px",
-                        fontSize: "5px",
+                        margin: "0",
+                        fontSize: "10px",
                         backgroundColor: buttonColor,
                         height: "20px",
-                        padding: "2px",
-                        width: "20px",
+                        padding: "6px 12px",
+                        borderRadius: "15px",
+                        boxShadow: "none",
                       }}
-                      onClick={handleFollow}
+                      onClick={
+                        userAbout?.hasFollow ? handleUnFollow : handleFollow
+                      }
+                      startIcon={
+                        userAbout?.hasFollow ? (
+                          <EmojiEmotionsIcon />
+                        ) : (
+                          <AddReactionIcon />
+                        )
+                      }
                     >
-                      <PersonAddIcon />
-                      {isFollowing ? "UnFollow" : "Follow"}
+                      {userAbout?.hasFollow ? "UnFollow" : "Follow"}
                     </Button>
                   </Stack>
                 </Stack>
@@ -525,7 +579,7 @@ function FileDetail() {
               >
                 List of similar tags
               </Typography>
-              <FileListTags fileMore={fileList} />
+              <FileListTags id={fileDetail.id} />
             </Grid>
           </Grid>
         </Card>
@@ -550,7 +604,7 @@ function FileDetail() {
               color="initial"
               sx={{ fontSize: 40, fontWeight: 700 }}
             >
-              More Related Content
+              More Related Category
             </Typography>
           </Grid>
           <Grid
@@ -560,12 +614,7 @@ function FileDetail() {
               marginBottom: "20px",
             }}
           >
-            <FileListMore fileMore={fileList} />
-            {/* <FileList
-                file={userAbout?.files}
-                imageData={imageData}
-                handleClickFile={handleClickFile}
-              /> */}
+            <FileListMore category={fileDetail.category} />
           </Grid>
           {/* <Grid
             item

@@ -67,7 +67,7 @@ function TodoList({ ...props }) {
                   height={200}
                   sx={{
                     backgroundImage: `url(${imageData[todo.id]})`,
-                    backdropFilter: "blur(10px)"
+                    backdropFilter: "blur(10px)",
                   }}
                 >
                   <CardMedia
@@ -84,7 +84,7 @@ function TodoList({ ...props }) {
                   />
                 </Box>
 
-                <CardContent sx={{ height: "100px", background:"#f8f8f8" }}>
+                <CardContent sx={{ height: "100px", background: "#f8f8f8" }}>
                   <Typography style={styles.todoName} gutterBottom variant="h6">
                     {todo.name}
                   </Typography>
@@ -102,7 +102,7 @@ function TodoList({ ...props }) {
                   display: "flex",
                   margin: "0px 1px",
                   justifyContent: "space-between",
-                  background:"#f8f8f8"
+                  background: "#f8f8f8",
                 }}
               >
                 <Typography
@@ -116,7 +116,7 @@ function TodoList({ ...props }) {
                     // setidlink(page.id);
                     // alert(page.title);
                   }}
-                  href={`/About/${todo.name}`}
+                  href={`/About/${todo.userId}`}
                   // to={`/About/${todo.userId}`}
                   key={index}
                   onMouseEnter={(e) => {

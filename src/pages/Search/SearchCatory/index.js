@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Card,
   CardActionArea,
   CardActions,
@@ -43,7 +44,7 @@ function SearchCatory() {
   const { name } = useParams();
   const [searchQuery, setSearchQuery] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedOption, setSelectedOption] = useState("Lọc");
+  const [selectedOption, setSelectedOption] = useState("Filter");
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -52,21 +53,27 @@ function SearchCatory() {
   const fileData = useSelector((state) => state.file.fileList);
   const [selectedCategory, setSelectedCategory] = useState(name);
   const [selectedDateRange, setSelectedDateRange] = useState(null);
+  const [nameCategory, setNameCategory] = useState(name);
   useEffect(() => {
     dispatch(fetchfile());
     dispatch(fetchCategory());
-    console.log(name);
+    console.log(nameCategory);
     // pdf && renderPage();
   }, []);
+  useEffect(() => {
+    // Cập nhật biến name khi selectedCategory thay đổi
+    setNameCategory(selectedCategory);
+  }, [selectedCategory]);
   useEffect(() => {
     const filteredData = fileData.filter(
       (file) =>
         selectedCategory === "" ||
+        selectedCategory === "Select a Category" ||
         file.category?.categoryName === selectedCategory ||
-        ((name === "" ||
+        ((nameCategory === "" ||
           file.category?.categoryName
             .toLowerCase()
-            .includes(name.toLowerCase())) &&
+            .includes(nameCategory.toLowerCase())) &&
           (selectedDateRange === null ||
             (new Date(file.uploadDate) >= selectedDateRange[0] &&
               new Date(file.uploadDate) <= selectedDateRange[1])))
@@ -84,7 +91,13 @@ function SearchCatory() {
     } else {
       setSearchQuery(filteredData);
     }
-  }, [selectedCategory, fileData, name, selectedOption, selectedDateRange]);
+  }, [
+    selectedCategory,
+    fileData,
+    nameCategory,
+    selectedOption,
+    selectedDateRange,
+  ]);
   const renderSelectedOption = (selectedOption) => {
     if (selectedOption === "oldest") {
       return "oldest";
@@ -120,7 +133,11 @@ function SearchCatory() {
       setSelectedDateRange(null);
     }
   };
-
+  const handleCategoryChange = (event) => {
+    if (event.target.value !== "Clear") {
+      setSelectedCategory(event.target.value);
+    }
+  };
   const getAlldata = () => {
     let datas = [];
 
@@ -155,9 +172,7 @@ function SearchCatory() {
             <Select
               style={useStyles.input}
               value={selectedCategory}
-              onChange={(e) => {
-                setSelectedCategory(e.target.value);
-              }}
+              onChange={handleCategoryChange}
               sx={{
                 width: "200px",
               }}
@@ -190,6 +205,14 @@ function SearchCatory() {
                 </MenuItem>
               ))}
             </Select>
+            <Button
+              variant="contained"
+              color="secondary"
+              size="small"
+              onClick={() => setSelectedCategory("Select a Category")}
+            >
+              Clear
+            </Button>
           </Grid>
           <Grid item xs={8} direction="row">
             <Stack
@@ -208,22 +231,20 @@ function SearchCatory() {
                 <Select
                   value={selectedOption}
                   onChange={handleOptionChange}
+                  displayEmpty
                   sx={{
                     border: "none",
                     width: "100px",
-                    height: "20px",
+                    height: "30px",
                     alignContent: "center",
-                    ml: "150px"
+                    ml: "200px",
                   }}
-                  MenuProps={{
-                    MenuListProps: {
-                      disableRadio: true,
-                    },
-                  }}
-                  renderValue={() => renderSelectedOption(selectedOption)}
                 >
-                  <MenuItem value="newest">newest</MenuItem>
-                  <MenuItem value="oldest">oldest</MenuItem>
+                  <MenuItem value="Filter" disabled>
+                    Filter
+                  </MenuItem>
+                  <MenuItem value="newest">Newest</MenuItem>
+                  <MenuItem value="oldest">Oldest</MenuItem>
                 </Select>
               </Item>
             </Stack>

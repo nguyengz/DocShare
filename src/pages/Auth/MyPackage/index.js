@@ -27,15 +27,12 @@ function MyPackage() {
       <Box
         sx={{
           width: "100%",
-          height: "500px",
+          // height: "500px",
           margin: "0px auto",
           background: "white",
           //   position: "fixed",
         }}
       >
-        <Typography variant="h1" color="initial" fontSize={28} fontWeight={50}>
-          My Package
-        </Typography>
         <Table data={listOder} />
       </Box>
     </>

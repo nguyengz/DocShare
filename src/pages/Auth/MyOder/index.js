@@ -26,6 +26,8 @@ import { useEffect, useState } from "react";
 import CircleIcon from "@mui/icons-material/Circle";
 import { BuildTwoTone } from "@mui/icons-material";
 import usePagination from "~/utils/PaginatedList";
+import Pricing from "~/pages/Payment/Package";
+import { setShowPricing } from "~/slices/download";
 // import { addPackage, fetchPackages } from "store/reducers/slices/package";
 // import { useDispatch, useSelector } from 'react-redux';
 // import { registerPackage } from '~/slices/paypal';
@@ -79,14 +81,6 @@ function MyOrder() {
   // const { id } = useParams();
   const { user: currentUser } = useSelector((state) => state.auth);
   //   const [isUploading, setIsUploading] = useState(false);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState(0);
-  const [download, setDownload] = useState("");
-  const [cloud, setCloud] = useState(0);
-  const [showDetailsId, setShowDetailsId] = useState(null);
-  // const [isActive, setIsActive] = useState();
-  const [showDialog, setShowDialog] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [listOder, setlistOder] = useState([]);
   let [page, setPage] = useState(1);
@@ -105,65 +99,16 @@ function MyOrder() {
         // Handle error
         console.error(error);
       });
-  }, [currentUser.id]);
-  useEffect(() => {
-    console.log(listOder);
-  }, [currentUser.id, listOder]);
+  }, []);
+
   const handleChange = (e, p) => {
     setPage(p);
     _DATA.jump(p);
-  };
-  const handleDialogClose = () => {
-    setShowDialog(false);
-    // hide the dialog box
-    // reset input value to initial value // reset switch value to initial value
-  };
-  const handleSwitchChange = async () => {
-    setShowDialog(true);
-  };
-  // const payLink = useSelector((state) => state.package.data);
-  const handleResgisterPackage = (tier) => {
-    setShowDetailsId(tier.tiers_id);
-  };
-
-  const handlClickThongKe = () => {
-    setShowDetailsId(null);
-  };
-  const handleNameChange = (event) => {
-    setName(event.target.value);
-  };
-
-  const handleDescriptionChange = (event) => {
-    setDescription(event.target.value);
-  };
-
-  const handlePriceChange = (event) => {
-    setPrice(event.target.value);
-  };
-  const handleDownloadChange = (event) => {
-    setDownload(event.target.value);
-  };
-
-  const handleCouldChange = (event) => {
-    setCloud(event.target.value);
-  };
-  const handleSubmit = () => {
-    alert("Thanh cong");
   };
   const handleAddPackage = () => {
     setShowForm(true); // show the form when the button is clicked
   };
 
-  const handleDialogSubmit = async (id) => {
-    try {
-      const updatedPackage = { id };
-      await axios.put(`http://localhost:8080/package/active`, updatedPackage);
-      // setIsActive(!isActive);
-      setShowDialog(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
   const totalOrderPrice = listOder.reduce(
     (total, order) => total + order.orderDetail.price,
     0
@@ -171,151 +116,177 @@ function MyOrder() {
 
   return (
     <Container
-      minHeight="1000px"
       maxWidth="12"
-      component="main"
+      // component="main"
       spacing={2}
       justify="center"
       alignItems="center"
       alignContent="center"
+      sx={{ minHeight: 1000 }}
     >
       <Grid
         container
         sm={8}
         spacing={1}
-        direction="row"
-        justify="center"
-        alignItems="center"
-        alignContent="center"
         wrap="wrap"
         sx={{ margin: "20px auto" }}
       >
-        <Grid item xs={12} md={8}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleAddPackage}
-          >
-            New oder
-          </Button>
-        </Grid>
-        <Grid item xs={12} md={4} sx={{ textAlign: "center" }}>
-          <Typography variant="caption" color="initial">
-            Total Order: {listOder.length} * Total price: {totalOrderPrice}
-          </Typography>
-        </Grid>
-        {_DATA?.currentData().map((listOder) => (
-          <>
-            <Grid
-              container
-              key={listOder.id}
-              xs={12}
-              sm={12}
-              spacing={2}
-              direction="row"
-              sx={{
-                border: "1px dashed #b4bbd1",
-                margin: "5px",
-                padding: "5px",
-                backgroundColor: "white",
-                height: "150px",
-              }}
+        <Grid container direction="row" justifyContent="space-between">
+          <Grid item md={6}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddPackage}
             >
-              <PricingCard
+              New order
+            </Button>
+          </Grid>
+          <Grid item md={6} sx={{ textAlign: "right" }}>
+            <Typography variant="caption" color="initial">
+              Total Order: {listOder.length} * Total price: {totalOrderPrice}
+            </Typography>
+          </Grid>
+        </Grid>
+        {showForm && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              alignItems: "center ",
+              justifyContent: "center",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              zIndex: 9999,
+            }}
+          >
+            <Pricing
+              onBack={() => {
+                if (showForm) {
+                  setShowForm(false);
+                } else {
+                  dispatch(setShowPricing(false));
+                }
+              }}
+              fileDetail_id={undefined}
+              name={currentUser.name}
+            />
+          </div>
+        )}
+        <Box minHeight="900px" width="90%" mt={5} mx="auto">
+          {_DATA?.currentData().map((listOder) => (
+            <>
+              <Grid
+                container
+                key={listOder.id}
+                xs={12}
+                sm={12}
+                spacing={2}
+                direction="row"
                 sx={{
-                  width: "250px",
-                  boxShadow: listOder.orderStatus
-                    ? "0 0 10px rgba(0, 255, 0, 0.5)"
-                    : "0 0 10px rgb(255 1 1)",
-                  fontSize: "14px",
+                  border: "1px dashed #b4bbd1",
+                  margin: "5px",
+                  padding: "5px",
+                  backgroundColor: "white",
+                  height: "150px",
                 }}
               >
-                <CardHeader
-                  title={listOder.packages.name}
-                  subheader={listOder.packages.subheader}
-                  titleTypographyProps={{ align: "center" }}
-                  height="10%"
-                  action={
-                    listOder.packages.name === "Pro" ? <StarIcon /> : null
-                  }
-                  subheaderTypographyProps={{
-                    align: "center",
-                  }}
+                <PricingCard
                   sx={{
-                    padding: "1px",
-                  }}
-                />
-                <CardContent
-                  sx={{
-                    padding: "1px",
+                    width: "250px",
+                    boxShadow: listOder.orderStatus
+                      ? "0 0 10px rgba(0, 255, 0, 0.5)"
+                      : "0 0 10px rgb(255 1 1)",
+                    fontSize: "14px",
                   }}
                 >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "baseline",
-                      padding: "0px",
+                  <CardHeader
+                    title={listOder.packages.name}
+                    subheader={listOder.packages.subheader}
+                    titleTypographyProps={{ align: "center" }}
+                    height="10%"
+                    action={
+                      listOder.packages.name === "Pro" ? <StarIcon /> : null
+                    }
+                    subheaderTypographyProps={{
+                      align: "center",
                     }}
-                  >
-                    <Typography
-                      component="body1"
-                      variant="h4"
-                      color="text.primary"
-                    >
-                      ${listOder.packages.price}
-                    </Typography>
-                    <Typography variant="h6" color="text.secondary">
-                      /mo
-                    </Typography>
-                  </Box>
-                  <PricingList>
-                    <Typography
-                      component="li"
-                      variant="subtitle1"
-                      align="center"
-                    >
-                      {listOder.packages.dowloads} Download
-                    </Typography>
-                    <Typography
-                      component="li"
-                      variant="subtitle1"
-                      align="center"
-                    >
-                      {listOder.packages.storageSize} GB storageSize
-                    </Typography>
-                  </PricingList>
-                </CardContent>
-              </PricingCard>
-
-              <Grid item xs={12} sm={6} ml={10}>
-                <Typography>
-                  {" "}
-                  Start_date: {listOder.orderDetail.start_date}
-                </Typography>
-                <Typography>
-                  {" "}
-                  End_date: {listOder.orderDetail.end_date}
-                </Typography>
-                <Typography> OrderCode: {listOder.orderCode} </Typography>
-                <Typography>
-                  OrderStatus: {listOder.orderStatus}{" "}
-                  <CircleIcon
                     sx={{
-                      color: listOder.orderStatus ? "green" : "red",
-                      borderRadius: "50%",
-                      width: "10px",
-                      height: "10px",
-                      display: "inline-block",
-                      verticalAlign: "middle",
-                      marginLeft: "5px",
+                      padding: "1px",
                     }}
                   />
-                </Typography>
+                  <CardContent
+                    sx={{
+                      padding: "1px",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "baseline",
+                        padding: "0px",
+                      }}
+                    >
+                      <Typography
+                        component="body1"
+                        variant="h4"
+                        color="text.primary"
+                      >
+                        ${listOder.packages.price}
+                      </Typography>
+                      <Typography variant="h6" color="text.secondary">
+                        /mo
+                      </Typography>
+                    </Box>
+                    <PricingList>
+                      <Typography
+                        component="li"
+                        variant="subtitle1"
+                        align="center"
+                      >
+                        {listOder.packages.dowloads} Download
+                      </Typography>
+                      <Typography
+                        component="li"
+                        variant="subtitle1"
+                        align="center"
+                      >
+                        {listOder.packages.storageSize} GB storageSize
+                      </Typography>
+                    </PricingList>
+                  </CardContent>
+                </PricingCard>
+
+                <Grid item xs={12} sm={6} ml={5} sx={{ paddingTop: "1px" }}>
+                  <Typography>
+                    Start_date: {listOder.orderDetail.start_date}
+                  </Typography>
+                  <Typography>
+                    End_date: {listOder.orderDetail.end_date}
+                  </Typography>
+                  <Typography> OrderCode: {listOder.orderCode} </Typography>
+                  <Typography>
+                    OrderStatus: {listOder.orderStatus}{" "}
+                    <CircleIcon
+                      sx={{
+                        color: listOder.orderStatus ? "green" : "red",
+                        borderRadius: "50%",
+                        width: "10px",
+                        height: "10px",
+                        display: "inline-block",
+                        verticalAlign: "middle",
+                        marginLeft: "5px",
+                      }}
+                    />
+                  </Typography>
+                </Grid>
               </Grid>
-            </Grid>
-          </>
-        ))}
+            </>
+          ))}{" "}
+        </Box>
         <Grid
           sm={12}
           mt={2}

@@ -2,6 +2,7 @@ import axios from "axios";
 import authHeader from "./auth-header";
 const API_URL = "/file";
 // const API_URL_upload = "/Files";
+const user = JSON.parse(localStorage.getItem("user"));
 
 const fetchFileList = () => {
   return axios.get(API_URL + "/ListFiles");
@@ -19,10 +20,14 @@ const uploadFile = (formData) => {
     },
   });
 };
-const fetchFileDetail = (data) => {
-  return axios.get(API_URL + "/getFile/id?file_id=" + data);
+const deletedFile = (dataDelete) => {
+  return axios.delete(API_URL + "/delete/user", { data: dataDelete });
 };
-const user = JSON.parse(localStorage.getItem("user"));
+const fetchFileDetail = (file_id, user_id) => {
+  return axios.get(
+    `${API_URL}/getFile/id?file_id=${file_id}&user_id=${user_id ? user_id : 0}`
+  );
+};
 const downLoadFile = (link, fileName) => {
   return axios.get(API_URL + "/download/" + link, {
     responseType: "blob",
@@ -31,6 +36,16 @@ const downLoadFile = (link, fileName) => {
     },
   });
 };
+const UpdateFile = (data, fileName) => {
+  return axios.put(API_URL + "/update", data);
+};
+const unLike = (data) => {
+  return axios.delete(API_URL + "/delete/like", { data: data });
+};
+const LikeFile = (data) => {
+  return axios.post(API_URL + "/like", data);
+};
+
 const fileService = {
   fetchFileList,
   fetchFileTop,
@@ -38,6 +53,10 @@ const fileService = {
   uploadFile,
   fetchFileDetail,
   downLoadFile,
+  deletedFile,
+  unLike,
+  LikeFile,
+  UpdateFile,
 };
 
 export default fileService;

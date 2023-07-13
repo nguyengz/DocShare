@@ -20,6 +20,7 @@ const store = configureStore({
   reducer: reducer,
 
   devTools: true,
+
   middleware: (getDefaulMiddleware) => getDefaulMiddleware().concat(),
 });
 

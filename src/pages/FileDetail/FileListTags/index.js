@@ -19,7 +19,7 @@ import "swiper/css/pagination";
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useFetchImageData from "~/utils/useEffectIamge";
 import LazyLoad from "react-lazyload";
 
@@ -49,129 +49,122 @@ const style = {
 
 function FileListTags(props) {
   // const [imageData, setImageData] = useState("");
-  const imageData = useFetchImageData(props.fileMore);
-
-  const number = [4, 2];
+  const navigate = useNavigate();
+  const [listtag, setListTag] = useState([]);
+  const imageData = useFetchImageData(listtag);
   const options = { year: "numeric", month: "short", day: "numeric" };
   // const result = [];
 
-  // useEffect(() => {
-  //   if (props && props.fileMore) {
-  //     props.fileMore.forEach((todo) => {
-  //       axios
-  //         .get(`http://localhost:8080/file/review/${todo.linkImg}`, {
-  //           responseType: "arraybuffer",
-  //         })
-  //         .then((response) =>
-  //           setImageData((prevImageData) => ({
-  //             ...prevImageData,
-  //             [todo.id]: `data:image/jpeg;base64,${btoa(
-  //               new Uint8Array(response.data).reduce(
-  //                 (data, byte) => data + String.fromCharCode(byte),
-  //                 ""
-  //               )
-  //             )}`,
-  //           }))
-  //         );
-  //     });
-  //   }
-  // }, [props, props.fileMore]);
   const handleClickFile = (todo) => {
     // Define the handleClickFile function here
+    navigate(`/fileDetail/${todo.id}`);
+    window.location.reload();
   };
-
+  useEffect(() => {
+    console.log(props.id);
+    axios
+      .get(`http://localhost:8080/file/list/tag?file_id=${props.id}`)
+      .then((response) => {
+        // Handle successful response
+        setListTag(response.data);
+        // In ra giá trị mới của listtag
+      })
+      .catch((error) => {
+        // Handle error
+        console.error(error);
+      });
+  }, [props.id]);
   const result =
-    Array.isArray(props.fileMore) && props.fileMore.length > 0
-      ? props.fileMore.slice(0, number[2])?.map((todo, index) => {
+    Array.isArray(listtag) && listtag.length > 0
+      ? listtag.slice(1, 6)?.map((todo, index) => {
           const uploadDate = new Date(todo.uploadDate);
           const formattedDate = uploadDate.toLocaleDateString("en-US", options);
 
           return (
             <Grid item sm={12} key={todo.id} sx={{ width: "450px" }}>
-              <LazyLoad height={200} once>
-                <Card
+              {/* <LazyLoad height={200} once> */}
+              <Card
+                sx={{
+                  display: "flex",
+                  height: "200px",
+                }}
+                spacing={1}
+              >
+                <CardMedia
+                  component="img"
+                  image={imageData[todo.id] || ""}
+                  alt="green iguana"
+                  sx={{
+                    width: "200px",
+                    // display: "block",
+                    objectFit: "contain",
+                    objectPosition: "center",
+                    background: "gainsboro",
+                    // height: "100%",
+                  }}
+                  onClick={() => handleClickFile(todo)}
+                />{" "}
+                <Box
                   sx={{
                     display: "flex",
-                    height: "200px",
+                    flexDirection: "column",
+                    width: "250px",
                   }}
-                  spacing={1}
                 >
-                  <CardMedia
-                    component="img"
-                    image={imageData[todo.id] || ""}
-                    alt="green iguana"
-                    sx={{
-                      width: "200px",
-                      // display: "block",
-                      objectFit: "contain",
-                      objectPosition: "center",
-                      background: "gainsboro",
-                      // height: "100%",
-                    }}
-                  />
+                  <CardContent sx={{ height: "90%" }}>
+                    <Typography
+                      style={style.todoName}
+                      gutterBottom
+                      variant="body2"
+                    >
+                      {todo.fileName}
+                    </Typography>
+                    <Typography
+                      component={Link}
+                      style={{
+                        marginTop: "30px",
+                        textDecoration: "none",
+                        color: "#1976d2",
+                      }}
+                      onClick={() => {
+                        // setidlink(page.id);
+                        // alert(page.title);
+                      }}
+                      href={`/About/${todo.userId}`}
+                      key={todo.userId}
+                      onMouseEnter={(e) => {
+                        e.target.style.color = "blue";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.color = "1976d2";
+                      }}
+                    >
+                      {todo.userName}
+                    </Typography>
+                  </CardContent>
                   <Box
                     sx={{
                       display: "flex",
-                      flexDirection: "column",
-                      width: "250px",
+                      alignItems: "center",
+                      pl: 1,
+                      pb: 1,
                     }}
                   >
-                    <CardContent sx={{ height: "90%" }}>
-                      <Typography
-                        style={style.todoName}
-                        gutterBottom
-                        variant="body2"
-                      >
-                        {todo.fileName}
-                      </Typography>
-                      <Typography
-                        component={Link}
-                        style={{
-                          marginTop: "30px",
-                          textDecoration: "none",
-                          color: "#1976d2",
-                        }}
-                        onClick={() => {
-                          // setidlink(page.id);
-                          // alert(page.title);
-                        }}
-                        href={`/About/${todo.userId}`}
-                        key={todo.userId}
-                        onMouseEnter={(e) => {
-                          e.target.style.color = "blue";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.color = "1976d2";
-                        }}
-                      >
-                        {todo.userName}
-                      </Typography>
-                    </CardContent>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        pl: 1,
-                        pb: 1,
+                    <CardActions
+                      style={{
+                        // display: "",
+                        margin: "0px 1px",
                       }}
                     >
-                      <CardActions
-                        style={{
-                          // display: "",
-                          margin: "0px 1px",
-                        }}
-                      >
-                        <Typography variant="caption">
-                          {todo.view} views
-                        </Typography>
-                        <Typography variant="caption">
-                          {formattedDate}
-                        </Typography>
-                      </CardActions>
-                    </Box>
+                      <Typography variant="caption">
+                        {todo.view} views
+                      </Typography>
+                      <Typography variant="caption">{formattedDate}</Typography>
+                    </CardActions>
                   </Box>
-                </Card>
-              </LazyLoad>
+                </Box>
+              </Card>
+              {/* </LazyLoad> */}
             </Grid>
           );
         })
@@ -179,7 +172,7 @@ function FileListTags(props) {
 
   return (
     <>
-      {props.fileMore && (
+      {listtag && (
         <Swiper
           direction={"vertical"}
           slidesPerView={3}

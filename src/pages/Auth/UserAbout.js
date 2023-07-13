@@ -11,9 +11,9 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { AccountCircle } from "@mui/icons-material";
+import randomColor from "randomcolor";
 
-import { fetchUser } from "~/slices/user";
+import { fetchUser, followUser, unFollowUser } from "~/slices/user";
 import FileList from "./ListComponent/FileList";
 import TagList from "./ListComponent/TagList";
 
@@ -38,6 +38,7 @@ const style = {
     width: "100px",
     height: "100px",
     fontSize: "50px",
+    background: randomColor(),
   },
   gridUser: {
     margin: "auto",
@@ -61,13 +62,17 @@ function AboutUser() {
   const navigate = useNavigate();
 
   const { userId } = useParams();
-  let userAbout = useSelector((state) => state.userAbout.userAbout);
+  const userAbout = useSelector((state) => state.userAbout.userAbout);
+  const { user: currentUser } = useSelector((state) => state.auth);
   const [imageData, setImageData] = useState("");
+
+  const firstLetter = userAbout?.username.charAt(0).toUpperCase();
   useEffect(() => {
-    dispatch(fetchUser(userId)).then((response) => {
+    const user_id = parseInt(currentUser?.id);
+    dispatch(fetchUser([user_id, userId])).then((response) => {
       console.log(response); // log the fetched user data
     });
-  }, [dispatch, userId]);
+  }, [currentUser?.id, dispatch, userId]);
   // useEffect(() => {
   //   if (userAbout && userAbout.files) {
   //     // add a check for userAbout and userAbout.files
@@ -88,36 +93,54 @@ function AboutUser() {
   //     });
   //   }
   // }, [userAbout]);
+  useEffect(() => {
+    if (userAbout && userAbout?.files) {
+      userAbout.files?.forEach((file) => {
+        // loadImageData(file);
+        fetchImage(file.linkImg).then((blob) => {
+          const url = URL.createObjectURL(blob);
+          setImageData((prevImageData) => ({
+            ...prevImageData,
+            [file.id]: url,
+          }));
+        });
+      });
+    }
+  }, [userAbout]);
+  useEffect(() => {
+    dispatch(fetchUser(userId));
+    // call handleListTags to get list of tags
+  }, [dispatch, userId]);
   function fetchImage(link) {
     return fetch(`http://localhost:8080/file/review/${link}`).then((response) =>
       response.blob()
     );
   }
 
-  function loadImageData(todo) {
-    fetchImage(todo.linkImg).then((blob) => {
-      const url = URL.createObjectURL(blob);
-      setImageData((prevImageData) => ({
-        ...prevImageData,
-        [todo.id]: url,
-      }));
-    });
-  }
-
-  useEffect(() => {
-    if (userAbout && userAbout.files) {
-      userAbout.files.forEach((todo) => {
-        loadImageData(todo);
-      });
-    }
-  }, [userAbout]);
-  useEffect(() => {
-    dispatch(fetchUser(userId)).then((response) => {
-      console.log(response); // log the fetched user data
-    });
-
-    // call handleListTags to get list of tags
-  }, [dispatch, userId]);
+  // function loadImageData(file) {
+  //   fetchImage(file.linkImg).then((blob) => {
+  //     const url = URL.createObjectURL(blob);
+  //     setImageData((prevImageData) => ({
+  //       ...prevImageData,
+  //       [file.id]: url,
+  //     }));
+  //   });
+  // }
+  const handleFollow = () => {
+    const data = {
+      user_id: parseInt(currentUser?.id),
+      friend_id: parseInt(userId),
+    };
+    currentUser?.id ? dispatch(followUser(data)) : console.log("err");
+  };
+  const handleUnFollow = () => {
+    const data = {
+      user_id: parseInt(currentUser?.id),
+      friend_id: parseInt(userId),
+    };
+    console.log(data);
+    currentUser?.id ? dispatch(unFollowUser(data)) : console.log("err");
+  };
   const handleClickFile = (todo) => {
     // console.log(todo.link);
     // const state = { link: todo.link };
@@ -133,12 +156,10 @@ function AboutUser() {
           <Stack direction="row">
             <Stack item>
               <Item>
-                <Avatar style={style.largeAvatar}>
-                  <AccountCircle />
-                </Avatar>
+                <Avatar style={style.largeAvatar}>{firstLetter}</Avatar>
               </Item>
             </Stack>
-            <Stack item sx={{ marginLeft: "10px" }}>
+            <Stack item sx={{ marginLeft: "15px" }}>
               <Item>
                 <Typography variant="h5">{userAbout?.username}</Typography>
               </Item>
@@ -151,7 +172,7 @@ function AboutUser() {
                   }}
                   href={`/`}
                 >
-                  {userAbout?.files.length} DocShare
+                  {userAbout?.files?.length} DocShare
                 </Typography>
               </Item>
               <Item>
@@ -162,7 +183,7 @@ function AboutUser() {
                     // alert(page.title);
                   }}
                 >
-                  {userAbout?.friends.length} Followers
+                  {userAbout?.friends?.length} Followers
                 </Typography>
               </Item>
               <Item>
@@ -173,6 +194,7 @@ function AboutUser() {
                     // alert(page.title);
                   }}
                 >
+                  {userAbout?.following ? userAbout?.following?.length : 0}{" "}
                   Followings
                 </Typography>
               </Item>
@@ -184,19 +206,39 @@ function AboutUser() {
                     // alert(page.title);
                   }}
                 >
-                  Likes
+                  {userAbout?.linksocial}0 Likes
+                </Typography>
+              </Item>
+              <Item>
+                <Typography
+                  component={Link}
+                  onClick={() => {
+                    // setidlink(page.id);
+                    // alert(page.title);
+                  }}
+                >
+                  {userAbout?.linksocial} LinkSocial
                 </Typography>
               </Item>
               <Item>
                 <Button
                   variant="outlined"
                   sx={{ margin: "10px" }}
-                  href={"/login"}
+                  onClick={userAbout?.hasFollow ? handleUnFollow : handleFollow}
                 >
-                  Follwer
+                  {userAbout?.hasFollow ? "UnFollow" : "Follow"}
                 </Button>
               </Item>
             </Stack>
+          </Stack>
+          <Stack item>
+            <Typography variant="h5" color="initial">
+              About:
+            </Typography>
+            <Typography variant="body2" color="initial">
+              {" "}
+              {userAbout?.about}
+            </Typography>
           </Stack>
           <Stack item>
             <TagList userAbout={userAbout} />
@@ -209,7 +251,7 @@ function AboutUser() {
               color="initial"
               sx={{ fontSize: 20, fontWeight: 700 }}
             >
-              More Related Content ({userAbout?.files.length})
+              More Related Content ({userAbout?.files?.length})
             </Typography>
             <Grid xs={12} sx={{ width: "100%", margin: "auto" }}>
               <FileList
@@ -219,15 +261,15 @@ function AboutUser() {
               />
             </Grid>
           </Grid>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Typography
               variant="h2"
               color="initial"
               sx={{ fontSize: 20, fontWeight: 700 }}
             >
-              More Related Content ( {userAbout?.files.length})
+              More Related Content ( {userAbout?.files?.length})
             </Typography>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Grid>
     </Box>

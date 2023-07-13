@@ -4,23 +4,15 @@ import {
   Avatar,
   Box,
   Button,
-  Card,
-  CardActionArea,
-  CardActions,
-  CardContent,
-  Chip,
   Grid,
   Link,
   Stack,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
-import { AccountCircle } from "@mui/icons-material";
+import randomColor from "randomcolor";
 
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper";
 import "swiper/swiper.css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -32,6 +24,7 @@ import PdfToImage from "~/components/Layouts/pdftoimage";
 import { useNavigate, useParams } from "react-router-dom";
 import FileList from "./ListComponent/FileList";
 import TagList from "./ListComponent/TagList";
+import { fetchUserAbout } from "~/slices/auth";
 
 const Item = styled(Grid)(({ theme }) => ({
   margin: 2,
@@ -65,6 +58,7 @@ const style = {
     width: "100px",
     height: "100px",
     fontSize: "50px",
+    background: randomColor(),
   },
   gridUser: {
     margin: "auto",
@@ -105,13 +99,22 @@ function Profile() {
 
   // const { userId } = useParams();
   const { user: currentUser } = useSelector((state) => state.auth);
-  let userAbout = useSelector((state) => state.userAbout.userAbout);
+  const userAbout = useSelector((state) => state.auth.userAbout);
   const [imageData, setImageData] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState();
 
   useEffect(() => {
-    dispatch(fetchUser(currentUser.id));
+    dispatch(fetchUserAbout(currentUser?.id));
     // console.log(userAbout);
-  }, [currentUser, dispatch]);
+  }, [currentUser?.id, dispatch]);
+  useEffect(() => {
+    if (userAbout?.avatar) {
+      loadImage(userAbout.avatar).then((url) => {
+        setAvatarUrl(url);
+      });
+    }
+    // console.log(userAbout);
+  }, [dispatch, userAbout?.avatar]);
   useEffect(() => {
     if (userAbout && userAbout.files) {
       // add a check for userAbout and userAbout.files
@@ -132,6 +135,11 @@ function Profile() {
       });
     }
   }, [userAbout]);
+  function loadImage(link) {
+    return fetch(`http://localhost:8080/file/review/${link}`)
+      .then((response) => response.blob())
+      .then((blob) => URL.createObjectURL(blob));
+  }
   const handleClickFile = (todo) => {
     // console.log(todo.link);
     // const state = { link: todo.link };
@@ -154,12 +162,10 @@ function Profile() {
           <Stack direction="row">
             <Stack item>
               <Item>
-                <Avatar style={style.largeAvatar}>
-                  <AccountCircle />
-                </Avatar>
+                <Avatar style={style.largeAvatar} src={avatarUrl}></Avatar>
               </Item>
             </Stack>
-            <Stack item sx={{ marginLeft: "5px" }}>
+            <Stack item sx={{ marginLeft: "5px", width: 200 }}>
               <Item>
                 <Typography variant="h5">{userAbout?.username}</Typography>
               </Item>
@@ -167,42 +173,55 @@ function Profile() {
                 <Typography
                   component={Link}
                   // onClick={handleClickMyFile}
-                  href={`/${currentUser.name}/EditUpload`}
+                  href={`/${currentUser?.name}/EditUpload`}
                 >
-                  {userAbout?.files.length} DocShare
+                  {userAbout?.files?.length} DocShare
                 </Typography>
               </Item>
               <Item>
                 <Typography
-                  component={Link}
                   onClick={() => {
                     // setidlink(page.id);
                     // alert(page.title);
                   }}
                 >
-                  {userAbout?.friends.length} Followers
+                  {userAbout.friends?.length} Followers
                 </Typography>
               </Item>
               <Item>
                 <Typography
-                  component={Link}
                   onClick={() => {
                     // setidlink(page.id);
                     // alert(page.title);
                   }}
                 >
-                  Followings
+                  {userAbout.following?.length} Followings
                 </Typography>
               </Item>
               <Item>
                 <Typography
-                  component={Link}
                   onClick={() => {
                     // setidlink(page.id);
                     // alert(page.title);
                   }}
                 >
-                  Likes
+                  0 Likes
+                </Typography>
+              </Item>
+              <Item>
+                <Typography
+                  sx={{
+                    overflow: "hidden",
+                  }}
+                >
+                  LinkSocial:{" "}
+                  <a
+                    href={userAbout?.linksocial}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {userAbout?.linksocial}
+                  </a>
                 </Typography>
               </Item>
               <Item>
@@ -217,6 +236,15 @@ function Profile() {
             </Stack>
           </Stack>
           <Stack item>
+            <Typography variant="h5" color="initial">
+              About:
+            </Typography>
+            <Typography variant="body2" color="initial">
+              {" "}
+              {userAbout?.about}
+            </Typography>
+          </Stack>
+          <Stack item>
             <TagList userAbout={userAbout} />
           </Stack>
         </Grid>
@@ -227,7 +255,7 @@ function Profile() {
               color="initial"
               sx={{ fontSize: 20, fontWeight: 700 }}
             >
-              More Related Content ({userAbout?.files.length})
+              More Related Content ({userAbout.files?.length})
             </Typography>
             <Grid xs={12} sx={{ width: "100%", margin: "auto" }}>
               <FileList

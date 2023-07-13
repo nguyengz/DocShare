@@ -13,17 +13,30 @@ import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import Settings from "@mui/icons-material/Settings";
+import Logout from "@mui/icons-material/Logout";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
-import { Button, Link, List, ListItem } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  Divider,
+  Link,
+  List,
+  ListItem,
+  Tooltip,
+} from "@mui/material";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 
-import { logout } from "~/slices/auth";
+import { fetchUserAbout, logout } from "~/slices/auth";
 import EventBus from "~/common/EventBus";
 import { unstable_HistoryRouter, useNavigate } from "react-router-dom";
 import SearchResutlt from "~/pages/Search";
 import Swal from "sweetalert2";
+import randomColor from "randomcolor";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: "20px",
@@ -139,14 +152,18 @@ const titlePages = [
   { id: "expole", title: "Expole" },
 ];
 export default function Header() {
+  const dispatch = useDispatch();
+  let navigate = useNavigate();
   const { user: currentUser } = useSelector((state) => state.auth);
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const userAbout = useSelector((state) => state.auth.userAbout);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
   // const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [tagName, setTagName] = useState("");
   const isMenuOpen = Boolean(anchorEl);
+  const [avatarUrl, setAvatarUrl] = useState();
   // const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-  const dispatch = useDispatch();
-  let navigate = useNavigate();
+
   const logOut = useCallback(() => {
     try {
       Swal.fire({
@@ -162,6 +179,7 @@ export default function Header() {
           dispatch(logout());
         }
       });
+      setAnchorEl(null);
     } catch (error) {
       console.log(error);
     }
@@ -171,9 +189,28 @@ export default function Header() {
     return () => {
       EventBus.remove("logout");
     };
-  }, [currentUser, logOut]);
+  }, [logOut]);
+
+  useEffect(() => {
+    dispatch(fetchUserAbout(currentUser?.id));
+    if (userAbout?.avatar) {
+      loadImage(userAbout?.avatar).then((url) => {
+        setAvatarUrl(url);
+      });
+    }
+    // console.log(userAbout);
+  }, [currentUser?.id, dispatch, userAbout?.avatar]);
+  function loadImage(link) {
+    return fetch(`http://localhost:8080/file/review/${link}`)
+      .then((response) => response.blob())
+      .then((blob) => URL.createObjectURL(blob));
+  }
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    // handleMobileMenuClose();
   };
   const handleClickProfile = (todo) => {
     // console.log(todo.link);
@@ -184,21 +221,20 @@ export default function Header() {
     navigate(`/profile/${currentUser.name}`);
   };
   const handleClickAcountSetting = (todo) => {
+    setAnchorEl(null);
     navigate(`/AcountSetting/${currentUser.name}`);
   };
   const handleClickMyUpload = (todo) => {
+    setAnchorEl(null);
     navigate(`/${currentUser.name}/EditUpload`);
   };
   // const handleMobileMenuClose = () => {
   //   setMobileMoreAnchorEl(null);
   // };
   const handleClickOder = (todo) => {
-    navigate(`/${currentUser.name}/oder`);
-  };
-
-  const handleMenuClose = () => {
     setAnchorEl(null);
-    // handleMobileMenuClose();
+    // alert(encodeURIComponent(currentUser?.name));
+    navigate(`/${encodeURIComponent(currentUser?.name)}/order`);
   };
 
   // const handleMobileMenuOpen = (event) => {
@@ -210,7 +246,7 @@ export default function Header() {
     navigate(`/Search?tagName=${query}`);
   };
 
-  const menuId = "primary-search-account-menu";
+  const menuId = "account-menu";
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
@@ -300,10 +336,10 @@ export default function Header() {
             </form>
             {/* <SearchResutlt tagName={tagName} /> */}
             <Box sx={{ flexGrow: 1 }} />
-            <Box sx={{ display: { xs: "", md: "flex" } }}>
+            <Box sx={{ display: "flex" }}>
               <Button
                 variant="contained"
-                sx={{ mr: "10px" }}
+                sx={{ height: "20%", margin: "auto 20px" }}
                 onClick={checkUpload}
               >
                 {" "}
@@ -313,41 +349,81 @@ export default function Header() {
 
               {currentUser && currentUser.name ? (
                 <>
-                  <IconButton
-                    size="large"
-                    edge="end"
-                    aria-label="account of current user"
-                    aria-controls={menuId}
-                    aria-haspopup="true"
-                    onClick={handleProfileMenuOpen}
-                    color="inherit"
-                  >
-                    <AccountCircle />
-                  </IconButton>
+                  <Tooltip title="Account menu">
+                    <IconButton
+                      aria-controls={open ? "account-menu" : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? "true" : undefined}
+                      onClick={handleProfileMenuOpen}
+                      color="inherit"
+                      backgroundColor={randomColor()}
+                    >
+                      {avatarUrl ? (
+                        <Avatar src={avatarUrl}></Avatar>
+                      ) : (
+                        <Avatar>
+                          {currentUser.name?.charAt(0).toUpperCase()}
+                        </Avatar>
+                      )}
+                      {/* <AccountCircle /> */}
+                    </IconButton>
+                  </Tooltip>
                   <Menu
                     anchorEl={anchorEl}
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
                     id={menuId}
-                    keepMounted
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
                     open={isMenuOpen}
                     onClose={handleMenuClose}
+                    PaperProps={{
+                      elevation: 0,
+                      sx: {
+                        overflow: "visible",
+                        filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                        mt: 1.5,
+                        "& .MuiAvatar-root": {
+                          width: 32,
+                          height: 32,
+                          ml: -0.5,
+                          mr: 1,
+                        },
+                        "&:before": {
+                          content: '""',
+                          display: "block",
+                          position: "absolute",
+                          top: 0,
+                          right: 14,
+                          width: 10,
+                          height: 10,
+                          bgcolor: "background.paper",
+                          transform: "translateY(-50%) rotate(45deg)",
+                          zIndex: 0,
+                        },
+                      },
+                    }}
+                    transformOrigin={{ horizontal: "right", vertical: "top" }}
+                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
                     <MenuItem onClick={handleClickProfile}>
+                      <Avatar src={avatarUrl}>
+                        {currentUser.name?.charAt(0).toUpperCase()}
+                      </Avatar>{" "}
                       {currentUser.name}
                     </MenuItem>
+                    <Divider />
                     <MenuItem onClick={handleClickAcountSetting}>
+                      <Settings fontSize="small" />
                       My account setting
                     </MenuItem>
-                    <MenuItem onClick={handleClickMyUpload}>My Upload</MenuItem>
-                    <MenuItem onClick={handleClickOder}>My Oder</MenuItem>
-                    <MenuItem onClick={logOut}>Log out</MenuItem>
+                    <MenuItem onClick={handleClickMyUpload}>
+                      <UploadFileIcon fontSize="small" /> My Upload
+                    </MenuItem>
+                    <MenuItem onClick={handleClickOder}>
+                      <ShoppingCartCheckoutIcon fontSize="small" /> My Oder
+                    </MenuItem>
+                    <MenuItem onClick={logOut}>
+                      {" "}
+                      <Logout fontSize="small" />
+                      Log out
+                    </MenuItem>
                   </Menu>
                   {/* {renderMenu} */}
                   {/* <Button sx={{ mr: "10px" }} onClick={logOut}>
@@ -370,7 +446,7 @@ export default function Header() {
               )}
             </Box>
 
-            <Box sx={{ display: { xs: "flex", md: "none" } }}>
+            {/* <Box sx={{ display: { xs: "flex", md: "none" } }}>
               <IconButton
                 size="large"
                 aria-label="show more"
@@ -381,7 +457,7 @@ export default function Header() {
               >
                 <MoreIcon />
               </IconButton>
-            </Box>
+            </Box> */}
           </Toolbar>
         </AppBar>
         {/* {renderMobileMenu} */}

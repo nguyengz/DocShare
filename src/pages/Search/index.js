@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Card,
   CardActionArea,
   CardActions,
@@ -43,37 +44,62 @@ function SearchResutlt() {
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState("Filter");
-
+  const [searchQuery, setSearchQuery] = useState([]);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const tagName = searchParams.get("tagName");
   const categoryData = useSelector((state) => state.category.data);
   const [selectedCategory, setSelectedCategory] = useState("Select a Category");
   const [selectedDateRange, setSelectedDateRange] = useState(null);
+  const [nameCategory, setNameCategory] = useState();
   useEffect(() => {
-    fetch(`http://localhost:8080/file/search?tagName=${tagName}`)
+    fetch(`/file/search?tagName=${tagName}`)
       .then((response) => response.json())
       .then((data) => setSearchResults(data))
       .catch((error) => console.log(error));
   }, [tagName]);
-  const filteredResults = useSearchQuery({
-    fileData: searchResults,
-    selectedCategory,
-    name: "",
-    selectedOption,
-    selectedDateRange: null,
-  });
+  useEffect(() => {
+    setNameCategory(selectedCategory);
+  }, [selectedCategory]);
   useEffect(() => {
     dispatch(fetchCategory());
     // pdf && renderPage();
   }, [dispatch]);
-  const renderSelectedOption = (selectedOption) => {
-    if (selectedOption === "oldest") {
-      return "oldest";
-    } else if (selectedOption === "newest") {
-      return "newest";
+
+  useEffect(() => {
+    const filteredData = searchResults.filter(
+      (file) =>
+        selectedCategory === "" ||
+        selectedCategory === "Select a Category" ||
+        file.category?.categoryName === selectedCategory ||
+        ((nameCategory === "" ||
+          file.category?.categoryName
+            .toLowerCase()
+            .includes(nameCategory.toLowerCase())) &&
+          (selectedDateRange === null ||
+            (new Date(file.uploadDate) >= selectedDateRange[0] &&
+              new Date(file.uploadDate) <= selectedDateRange[1])))
+    );
+    if (selectedOption === "newest") {
+      const sortedFiles = [...filteredData].sort(
+        (a, b) => new Date(b.uploadDate) - new Date(a.uploadDate)
+      );
+      setSearchQuery(sortedFiles);
+    } else if (selectedOption === "oldest") {
+      const sortedFiles = [...filteredData].sort(
+        (a, b) => new Date(a.uploadDate) - new Date(b.uploadDate)
+      );
+      setSearchQuery(sortedFiles);
+    } else {
+      setSearchQuery(filteredData);
     }
-  };
+  }, [
+    selectedCategory,
+    searchResults,
+    nameCategory,
+    selectedOption,
+    selectedDateRange,
+  ]);
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
     if (event.target.value === "newest") {
@@ -103,10 +129,18 @@ function SearchResutlt() {
     }
   };
 
+  // const handleCategoryChange = (event) => {
+  //   setSelectedCategory(event.target.value);
+  // };
+  const handleCategoryChange = (event) => {
+    if (event.target.value !== "Clear") {
+      setSelectedCategory(event.target.value);
+    }
+  };
   const getAlldata = () => {
     let datas = [];
 
-    filteredResults.map((file) => {
+    searchQuery.map((file) => {
       const data = {
         id: file.id,
         userId: file.userId,
@@ -137,9 +171,7 @@ function SearchResutlt() {
             <Select
               style={useStyles.input}
               value={selectedCategory}
-              onChange={(e) => {
-                setSelectedCategory(e.target.value);
-              }}
+              onChange={handleCategoryChange}
               sx={{
                 width: "200px",
               }}
@@ -172,6 +204,15 @@ function SearchResutlt() {
                 </MenuItem>
               ))}
             </Select>
+            <Button
+              marginLeft="5px"
+              variant="contained"
+              backgroundColor="#0d91fe"
+              size="small"
+              onClick={() => setSelectedCategory("Select a Category")}
+            >
+              Clear
+            </Button>
           </Grid>
           <Grid item xs={8} direction="row">
             <Stack
@@ -191,25 +232,19 @@ function SearchResutlt() {
                   value={selectedOption}
                   onChange={handleOptionChange}
                   displayEmpty
-                  // MenuProps={{
-                  //   MenuListProps: {
-                  //     disableRadio: true,
-                  //   },
-                  // }}
-                  renderValue={() => renderSelectedOption(selectedOption)}
                   sx={{
                     border: "none",
                     width: "100px",
                     height: "30px",
                     alignContent: "center",
-                    ml: "150px",
+                    ml: "200px",
                   }}
                 >
-                  <MenuItem value="">
-                    <em>None</em>
+                  <MenuItem value="Filter" disabled>
+                    Filter
                   </MenuItem>
-                  <MenuItem value="newest">newest</MenuItem>
-                  <MenuItem value="oldest">oldest</MenuItem>
+                  <MenuItem value="newest">Newest</MenuItem>
+                  <MenuItem value="oldest">Oldest</MenuItem>
                 </Select>
               </Item>
             </Stack>

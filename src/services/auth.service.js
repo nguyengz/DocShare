@@ -1,7 +1,7 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 
-const API_URL = "http://localhost:8080/api/auth/";
+const API_URL = "/api/auth/";
 
 const register = (name, username, email, password) => {
   return axios.post(API_URL + "signup", {
@@ -24,7 +24,7 @@ const login = (username, password) => {
         Swal.fire({
           icon: "success",
           title: "Welcome",
-          timer: 1000,
+          timer: 2000,
           showConfirmButton: false,
         });
       } else if (response.data.error) {
@@ -32,7 +32,7 @@ const login = (username, password) => {
           icon: "error",
           title: "Password or Username failed",
           text: "Please check infomation again!",
-          timer: 2000,
+          timer: 3000,
           showConfirmButton: false,
         });
       }
@@ -43,15 +43,47 @@ const login = (username, password) => {
 const logout = () => {
   localStorage.removeItem("user");
 };
-const fetchUser = (data) => {
-  return axios.get(API_URL + "/users?user_id=" + data);
+
+const fetchUserAbout = (user_id) => {
+  return axios.get(API_URL + "user/about?user_id=" + user_id);
+};
+const updateUser = (data) => {
+  return axios.put(`${API_URL}update/profile`, data);
+};
+const changePass = (username, password) => {
+  return axios
+    .put(API_URL + "user/password", {
+      username,
+      password,
+    })
+    .then((response) => {
+      if (response.data) {
+        Swal.fire({
+          icon: "success",
+          title: "Please check email to change password",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+      } else if (response.data.error) {
+        Swal.fire({
+          icon: "error",
+          title: "Password or Username failed",
+          text: "Please check infomation again!",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+      }
+      return response.data;
+    });
 };
 
 const authService = {
   register,
   login,
   logout,
-  fetchUser,
+  fetchUserAbout,
+  updateUser,
+  changePass,
 };
 
 export default authService;

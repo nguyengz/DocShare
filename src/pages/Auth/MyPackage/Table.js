@@ -55,13 +55,13 @@ const Table = (props) => {
         alignItems: "center",
         justifyContent: "center",
       },
-      Cell: ({ row }) => row.original?.packages?.name,
+      Cell: ({ row }) => row.original?.name,
     },
     {
       accessorKey: "price",
       header: "Price",
       size: 50,
-      Cell: ({ row }) => row.original?.packages?.price,
+      Cell: ({ row }) => row.original?.price,
       muiTableBodyCellStyle: {
         display: "flex",
         alignItems: "center",
@@ -73,19 +73,19 @@ const Table = (props) => {
       header: "NumOfAccess",
       size: 50,
       Cell: ({ row }) =>
-        row.original?.numOfAccess + "/" + row.original?.packages?.dowloads,
+        row.original?.numOfAccess + "/" + row.original?.dowloads,
     },
     {
       accessorKey: "storageSize",
       header: "StorageSize",
       size: 50,
-      Cell: ({ row }) => row.original?.packages?.storageSize,
+      Cell: ({ row }) => row.original?.storageSize,
     },
     {
       accessorKey: "createdAt",
-      header: "CreatedAt",
+      header: "End Date",
       size: 50,
-      Cell: ({ cell }) => formatDate(cell.value),
+      Cell: ({ row }) => formatDate(row.original?.createdAt),
     },
   ]);
   const centeredColumns = columns.map((column) => column.accessorKey); // danh sách tất cả các cột
