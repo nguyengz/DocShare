@@ -215,7 +215,7 @@ function FileDetail() {
       Swal.fire({
         icon: "error",
         title: "Please Sign in !",
-        text: "You can download the file right now.",
+        text: "You can't download the file right now.",
         confirmButtonText: "OK",
       }).then(() => {
         navigate(`/login?${queryParams}`);

@@ -12,7 +12,6 @@ const useStyles = makeStyles((theme) => ({
 function Todo({ ...props }) {
   const { todoList, number } = props;
 
-  const classes = useStyles();
   return (
     <>
       <Box

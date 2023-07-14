@@ -7,14 +7,14 @@ import { fetchfile, fetchfileFeatured } from "~/slices/file";
 
 function Featured() {
   const dispatch = useDispatch();
-  const fileData = useSelector((state) => state.file.data);
+  const fileData = useSelector((state) => state.file.feaTured);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     dispatch(fetchfileFeatured())
       .then(() => setIsLoading(false))
       .catch((error) => console.log(error));
-  }, []);
+  }, [dispatch]);
 
   const getAlldata = () => {
     let datas = [];
@@ -27,7 +27,7 @@ function Featured() {
         linkImg: file.linkImg,
         link: file.link,
         view: file.view,
-        userName: file.userName
+        userName: file.userName,
       };
       datas = [...datas, data];
     });
@@ -35,19 +35,16 @@ function Featured() {
   };
 
   const todoList = isLoading ? [] : getAlldata();
-  const numberProduct = [4, 12, 7];
+  const numberProduct = [4, 12];
   //   const numberProduct1 = [3, 12, 7];
   return (
     <>
       <Box
         sx={{
           width: "auto",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
           textAlign: "center",
           color: "white",
-          margin: 0,
+          marginTop: 5,
         }}
       >
         <Todo todoList={todoList} number={numberProduct} />

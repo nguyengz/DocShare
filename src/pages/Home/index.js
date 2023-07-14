@@ -2,23 +2,22 @@ import React from "react";
 
 import { Box } from "@mui/material";
 import Featured from "~/components/Layouts/Main/Featured";
+import TopView from "~/components/Layouts/Main/TopView";
 
 function Home() {
   return (
     <>
       <Box
         sx={{
-          width: "auto",
-          height: "auto",
           backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
+
           backgroundPosition: "center",
           textAlign: "center",
-          color: "white",
-          marginTop: 40,
+          marginTop: 5,
           marginBottom: 10,
         }}
       >
+        <TopView />
         <Featured />
       </Box>
     </>

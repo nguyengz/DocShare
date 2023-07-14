@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import {
+  Avatar,
   Box,
   Button,
   Card,
@@ -8,15 +10,14 @@ import {
   CardContent,
   CardMedia,
   Grid,
-  Link,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-
-import { useNavigate } from "react-router-dom";
-import PdfToImage from "../../../pdftoimage";
+import { Link, useNavigate } from "react-router-dom";
 import useFetchImageData from "~/utils/useEffectIamge";
+
+const data = [];
 
 const styles = {
   todoName: {
@@ -26,23 +27,42 @@ const styles = {
     maxWidth: "300px",
   },
 };
-
-function TodoList({ ...props }) {
+function TodoListTopView({ ...props }) {
   const { todoList, number } = props;
-  // const [imageData, setImageData] = useState("");
+
   const navigate = useNavigate();
 
   const result = [];
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("sm"));
-
   const imageData = useFetchImageData(todoList);
+
   const handleClickProduct = (todo) => {
-    console.log(todo);
+    // console.log(todo.link);
+    // const state = { link: todo.link };
+    // const title = "";
+    // const url = `/fileDetail/${todo.link}`;
+    // window.history.pushState(state, title, url);
     navigate(`/fileDetail/${todo.id}`);
   };
-
+  // useEffect(() => {
+  //   todoList.forEach((todo) => {
+  //     fetch(`http://localhost:8080/file/review/${todo.image}`)
+  //       .then((response) => response.arrayBuffer())
+  //       .then((buffer) =>
+  //         setImageData((prevImageData) => ({
+  //           ...prevImageData,
+  //           [todo.id]: `data:image/jpeg;base64,${btoa(
+  //             new Uint8Array(buffer).reduce(
+  //               (data, byte) => data + String.fromCharCode(byte),
+  //               ""
+  //             )
+  //           )}`,
+  //         }))
+  //       );
+  //   });
+  // }, [todoList]);
   const handleListProducts = () => {
     // eslint-disable-next-line no-lone-blocks
     {
@@ -54,21 +74,24 @@ function TodoList({ ...props }) {
         result.push(
           <Grid
             item
-            xs={matches ? (index > 2 ? 3 : number[0]) : number[1]}
+            xs={matches ? number[0] : number[1]}
             key={todo.id}
             padding={1}
           >
             <Card
               elevation={0}
-              sx={{ height: "100%", boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)" }}
+              sx={{
+                height: "100%",
+                boxShadow: "0 0 20px rgb(126 162 247 / 42%)",
+              }}
             >
               <CardActionArea onClick={() => handleClickProduct(todo)}>
                 <Box
                   height={200}
-                  sx={{
-                    backgroundImage: `url(${imageData[todo.id]})`,
-                    backdropFilter: "blur(10px)",
-                  }}
+                  // sx={{
+                  //   backgroundImage: `url(${imageData[todo.id]})`,
+                  //   // filter: "blur(10px)",
+                  // }}
                 >
                   <CardMedia
                     component="img"
@@ -79,6 +102,7 @@ function TodoList({ ...props }) {
                       objectFit: "contain",
                       objectPosition: "center",
                       background: "gainsboro",
+                      position: "absolute",
                       // backgroundImage: `url(${imageData[todo.id]})`,
                     }}
                   />
@@ -91,7 +115,7 @@ function TodoList({ ...props }) {
                   <Typography variant="body2" color="text.secondary">
                     <Typography>
                       {todo.name.length > 50
-                        ? todo.name.slice(0, 40) + "..."
+                        ? todo.name.slice(0, 50) + "..."
                         : todo.name}
                     </Typography>
                   </Typography>
@@ -116,8 +140,8 @@ function TodoList({ ...props }) {
                     // setidlink(page.id);
                     // alert(page.title);
                   }}
-                  href={`/About/${todo.userId}`}
-                  // to={`/About/${todo.userId}`}
+                  // href={`/About/${todo.name}`}
+                  to={`/About/${todo.userId}`}
                   key={index}
                   onMouseEnter={(e) => {
                     e.target.style.color = "blue";
@@ -144,12 +168,11 @@ function TodoList({ ...props }) {
       <Box sx={{ flexGrow: 1 }}>
         <Grid container sx={{ width: "100%", margin: "auto" }}>
           {handleListProducts()}
-          {result.slice(0, 7).map((item) => item)}
-          {/* {result.slice(3).map((item) => item)} */}
+          {result.map((item) => item)}
         </Grid>
       </Box>
     </>
   );
 }
 
-export default TodoList;
+export default TodoListTopView;
