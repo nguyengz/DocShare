@@ -1,7 +1,8 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 
-import TodoListTopView from "../TopListView";
+// import TodoListTopView from "../TopListView";
+import TodoListTop from "~/components/TodoListTop";
 
 function TodoT({ ...props }) {
   const { todoList, number } = props;
@@ -20,7 +21,7 @@ function TodoT({ ...props }) {
           alignContent: "center",
         }}
       >
-        <TodoListTopView todoList={todoList} number={number} />
+        <TodoListTop todoList={todoList} number={number} />
       </Box>
     </>
   );

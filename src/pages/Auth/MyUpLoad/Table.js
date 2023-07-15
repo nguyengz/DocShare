@@ -27,11 +27,10 @@ import { Link } from "react-router-dom";
 const Example = (props) => {
   const dispatch = useDispatch();
   //   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const deleleted = useSelector((state) => state.userAbout.data);
+
   const [tableData, setTableData] = useState([]);
   const [openDialogDl, setOpenDialogDl] = useState(false);
   const [dialogDataDl, setDialogDataDl] = useState({});
-  const [validationErrors, setValidationErrors] = useState({});
   const [editingRow, setEditingRow] = useState(null);
   useEffect(() => {
     if (props.data) {

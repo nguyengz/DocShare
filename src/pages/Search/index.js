@@ -153,13 +153,16 @@ function SearchResutlt() {
         link: file.link,
         view: file.view,
         userName: file.userName,
+        likeFile: file.likeFile,
+        totalDownload: file.totalDownload,
+        uploadDate: file.uploadDate,
       };
       datas = [...datas, data];
     });
     return datas;
   };
   const todoList = getAlldata();
-  const numberProduct = [3, 12, 20];
+  const numberProduct = [3, 12, resuft];
   return (
     <>
       <Box minHeight={1000} sx={{ flexGrow: 1 }}>

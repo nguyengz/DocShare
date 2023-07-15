@@ -16,7 +16,7 @@ import { styled } from "@mui/system";
 import StarIcon from "@mui/icons-material/StarBorder";
 import { useDispatch, useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination, Navigation } from "swiper";
+import { Pagination, Navigation } from "swiper";
 import "swiper/swiper.css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -80,7 +80,7 @@ function Slider() {
         console.error(error);
       });
   }, [setTiers]);
-  const handleAddPackage = () => {
+  const handleClickPackage = () => {
     setShowForm(true); // show the form when the button is clicked
   };
   const handleResgisterPackage = async (tier) => {
@@ -110,6 +110,7 @@ function Slider() {
       }
     }
   };
+
   return (
     <>
       <Box
@@ -159,7 +160,10 @@ function Slider() {
             justifyContent: "center",
             alignItems: "center",
             margin: "10px auto",
+            boxShadow:
+              "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
           }}
+          onClick={handleClickPackage}
         >
           <Swiper
             spaceBetween={30}
@@ -175,7 +179,12 @@ function Slider() {
             {tiers.map((tier) => (
               <SwiperSlide key={tier}>
                 <Grid item key={tier.id}>
-                  <PricingCard>
+                  <PricingCard
+                    sx={{
+                      boxShadow:
+                        "rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset",
+                    }}
+                  >
                     <CardHeader
                       title={tier.name}
                       // subheader={tier.name}
@@ -202,7 +211,14 @@ function Slider() {
                           ${tier.price}
                         </Typography>
                         <Typography variant="h6" color="text.secondary">
-                          /mo
+                          {tier?.duration &&
+                            (Number.isInteger(tier?.duration / 365)
+                              ? `/${tier?.duration / 365}year`
+                              : Number.isInteger(tier?.duration / 30)
+                              ? `/${tier?.duration / 30}month`
+                              : Number.isInteger(tier?.duration / 7)
+                              ? `/${tier?.duration / 7}week`
+                              : `/${tier?.duration}day`)}
                         </Typography>
                       </Box>
                       <PricingList>
@@ -211,7 +227,11 @@ function Slider() {
                           variant="subtitle1"
                           align="center"
                         >
-                          {tier.dowloads === 0 ? "Unlimit" : tier.dowloads}{" "}
+                          {tier?.price === 0
+                            ? "1 Upload = 1"
+                            : tier.dowloads === 0
+                            ? "Unlimit"
+                            : tier.dowloads}{" "}
                           Download
                         </Typography>
                         <Typography
@@ -223,7 +243,7 @@ function Slider() {
                         </Typography>
                       </PricingList>
                     </CardContent>
-                    <CardActions>
+                    {/* <CardActions>
                       <Button
                         fullWidth
                         variant={tier.name === "Pro" ? "contained" : "outlined"}
@@ -231,7 +251,7 @@ function Slider() {
                       >
                         Get started
                       </Button>
-                    </CardActions>
+                    </CardActions> */}
                   </PricingCard>
                 </Grid>
               </SwiperSlide>
@@ -265,7 +285,7 @@ function Slider() {
               }
             }}
             fileDetail_id={undefined}
-            name={currentUser.name}
+            name={currentUser?.name}
           />
         </div>
       )}

@@ -7,12 +7,18 @@ import {
   CardContent,
   CardMedia,
   Grid,
+  IconButton,
   Typography,
 } from "@mui/material";
+import ShareIcon from "@mui/icons-material/Share";
+import DownloadIcon from "@mui/icons-material/Download";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
+import moment from "moment/moment";
+import { format } from "date-fns";
+
 import { Swiper, SwiperSlide } from "swiper/react";
-
 import { Pagination, Mousewheel } from "swiper";
-
 import "swiper/swiper.css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -53,6 +59,10 @@ function FileListTags(props) {
   const [listtag, setListTag] = useState([]);
   const imageData = useFetchImageData(listtag);
   const options = { year: "numeric", month: "short", day: "numeric" };
+  const formatDate = (dateString) => {
+    const date = moment.utc(dateString).toDate();
+    return format(date, "dd/MM/yy HH:mm");
+  };
   // const result = [];
 
   const handleClickFile = (todo) => {
@@ -77,9 +87,6 @@ function FileListTags(props) {
   const result =
     Array.isArray(listtag) && listtag.length > 0
       ? listtag.slice(1, 6)?.map((todo, index) => {
-          const uploadDate = new Date(todo.uploadDate);
-          const formattedDate = uploadDate.toLocaleDateString("en-US", options);
-
           return (
             <Grid item sm={12} key={todo.id} sx={{ width: "450px" }}>
               {/* <LazyLoad height={200} once> */}
@@ -147,19 +154,45 @@ function FileListTags(props) {
                       display: "flex",
                       alignItems: "center",
                       pl: 1,
-                      pb: 1,
                     }}
                   >
                     <CardActions
                       style={{
                         // display: "",
-                        margin: "0px 1px",
+                        margin: "0px",
                       }}
                     >
-                      <Typography variant="caption">
-                        {todo.view} views
+                      <Typography
+                        variant="caption"
+                        display="flex"
+                        alignItems="center"
+                      >
+                        {formatDate(todo.uploadDate)}
                       </Typography>
-                      <Typography variant="caption">{formattedDate}</Typography>
+                      <Typography
+                        variant="caption"
+                        display="flex"
+                        alignItems="center"
+                      >
+                        {todo.view} <RemoveRedEyeOutlinedIcon />
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        display="flex"
+                        alignItems="center"
+                      >
+                        {todo.likeFile} <FavoriteIcon sx={{ color: "red" }} />
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        display="flex"
+                        alignItems="center"
+                      >
+                        {todo.totalDownload} <DownloadIcon />
+                      </Typography>
+                      <IconButton aria-label="">
+                        <ShareIcon />
+                      </IconButton>
                     </CardActions>
                   </Box>
                 </Box>

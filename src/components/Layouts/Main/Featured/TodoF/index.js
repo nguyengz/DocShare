@@ -1,14 +1,8 @@
 import React from "react";
-import { Box, Divider, Grid, Typography } from "@mui/material";
-import TodoTop from "../TodoListF";
-import { Padding } from "@mui/icons-material";
-import { makeStyles } from "@mui/styles";
-const useStyles = makeStyles((theme) => ({
-  divider: {
-    backgroundColor: "blue",
-    height: 3,
-  },
-}));
+import { Box, Grid, Typography } from "@mui/material";
+
+import TodoListTop from "~/components/TodoListTop";
+
 function Todo({ ...props }) {
   const { todoList, number } = props;
 
@@ -26,7 +20,7 @@ function Todo({ ...props }) {
         <Grid container display={"flex"}>
           <Grid xs={3} item>
             <Typography variant="h5" color={"black"}>
-              Featured DocShare
+              Top Likes DocShare
             </Typography>
           </Grid>
           <Grid xs={6} item></Grid>
@@ -40,7 +34,7 @@ function Todo({ ...props }) {
           </Grid>
         </Grid>
 
-        <TodoTop todoList={todoList} number={number} />
+        <TodoListTop todoList={todoList} number={number} />
       </Box>
     </>
   );

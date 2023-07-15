@@ -11,8 +11,9 @@ import { styled } from "@mui/system";
 import { useDispatch, useSelector } from "react-redux";
 import { registerPackage } from "~/slices/paypal";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const PricingList = styled("ul")({
   margin: 0,
@@ -78,22 +79,28 @@ export default function Pricing({ onBack, fileDetail_id, name }) {
   }, [setTiers]);
   const handleResgisterPackage = async (tier) => {
     setIsUploading(true);
-    const data = {
-      user_id: currentUser.id,
-      package_id: tier.id,
-      file_id: parseInt(fileDetail_id) ? parseInt(fileDetail_id) : "",
-      name: encodeURIComponent(name),
-    };
 
-    try {
-      // dispatch the uploadfile action
-      const response = await dispatch(registerPackage(data));
-      const payLink = response.payload;
-      console.log(data);
-      window.location.href = payLink;
-    } catch (error) {
-      console.log(error);
-      setIsUploading(false); // set isUploading state to false if there is an error
+    if (tier.type === 2) {
+      setIsUploading(false);
+      navigate("/uploadfile");
+      // <Navigate to="/uploadfile" />;
+    } else {
+      const data = {
+        user_id: currentUser.id,
+        package_id: tier.id,
+        file_id: parseInt(fileDetail_id) ? parseInt(fileDetail_id) : "",
+        name: encodeURIComponent(name),
+      };
+      try {
+        // dispatch the uploadfile action
+        const response = await dispatch(registerPackage(data));
+        const payLink = response.payload;
+        console.log(data);
+        window.location.href = payLink;
+      } catch (error) {
+        console.log(error);
+        setIsUploading(false); // set isUploading state to false if there is an error
+      }
     }
   };
 

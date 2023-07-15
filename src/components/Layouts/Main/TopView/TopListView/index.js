@@ -13,10 +13,14 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  IconButton,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import useFetchImageData from "~/utils/useEffectIamge";
-
+import ShareIcon from "@mui/icons-material/Share";
+import DownloadIcon from "@mui/icons-material/Download";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 const data = [];
 
 const styles = {
@@ -39,30 +43,9 @@ function TodoListTopView({ ...props }) {
   const imageData = useFetchImageData(todoList);
 
   const handleClickProduct = (todo) => {
-    // console.log(todo.link);
-    // const state = { link: todo.link };
-    // const title = "";
-    // const url = `/fileDetail/${todo.link}`;
-    // window.history.pushState(state, title, url);
     navigate(`/fileDetail/${todo.id}`);
   };
-  // useEffect(() => {
-  //   todoList.forEach((todo) => {
-  //     fetch(`http://localhost:8080/file/review/${todo.image}`)
-  //       .then((response) => response.arrayBuffer())
-  //       .then((buffer) =>
-  //         setImageData((prevImageData) => ({
-  //           ...prevImageData,
-  //           [todo.id]: `data:image/jpeg;base64,${btoa(
-  //             new Uint8Array(buffer).reduce(
-  //               (data, byte) => data + String.fromCharCode(byte),
-  //               ""
-  //             )
-  //           )}`,
-  //         }))
-  //       );
-  //   });
-  // }, [todoList]);
+
   const handleListProducts = () => {
     // eslint-disable-next-line no-lone-blocks
     {
@@ -74,7 +57,7 @@ function TodoListTopView({ ...props }) {
         result.push(
           <Grid
             item
-            xs={matches ? number[0] : number[1]}
+            xs={matches ? (index > 2 ? 3 : number[0]) : number[1]}
             key={todo.id}
             padding={1}
           >
@@ -107,17 +90,14 @@ function TodoListTopView({ ...props }) {
                     }}
                   />
                 </Box>
-
                 <CardContent sx={{ height: "100px", background: "#f8f8f8" }}>
                   <Typography style={styles.todoName} gutterBottom variant="h6">
                     {todo.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    <Typography>
-                      {todo.name.length > 50
-                        ? todo.name.slice(0, 50) + "..."
-                        : todo.name}
-                    </Typography>
+                    {todo.name.length > 50
+                      ? todo.name.slice(0, 50) + "..."
+                      : todo.name}
                   </Typography>
                 </CardContent>
               </CardActionArea>
@@ -152,10 +132,32 @@ function TodoListTopView({ ...props }) {
                 >
                   {todo.userName}
                 </Typography>
-                <Typography variant="caption">{todo.view} views</Typography>
-                <Button size="small" color="primary">
-                  Share
-                </Button>
+
+                <Typography
+                  variant="caption"
+                  display="flex"
+                  alignItems="center"
+                >
+                  {todo.view} <RemoveRedEyeOutlinedIcon />
+                </Typography>
+                <Typography
+                  variant="caption"
+                  display="flex"
+                  alignItems="center"
+                >
+                  {todo.likeFile} <FavoriteIcon sx={{ color: "red" }} />
+                </Typography>
+                <Typography
+                  variant="caption"
+                  display="flex"
+                  alignItems="center"
+                >
+                  {todo.view} <DownloadIcon />
+                </Typography>
+
+                <IconButton aria-label="" onClick={handleClickProduct}>
+                  <ShareIcon />
+                </IconButton>
               </CardActions>
             </Card>
           </Grid>

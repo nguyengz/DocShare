@@ -1,14 +1,13 @@
 import React from "react";
 
-import TodoListSearch from "../TodoListS";
+import TodoListTop from "~/components/TodoListTop";
 
 function TodoSearch({ ...props }) {
   const { todoList, number } = props;
 
- 
   return (
     <>
-        <TodoListSearch todoList={todoList} number={number} />
+      <TodoListTop todoList={todoList} number={number} />
     </>
   );
 }
