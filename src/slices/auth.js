@@ -223,7 +223,7 @@ const authSlice = createSlice({
     [login.rejected]: (state, action) => {
       state.isLoggedIn = false;
       state.user = null;
-      state.error = action.payload.user;
+      state.error = action.payload;
     },
     [logout.fulfilled]: (state, action) => {
       state.isLoggedIn = false;
@@ -235,9 +235,11 @@ const authSlice = createSlice({
     // Handle the fulfilled state when updating package
     [updateUser.fulfilled]: (state, action) => {
       state.status = "succeeded";
-      state.userAbout = state.userAbout.map((user) =>
-        user.id === action.payload.id ? action.payload : user
-      );
+      if (state.userAbout && Array.isArray(state.userAbout)) {
+        state.userAbout = state.userAbout.map((user) =>
+          user.id === action.payload.id ? action.payload : user
+        );
+      }
     },
     // Handle the rejected state when updating package
     [updateUser.rejected]: (state, action) => {

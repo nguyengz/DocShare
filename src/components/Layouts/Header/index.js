@@ -404,9 +404,9 @@ export default function Header() {
                   >
                     <MenuItem onClick={handleClickProfile}>
                       <Avatar src={avatarUrl}>
-                        {currentUser.name?.charAt(0).toUpperCase()}
+                        {userAbout?.name?.charAt(0).toUpperCase()}
                       </Avatar>{" "}
-                      {currentUser.name}
+                      {userAbout?.name}
                     </MenuItem>
                     <Divider />
                     <MenuItem onClick={handleClickAcountSetting}>
