@@ -19,7 +19,6 @@ import { Form, Formik } from "formik";
 
 import * as Yup from "yup";
 import { AccountCircle } from "@mui/icons-material";
-import { makeStyles } from "@mui/styles";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
@@ -42,10 +41,7 @@ const style = {
     fontSize: "50px",
     margin: "auto",
   },
-  input: {
-    with: "300px",
-    height: "40px",
-  },
+
   gridUser: {
     margin: "auto",
     width: "70%",
@@ -78,8 +74,6 @@ const style = {
     padding: "0",
     overflowX: "hidden",
   },
-};
-const useStyles = makeStyles({
   input: {
     // with: "350px",
     height: "40px",
@@ -106,10 +100,37 @@ const useStyles = makeStyles({
       backgroundColor: "#3f51b5",
     },
   },
-});
+};
+// const useStyles = makeStyles({
+//   input: {
+//     // with: "350px",
+//     height: "40px",
+//   },
+//   TextareaAutosize: {
+//     height: "200px",
+//     width: "100%",
+//     backgroundColor: "red",
+//   },
+//   tag: {
+//     margin: "5px",
+//     backgroundColor: "#f0f0f0",
+//     color: "#333",
+//     fontWeight: "bold",
+//     borderRadius: "5px",
+//     "&:hover": {
+//       backgroundColor: "#e0e0e0",
+//     },
+//   },
+//   selectedTag: {
+//     backgroundColor: "#3f51b5",
+//     color: "#fff",
+//     "&:hover": {
+//       backgroundColor: "#3f51b5",
+//     },
+//   },
+// });
 function AcountSetting() {
   const dispatch = useDispatch();
-  const classes = useStyles();
   const { user: currentUser } = useSelector((state) => state.auth);
   const userAbout = useSelector((state) => state.auth.userAbout);
   const [email, setEmail] = useState(null);
@@ -407,7 +428,7 @@ function AcountSetting() {
                           <Item>
                             <InputLabel htmlFor="Email">Email</InputLabel>
                             <OutlinedInput
-                              className={classes.input}
+                              style={style.input}
                               type="text"
                               fullWidth
                               value={email}
@@ -422,7 +443,7 @@ function AcountSetting() {
                               FirstName
                             </InputLabel>
                             <OutlinedInput
-                              className={classes.input}
+                              style={style.input}
                               type="text"
                               id="firtName"
                               name="firtName"
@@ -485,7 +506,7 @@ function AcountSetting() {
                             </Button>
                             {/* <InputLabel htmlFor="PassWord">PassWord</InputLabel>
                             <OutlinedInput
-                              className={classes.input}
+                              style={style.input}
                               type="text"
                               fullWidth
                               //   value={title}
@@ -498,7 +519,7 @@ function AcountSetting() {
                           <Item>
                             <InputLabel htmlFor="LastName">LastName</InputLabel>
                             <OutlinedInput
-                              className={classes.input}
+                              style={style.input}
                               id="lastName"
                               name="lastName"
                               type="text"
@@ -529,8 +550,7 @@ function AcountSetting() {
                             </InputLabel>
 
                             <OutlinedInput
-                              sx={useStyles.input}
-                              className={classes.input}
+                              style={style.input}
                               id="phone"
                               name="phone"
                               type="text"
@@ -559,8 +579,7 @@ function AcountSetting() {
                               Link social
                             </InputLabel>
                             <OutlinedInput
-                              sx={useStyles.input}
-                              className={classes.input}
+                              style={style.input}
                               id="linksocial"
                               name="linksocial"
                               type="text"

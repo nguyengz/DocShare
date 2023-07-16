@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { makeStyles } from "@mui/styles";
+
 import randomColor from "randomcolor";
 
 import "swiper/swiper.css";
@@ -19,9 +19,7 @@ import "swiper/css/pagination";
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
 
-import { fetchUser } from "~/slices/user";
-import PdfToImage from "~/components/Layouts/pdftoimage";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import FileList from "./ListComponent/FileList";
 import TagList from "./ListComponent/TagList";
 import { fetchUserAbout } from "~/slices/auth";
@@ -42,17 +40,6 @@ const Item = styled(Grid)(({ theme }) => ({
   },
 }));
 
-const useStyles = makeStyles({
-  largeAvatar: {
-    width: "100px",
-    height: "100px",
-    fontSize: "50px",
-  },
-  gridUser: {
-    margin: "auto",
-    width: "70%",
-  },
-});
 const style = {
   largeAvatar: {
     width: "100px",

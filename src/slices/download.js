@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { saveAs } from "file-saver";
 import Swal from "sweetalert2";
-import Pricing from "~/pages/Payment/Package";
 import fileService from "~/services/file.service";
 
 const initialState = {

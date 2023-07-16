@@ -25,7 +25,6 @@ import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
 import { styled } from "@mui/material/styles";
-import { makeStyles } from "@mui/styles";
 import { useEffect } from "react";
 import { TagsInput } from "react-tag-input-component";
 
@@ -51,7 +50,58 @@ const Item = styled(Grid)(({ theme }) => ({
   width: "300px",
   color: theme.palette.text.secondary,
 }));
-const useStyles = makeStyles({
+// const useStyles = makeStyles({
+//   input: {
+//     with: "300px",
+//     height: "40px",
+//   },
+//   TextareaAutosize: {
+//     height: "200px",
+//     width: "100%",
+//     backgroundColor: "red",
+//   },
+//   tag: {
+//     margin: "5px",
+//     backgroundColor: "#f0f0f0",
+//     color: "#333",
+//     fontWeight: "bold",
+//     borderRadius: "5px",
+//     "&:hover": {
+//       backgroundColor: "#e0e0e0",
+//     },
+//   },
+//   selectedTag: {
+//     backgroundColor: "#3f51b5",
+//     color: "#fff",
+//     "&:hover": {
+//       backgroundColor: "#3f51b5",
+//     },
+//   },
+// });
+const styles = {
+  wrapper: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "1px",
+    width: "100%",
+    height: "400px",
+    border: "2px inset",
+    boxShadow: "2px 2px 10px #aaaaaa",
+  },
+  imageWrapper: {
+    display: "block",
+    width: "100%",
+    height: "100%",
+    border: "1px solid rgba(0,0,0,0.15)",
+    borderRadius: "1px",
+    boxShadow: "0 2px 5px 0 rgba(0,0,0,0.25)",
+    padding: "0",
+    overflowX: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   input: {
     with: "300px",
     height: "40px",
@@ -78,31 +128,6 @@ const useStyles = makeStyles({
       backgroundColor: "#3f51b5",
     },
   },
-});
-const styles = {
-  wrapper: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "1px",
-    width: "100%",
-    height: "400px",
-    border: "2px inset",
-    boxShadow: "2px 2px 10px #aaaaaa",
-  },
-  imageWrapper: {
-    display: "block",
-    width: "100%",
-    height: "100%",
-    border: "1px solid rgba(0,0,0,0.15)",
-    borderRadius: "1px",
-    boxShadow: "0 2px 5px 0 rgba(0,0,0,0.25)",
-    padding: "0",
-    overflowX: "hidden",
-    justifyContent: "center",
-    alignItems: "center",
-  },
 };
 
 function InfomationUpload(props) {
@@ -116,7 +141,6 @@ function InfomationUpload(props) {
     ? props.selectedFile.type.split("/").pop()
     : "";
   const fileSize = props.selectedFile ? props.selectedFile.size : 0;
-  const classes = useStyles();
 
   const [selectedCategory, setSelectedCategory] = useState("Select a Category");
   const [tags, setSelectedTags] = useState([]);
@@ -461,7 +485,7 @@ function InfomationUpload(props) {
                                   FileName
                                 </InputLabel>
                                 <OutlinedInput
-                                  className={classes.input}
+                                  style={styles.input}
                                   type="text"
                                   name="title"
                                   onBlur={handleBlur}
@@ -527,7 +551,7 @@ function InfomationUpload(props) {
                               <Item>
                                 <InputLabel>Category</InputLabel>
                                 <Select
-                                  className={classes.input}
+                                  style={styles.input}
                                   name="selectedCategory"
                                   onBlur={handleBlur}
                                   error={Boolean(
@@ -583,7 +607,7 @@ function InfomationUpload(props) {
                                   Tags
                                 </InputLabel>
                                 <TagsInput
-                                  className={classes.input}
+                                  style={styles.input}
                                   name="tags"
                                   onBlur={handleBlur}
                                   error={Boolean(touched.tags && errors.tags)}
