@@ -1,20 +1,22 @@
-import { Box, Grid, Typography } from "@mui/material";
-import Todo from "./TodoF";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchfile, fetchfileFeatured } from "~/slices/file";
+import { Box, Grid, Paper, Typography } from "@mui/material";
 
-function Featured() {
+import { useEffect, useState } from "react";
+
+import { fetchfile, fetchfileTop } from "~/slices/file";
+
+import { useDispatch, useSelector } from "react-redux";
+import TodoT from "./TopView";
+
+function TopView() {
   const dispatch = useDispatch();
-  const fileData = useSelector((state) => state.file.feaTured);
+  const fileData = useSelector((state) => state.file.topView);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(fetchfileFeatured())
+    dispatch(fetchfileTop())
       .then(() => setIsLoading(false))
       .catch((error) => console.log(error));
-  }, [dispatch]);
+  }, []);
 
   const getAlldata = () => {
     let datas = [];
@@ -38,22 +40,37 @@ function Featured() {
   };
 
   const todoList = isLoading ? [] : getAlldata();
-  const numberProduct = [4, 12];
-  //   const numberProduct1 = [3, 12, 7];
+  const numberProduct = [4, 12, 3];
+
   return (
     <>
       <Box
         sx={{
           width: "auto",
-          textAlign: "center",
-          color: "white",
-          marginTop: 5,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          marginTop: "30px",
         }}
       >
-        <Todo todoList={todoList} number={numberProduct} />
+        <Grid container xs={8} sm={8} margin="auto">
+          {" "}
+          <Typography
+            variant="h5"
+            sx={
+              {
+                //   fontFamily: "inherit",
+                //   padding: "20px 0 0 0",
+              }
+            }
+          >
+            View Top DocShare
+          </Typography>
+        </Grid>
+        <TodoT todoList={todoList} number={numberProduct} />
       </Box>
     </>
   );
 }
 
-export default Featured;
+export default TopView;

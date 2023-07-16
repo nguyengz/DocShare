@@ -5,6 +5,7 @@ import Main from "../Main";
 // import About from '../Main/About';
 import Slider from "../Main/Slider";
 import { useMediaQuery, useTheme } from "@mui/material";
+import TopView from "../Main/TopView";
 
 function DefaultLayout({ children }) {
   const theme = useTheme();

@@ -120,6 +120,8 @@ const fileSlice = createSlice({
   initialState: {
     data: [],
     fileList: [],
+    topView: [],
+    feaTured: [],
     detailList: [],
     status: "no",
     error: null,
@@ -159,7 +161,7 @@ const fileSlice = createSlice({
       })
       .addCase(fetchfileTop.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.data = action.payload;
+        state.topView = action.payload;
       })
       .addCase(fetchfileTop.rejected, (state, action) => {
         state.status = "failed";
@@ -170,7 +172,7 @@ const fileSlice = createSlice({
       })
       .addCase(fetchfileFeatured.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.data = action.payload;
+        state.feaTured = action.payload;
       })
       .addCase(fetchfileFeatured.rejected, (state, action) => {
         state.status = "failed";

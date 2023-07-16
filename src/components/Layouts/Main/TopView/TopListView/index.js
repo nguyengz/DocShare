@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import {
+  Avatar,
   Box,
   Button,
   Card,
@@ -8,15 +10,18 @@ import {
   CardContent,
   CardMedia,
   Grid,
-  Link,
   Typography,
   useMediaQuery,
   useTheme,
+  IconButton,
 } from "@mui/material";
-
-import { useNavigate } from "react-router-dom";
-import PdfToImage from "../../../pdftoimage";
+import { Link, useNavigate } from "react-router-dom";
 import useFetchImageData from "~/utils/useEffectIamge";
+import ShareIcon from "@mui/icons-material/Share";
+import DownloadIcon from "@mui/icons-material/Download";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
+const data = [];
 
 const styles = {
   todoName: {
@@ -26,20 +31,18 @@ const styles = {
     maxWidth: "300px",
   },
 };
-
-function TodoList({ ...props }) {
+function TodoListTopView({ ...props }) {
   const { todoList, number } = props;
-  // const [imageData, setImageData] = useState("");
+
   const navigate = useNavigate();
 
   const result = [];
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("sm"));
-
   const imageData = useFetchImageData(todoList);
+
   const handleClickProduct = (todo) => {
-    console.log(todo);
     navigate(`/fileDetail/${todo.id}`);
   };
 
@@ -60,15 +63,18 @@ function TodoList({ ...props }) {
           >
             <Card
               elevation={0}
-              sx={{ height: "100%", boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)" }}
+              sx={{
+                height: "100%",
+                boxShadow: "0 0 20px rgb(126 162 247 / 42%)",
+              }}
             >
               <CardActionArea onClick={() => handleClickProduct(todo)}>
                 <Box
                   height={200}
-                  sx={{
-                    backgroundImage: `url(${imageData[todo.id]})`,
-                    backdropFilter: "blur(10px)",
-                  }}
+                  // sx={{
+                  //   backgroundImage: `url(${imageData[todo.id]})`,
+                  //   // filter: "blur(10px)",
+                  // }}
                 >
                   <CardMedia
                     component="img"
@@ -79,21 +85,19 @@ function TodoList({ ...props }) {
                       objectFit: "contain",
                       objectPosition: "center",
                       background: "gainsboro",
+                      position: "absolute",
                       // backgroundImage: `url(${imageData[todo.id]})`,
                     }}
                   />
                 </Box>
-
                 <CardContent sx={{ height: "100px", background: "#f8f8f8" }}>
                   <Typography style={styles.todoName} gutterBottom variant="h6">
                     {todo.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    <Typography>
-                      {todo.name.length > 50
-                        ? todo.name.slice(0, 40) + "..."
-                        : todo.name}
-                    </Typography>
+                    {todo.name.length > 50
+                      ? todo.name.slice(0, 50) + "..."
+                      : todo.name}
                   </Typography>
                 </CardContent>
               </CardActionArea>
@@ -116,8 +120,8 @@ function TodoList({ ...props }) {
                     // setidlink(page.id);
                     // alert(page.title);
                   }}
-                  href={`/About/${todo.userId}`}
-                  // to={`/About/${todo.userId}`}
+                  // href={`/About/${todo.name}`}
+                  to={`/About/${todo.userId}`}
                   key={index}
                   onMouseEnter={(e) => {
                     e.target.style.color = "blue";
@@ -128,10 +132,32 @@ function TodoList({ ...props }) {
                 >
                   {todo.userName}
                 </Typography>
-                <Typography variant="caption">{todo.view} views</Typography>
-                <Button size="small" color="primary">
-                  Share
-                </Button>
+
+                <Typography
+                  variant="caption"
+                  display="flex"
+                  alignItems="center"
+                >
+                  {todo.view} <RemoveRedEyeOutlinedIcon />
+                </Typography>
+                <Typography
+                  variant="caption"
+                  display="flex"
+                  alignItems="center"
+                >
+                  {todo.likeFile} <FavoriteIcon sx={{ color: "red" }} />
+                </Typography>
+                <Typography
+                  variant="caption"
+                  display="flex"
+                  alignItems="center"
+                >
+                  {todo.view} <DownloadIcon />
+                </Typography>
+
+                <IconButton aria-label="" onClick={handleClickProduct}>
+                  <ShareIcon />
+                </IconButton>
               </CardActions>
             </Card>
           </Grid>
@@ -144,12 +170,11 @@ function TodoList({ ...props }) {
       <Box sx={{ flexGrow: 1 }}>
         <Grid container sx={{ width: "100%", margin: "auto" }}>
           {handleListProducts()}
-          {result.slice(0, 7).map((item) => item)}
-          {/* {result.slice(3).map((item) => item)} */}
+          {result.map((item) => item)}
         </Grid>
       </Box>
     </>
   );
 }
 
-export default TodoList;
+export default TodoListTopView;

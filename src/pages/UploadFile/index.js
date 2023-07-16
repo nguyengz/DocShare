@@ -112,7 +112,7 @@ function UploadFile() {
                 textAlign: "center",
               }}
             >
-              Upload and share with over 70 million people
+              Upload and share with over everyone
             </Typography>
             <Typography
               variant="h1"
@@ -124,7 +124,7 @@ function UploadFile() {
                 margin: "10px auto",
               }}
             >
-              Presentations, Documents, Infographics, and more
+              You will receive 1 download when you upload a valid document
             </Typography>
             <Card
               container
@@ -192,7 +192,9 @@ function UploadFile() {
                     </Typography>
                   </Button>
                   <Typography variant="caption" color="initial">
-                    Size &lt;= 50MB
+                    To upload the document in the correct format and ensure the
+                    content, please upload in PDF format <br /> Maximum size:
+                    50MB <br /> Min pages: 5 pages
                   </Typography>{" "}
                 </Grid>
               </Grid>

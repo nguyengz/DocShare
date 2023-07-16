@@ -34,8 +34,8 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import AddReactionIcon from "@mui/icons-material/AddReaction";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import ShareRoundedIcon from "@mui/icons-material/ShareRounded";
+import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import FlagIcon from "@mui/icons-material/Flag";
-import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import randomColor from "randomcolor";
 
 import FileListMore from "./FileList";
@@ -48,6 +48,9 @@ import { fetchUser, followUser, unFollowUser } from "~/slices/user";
 
 import { pdfjs } from "react-pdf";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
+import { format } from "date-fns";
+import moment from "moment/moment";
+import { FacebookShareButton } from "react-share";
 pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 const styles = {
@@ -93,16 +96,17 @@ function FileDetail() {
   const [pageRendering, setPageRendering] = React.useState("");
 
   const [isFollowing, setIsFollowing] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
 
   const { user: currentUser } = useSelector((state) => state.auth);
   const userAbout = useSelector((state) => state.userAbout.userAbout);
   const showPricing = useSelector((state) => state.download.showPricing);
   const fileDetail = useSelector((state) => state.file.detailList);
   const uploadDate = new Date(fileDetail.uploadDate);
-  const options = { year: "numeric", month: "short", day: "numeric" };
-  const formattedDate = uploadDate.toLocaleDateString("en-US", options);
 
+  const formatDate = (dateString) => {
+    const date = moment.utc(dateString).toDate();
+    return format(date, "dd/MM/yy HH:mm");
+  };
   const buttonColor = isFollowing ? "paleturquoise" : "primary";
   const [tags, setTags] = useState([]);
   const firstLetter = userAbout?.username.charAt(0).toUpperCase();
@@ -215,7 +219,7 @@ function FileDetail() {
       Swal.fire({
         icon: "error",
         title: "Please Sign in !",
-        text: "You can download the file right now.",
+        text: "You can't download the file right now.",
         confirmButtonText: "OK",
       }).then(() => {
         navigate(`/login?${queryParams}`);
@@ -429,10 +433,15 @@ function FileDetail() {
                     </Typography>
                     <Typography
                       variant="caption"
+                      display="flex"
+                      alignItems="center"
                       sx={{ fontSize: "15px", marginLeft: "10px" }}
                     >
-                      {formattedDate} • {fileDetail.likeFile} likes •{" "}
-                      {fileDetail.view} views
+                      {formatDate(fileDetail.uploadDate)} •{" "}
+                      {fileDetail.likeFile}{" "}
+                      <FavoriteIcon sx={{ color: "red" }} /> • {fileDetail.view}
+                      <RemoveRedEyeOutlinedIcon /> • {fileDetail.totalDownload}
+                      <DownloadIcon />
                     </Typography>
                   </Stack>
                   <Stack item>
@@ -471,7 +480,17 @@ function FileDetail() {
                       fileDetail.like ? handleUnLikeFile : handleLikeFile
                     }
                   />
-                  <ShareRoundedIcon />
+
+                  <FacebookShareButton
+                    url={`http://localhost:3000/fileDetail/${fileDetail?.id}`}
+                    quote={fileDetail?.name}
+                    hashtag={"#DocShare"}
+                    description={fileDetail?.description}
+                    className="Demo__some-network__share-button"
+                  >
+                    <ShareRoundedIcon />
+                  </FacebookShareButton>
+
                   <FlagIcon />
                 </Stack>
                 <Stack
@@ -501,7 +520,11 @@ function FileDetail() {
                     ))}
                 </Stack>
                 <Stack direction="row" spacing={2} sx={{ margin: "10px" }}>
-                  <Typography>{fileDetail.description}</Typography>
+                  <Typography>{fileDetail?.category?.categoryName}</Typography>
+                </Stack>
+
+                <Stack direction="row" spacing={2} sx={{ margin: "10px" }}>
+                  <Typography>{fileDetail?.description}</Typography>
                 </Stack>
                 <Stack
                   direction="row"

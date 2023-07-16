@@ -54,6 +54,7 @@ function SearchCatory() {
   const [selectedCategory, setSelectedCategory] = useState(name);
   const [selectedDateRange, setSelectedDateRange] = useState(null);
   const [nameCategory, setNameCategory] = useState(name);
+  const [resuft, setResuft] = useState();
   useEffect(() => {
     dispatch(fetchfile());
     dispatch(fetchCategory());
@@ -88,8 +89,10 @@ function SearchCatory() {
         (a, b) => new Date(a.uploadDate) - new Date(b.uploadDate)
       );
       setSearchQuery(sortedFiles);
+      setResuft(filteredData.length);
     } else {
       setSearchQuery(filteredData);
+      setResuft(filteredData.length);
     }
   }, [
     selectedCategory,
@@ -223,7 +226,11 @@ function SearchCatory() {
             >
               <Item>
                 <Typography variant="body2" sx={{ color: "#999" }}>
-                  1 - 18 of {fileData.length} results
+                  {/* `${API_URL}/user?user_id=${user_id ? user_id : 0}&friend_id=${friend_id}` */}
+                  {/* {tier.dowloads === 0 ? "Unlimit" : tier.dowloads} Download */}
+                  {/* {searchQuery.length > 0 ? `1 - ${searchQuery.length} ` : 0} of{" "}
+                  {searchQuery.length} results */}
+                  {resuft > 0 ? `1 - ${resuft} ` : 0} of {resuft} results
                 </Typography>
               </Item>
 

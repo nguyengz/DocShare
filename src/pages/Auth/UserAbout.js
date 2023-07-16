@@ -118,7 +118,7 @@ function AboutUser() {
   }, [dispatch, userId]);
   useEffect(() => {
     if (userAbout?.avatar) {
-      loadImage(userAbout.avatar).then((url) => {
+      loadImage(userAbout?.avatar).then((url) => {
         setAvatarUrl(url);
       });
     }
@@ -176,7 +176,7 @@ function AboutUser() {
                     style={style.largeAvatar}
                     sx={{ background: randomColor() }}
                   >
-                    {currentUser.name?.charAt(0).toUpperCase()}
+                    {currentUser?.name?.charAt(0).toUpperCase()}
                   </Avatar>
                 )}
                 {/* <Avatar style={style.largeAvatar} src={avatarUrl}></Avatar> */}

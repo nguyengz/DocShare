@@ -6,18 +6,24 @@ import {
   CardContent,
   CardMedia,
   Grid,
+  IconButton,
   Typography,
 } from "@mui/material";
-import { Swiper, SwiperSlide } from "swiper/react";
+import ShareIcon from "@mui/icons-material/Share";
+import DownloadIcon from "@mui/icons-material/Download";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
+import moment from "moment/moment";
+import { format } from "date-fns";
 
+import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper";
 import "swiper/swiper.css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchfile } from "~/slices/file";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import useFetchImageData from "~/utils/useEffectIamge";
 import axios from "axios";
@@ -58,9 +64,12 @@ function FileListMore(props) {
 
   const [matches] = useState(false);
   const number = [4, 2];
-  const options = { year: "numeric", month: "short", day: "numeric" };
-  // const result = [];
 
+  // const result = [];
+  const formatDate = (dateString) => {
+    const date = moment.utc(dateString).toDate();
+    return format(date, "dd/MM/yy HH:mm");
+  };
   const handleClickFile = (todo) => {
     // Define the handleClickFile function here
     navigate(`/fileDetail/${todo.id}`);
@@ -83,9 +92,6 @@ function FileListMore(props) {
   const result =
     Array.isArray(listcategory) && listcategory.length > 0
       ? listcategory.slice(1, 6)?.map((todo, index) => {
-          const uploadDate = new Date(todo.uploadDate);
-          const formattedDate = uploadDate.toLocaleDateString("en-US", options);
-
           return (
             <Grid item key={todo.id} padding={1}>
               <LazyLoad height={200} once>
@@ -93,7 +99,6 @@ function FileListMore(props) {
                   elevation={0}
                   sx={{
                     border: "1px solid",
-                    width: "200px",
                   }}
                 >
                   <CardActionArea
@@ -155,8 +160,37 @@ function FileListMore(props) {
                       justifyContent: "space-between",
                     }}
                   >
-                    <Typography variant="caption">{todo.view} views</Typography>
-                    <Typography variant="caption">{formattedDate}</Typography>
+                    <Typography
+                      variant="caption"
+                      display="flex"
+                      alignItems="center"
+                    >
+                      {formatDate(todo.uploadDate)}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      display="flex"
+                      alignItems="center"
+                    >
+                      {todo.view} <RemoveRedEyeOutlinedIcon />
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      display="flex"
+                      alignItems="center"
+                    >
+                      {todo.likeFile} <FavoriteIcon sx={{ color: "red" }} />
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      display="flex"
+                      alignItems="center"
+                    >
+                      {todo.totalDownload} <DownloadIcon />
+                    </Typography>
+                    <IconButton aria-label="">
+                      <ShareIcon />
+                    </IconButton>
                   </CardActions>
                 </Card>
               </LazyLoad>

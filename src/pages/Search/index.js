@@ -52,6 +52,7 @@ function SearchResutlt() {
   const [selectedCategory, setSelectedCategory] = useState("Select a Category");
   const [selectedDateRange, setSelectedDateRange] = useState(null);
   const [nameCategory, setNameCategory] = useState();
+  const [resuft, setResuft] = useState();
   useEffect(() => {
     fetch(`/file/search?tagName=${tagName}`)
       .then((response) => response.json())
@@ -90,8 +91,10 @@ function SearchResutlt() {
         (a, b) => new Date(a.uploadDate) - new Date(b.uploadDate)
       );
       setSearchQuery(sortedFiles);
+      setResuft(filteredData.length);
     } else {
       setSearchQuery(filteredData);
+      setResuft(filteredData.length);
     }
   }, [
     selectedCategory,
@@ -150,13 +153,16 @@ function SearchResutlt() {
         link: file.link,
         view: file.view,
         userName: file.userName,
+        likeFile: file.likeFile,
+        totalDownload: file.totalDownload,
+        uploadDate: file.uploadDate,
       };
       datas = [...datas, data];
     });
     return datas;
   };
   const todoList = getAlldata();
-  const numberProduct = [3, 12, 10];
+  const numberProduct = [3, 12, resuft];
   return (
     <>
       <Box minHeight={1000} sx={{ flexGrow: 1 }}>
@@ -223,7 +229,8 @@ function SearchResutlt() {
             >
               <Item>
                 <Typography variant="body2" sx={{ color: "#999" }}>
-                  1 - 18 of {searchResults.length} results
+                  {resuft > 0 ? `1 - ${resuft} ` : 0} of {resuft} results
+                  {/* 1 - 18 of {searchResults.length} results */}
                 </Typography>
               </Item>
 
