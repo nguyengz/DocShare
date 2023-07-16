@@ -27,7 +27,6 @@ import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import useFetchImageData from "~/utils/useEffectIamge";
 import axios from "axios";
-import LazyLoad from "react-lazyload";
 const style = {
   todoName: {
     whiteSpace: "nowrap",
@@ -94,106 +93,104 @@ function FileListMore(props) {
       ? listcategory.slice(1, 6)?.map((todo, index) => {
           return (
             <Grid item key={todo.id} padding={1}>
-              <LazyLoad height={200} once>
-                <Card
-                  elevation={0}
-                  sx={{
-                    border: "1px solid",
+              <Card
+                elevation={0}
+                sx={{
+                  border: "1px solid",
+                }}
+              >
+                <CardActionArea
+                  sx={{ height: "100%" }}
+                  onClick={() => handleClickFile(todo)}
+                >
+                  <CardMedia
+                    component="img"
+                    image={imageData[todo.id] || ""}
+                    alt="green iguana"
+                    height={200}
+                    sx={{
+                      objectFit: "contain",
+                      objectPosition: "top",
+                      background: "gainsboro",
+                    }}
+                  />
+                  <CardContent sx={{ height: "50px" }}>
+                    <Typography
+                      style={style.todoName}
+                      gutterBottom
+                      variant="body2"
+                    >
+                      {todo.fileName.length > 50
+                        ? todo.fileName.slice(0, 50) + "..."
+                        : todo.fileName}
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+
+                <Typography
+                  component={Link}
+                  style={{
+                    padding: "0px",
+                    margin: "5px",
+                    textDecoration: "none",
+                    color: "#1976d2",
+                  }}
+                  onClick={() => {
+                    // setidlink(page.id);
+                    // alert(page.title);
+                  }}
+                  to={`/About/${todo.userId}`}
+                  key={todo.userId}
+                  onMouseEnter={(e) => {
+                    e.target.style.color = "blue";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.color = "1976d2";
                   }}
                 >
-                  <CardActionArea
-                    sx={{ height: "100%" }}
-                    onClick={() => handleClickFile(todo)}
-                  >
-                    <CardMedia
-                      component="img"
-                      image={imageData[todo.id] || ""}
-                      alt="green iguana"
-                      height={200}
-                      sx={{
-                        objectFit: "contain",
-                        objectPosition: "top",
-                        background: "gainsboro",
-                      }}
-                    />
-                    <CardContent sx={{ height: "50px" }}>
-                      <Typography
-                        style={style.todoName}
-                        gutterBottom
-                        variant="body2"
-                      >
-                        {todo.fileName.length > 50
-                          ? todo.fileName.slice(0, 50) + "..."
-                          : todo.fileName}
-                      </Typography>
-                    </CardContent>
-                  </CardActionArea>
+                  {todo.userName}
+                </Typography>
 
+                <CardActions
+                  style={{
+                    display: "flex",
+                    margin: "0px 1px",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <Typography
-                    component={Link}
-                    style={{
-                      padding: "0px",
-                      margin: "5px",
-                      textDecoration: "none",
-                      color: "#1976d2",
-                    }}
-                    onClick={() => {
-                      // setidlink(page.id);
-                      // alert(page.title);
-                    }}
-                    to={`/About/${todo.userId}`}
-                    key={todo.userId}
-                    onMouseEnter={(e) => {
-                      e.target.style.color = "blue";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.color = "1976d2";
-                    }}
+                    variant="caption"
+                    display="flex"
+                    alignItems="center"
                   >
-                    {todo.userName}
+                    {formatDate(todo.uploadDate)}
                   </Typography>
-
-                  <CardActions
-                    style={{
-                      display: "flex",
-                      margin: "0px 1px",
-                      justifyContent: "space-between",
-                    }}
+                  <Typography
+                    variant="caption"
+                    display="flex"
+                    alignItems="center"
                   >
-                    <Typography
-                      variant="caption"
-                      display="flex"
-                      alignItems="center"
-                    >
-                      {formatDate(todo.uploadDate)}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      display="flex"
-                      alignItems="center"
-                    >
-                      {todo.view} <RemoveRedEyeOutlinedIcon />
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      display="flex"
-                      alignItems="center"
-                    >
-                      {todo.likeFile} <FavoriteIcon sx={{ color: "red" }} />
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      display="flex"
-                      alignItems="center"
-                    >
-                      {todo.totalDownload} <DownloadIcon />
-                    </Typography>
-                    <IconButton aria-label="">
-                      <ShareIcon />
-                    </IconButton>
-                  </CardActions>
-                </Card>
-              </LazyLoad>
+                    {todo.view} <RemoveRedEyeOutlinedIcon />
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    display="flex"
+                    alignItems="center"
+                  >
+                    {todo.likeFile} <FavoriteIcon sx={{ color: "red" }} />
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    display="flex"
+                    alignItems="center"
+                  >
+                    {todo.totalDownload} <DownloadIcon />
+                  </Typography>
+                  <IconButton aria-label="">
+                    <ShareIcon />
+                  </IconButton>
+                </CardActions>
+              </Card>
             </Grid>
           );
         })

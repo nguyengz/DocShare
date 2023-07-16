@@ -27,7 +27,6 @@ import "swiper/css/scrollbar";
 
 import { Link, useNavigate } from "react-router-dom";
 import useFetchImageData from "~/utils/useEffectIamge";
-import LazyLoad from "react-lazyload";
 
 const style = {
   todoName: {
@@ -54,21 +53,16 @@ const style = {
 };
 
 function FileListTags(props) {
-  // const [imageData, setImageData] = useState("");
-  const navigate = useNavigate();
   const [listtag, setListTag] = useState([]);
   const imageData = useFetchImageData(listtag);
-  const options = { year: "numeric", month: "short", day: "numeric" };
+
   const formatDate = (dateString) => {
     const date = moment.utc(dateString).toDate();
     return format(date, "dd/MM/yy HH:mm");
   };
-  // const result = [];
-
   const handleClickFile = (todo) => {
     // Define the handleClickFile function here
-    navigate(`/fileDetail/${todo.id}`);
-    window.location.reload();
+    window.location.href = `/fileDetail/${todo.id}`;
   };
   useEffect(() => {
     console.log(props.id);
@@ -110,7 +104,7 @@ function FileListTags(props) {
                     // height: "100%",
                   }}
                   onClick={() => handleClickFile(todo)}
-                />{" "}
+                />
                 <Box
                   sx={{
                     display: "flex",

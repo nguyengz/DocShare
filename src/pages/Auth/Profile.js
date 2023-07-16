@@ -11,8 +11,6 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
-import randomColor from "randomcolor";
-
 import "swiper/swiper.css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -23,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import FileList from "./ListComponent/FileList";
 import TagList from "./ListComponent/TagList";
 import { fetchUserAbout } from "~/slices/auth";
+import { useRandomColor } from "~/utils/ramdomColor";
 
 const Item = styled(Grid)(({ theme }) => ({
   margin: 2,
@@ -82,7 +81,7 @@ const style = {
 function Profile() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const avatarBgColor = useRandomColor();
   // const { userId } = useParams();
   const { user: currentUser } = useSelector((state) => state.auth);
   const userAbout = useSelector((state) => state.auth.userAbout);
@@ -153,7 +152,7 @@ function Profile() {
                 ) : (
                   <Avatar
                     style={style.largeAvatar}
-                    sx={{ background: randomColor() }}
+                    sx={{ background: avatarBgColor }}
                   >
                     {currentUser.name?.charAt(0).toUpperCase()}
                   </Avatar>

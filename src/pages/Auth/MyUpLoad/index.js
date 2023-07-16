@@ -18,18 +18,28 @@ import InventoryIcon from "@mui/icons-material/Inventory";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import MyPackage from "../MyPackage";
 import { fetchUserAbout } from "~/slices/auth";
+import { fetchMyPackage } from "~/slices/order";
 function MyUpload() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
-  // const { userId } = useParams();
   const { user: currentUser } = useSelector((state) => state.auth);
   const userAbout = useSelector((state) => state.auth.userAbout);
-  const [imageData, setImageData] = useState("");
+  const myPackage = useSelector((state) => state.order.data);
   const [showPackage, setShowPackage] = useState(false);
 
+  let totalDownloads = 0;
+  let storageSizes = 0;
+  for (let i = 0; i < myPackage.length; i++) {
+    const item = myPackage[i];
+    const downloads = item.dowloads;
+    const storageSize = item.storageSize;
+
+    totalDownloads += downloads;
+    storageSizes += storageSize;
+  }
   useEffect(() => {
     dispatch(fetchUserAbout(currentUser.id));
+    dispatch(fetchMyPackage(currentUser.id));
     // console.log(userAbout);
   }, [currentUser, dispatch]);
   const handlClickPackage = () => {
@@ -38,9 +48,6 @@ function MyUpload() {
   };
   const handlClickFileuploadTb = () => {
     // navigate("/");
-    setShowPackage(false);
-  };
-  const handleClosePackage = () => {
     setShowPackage(false);
   };
   return (
@@ -108,7 +115,8 @@ function MyUpload() {
                 alignItems: "center", //Thêm thuộc tính align-items vào đây
               }}
             >
-              <CloudUploadIcon sx={{ marginRight: "5px" }} /> SizeCloud: {}
+              <CloudUploadIcon sx={{ marginRight: "5px" }} /> SizeCloud:
+              {totalDownloads}
             </Typography>
             <Typography
               variant="body"
@@ -121,7 +129,8 @@ function MyUpload() {
                 alignItems: "center", //Thêm thuộc tính align-items vào đây
               }}
             >
-              <FileUploadIcon sx={{ marginRight: "5px" }} /> SizeCloud:{" "}
+              <FileUploadIcon sx={{ marginRight: "5px" }} /> FileUpload:
+              {userAbout?.files?.length}
             </Typography>
             <Button
               onClick={showPackage ? handlClickFileuploadTb : handlClickPackage}
