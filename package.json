@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@ant-design/icons": "^5.0.1",
+    "@ant-design/icons": "^5.1.4",
     "@cyntler/react-doc-viewer": "^1.13.0",
     "@emotion/react": "^11.10.8",
     "@emotion/styled": "^11.10.8",
