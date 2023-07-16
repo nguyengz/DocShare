@@ -1,19 +1,9 @@
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Pagination,
-  Stack,
-  Switch,
-  TextField,
-  Tooltip,
-} from "@mui/material";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import { Box, Button, Pagination, Stack } from "@mui/material";
+
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
+
 import CardContent from "@mui/material/CardContent";
 import CardHeader from "@mui/material/CardHeader";
 import Container from "@mui/material/Container";
@@ -22,9 +12,7 @@ import StarIcon from "@mui/icons-material/StarBorder";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/system";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
 import CircleIcon from "@mui/icons-material/Circle";
-import { BuildTwoTone } from "@mui/icons-material";
 import usePagination from "~/utils/PaginatedList";
 import Pricing from "~/pages/Payment/Package";
 import { setShowPricing } from "~/slices/download";
