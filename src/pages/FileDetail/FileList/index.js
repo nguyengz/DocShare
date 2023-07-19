@@ -58,6 +58,7 @@ const style = {
 function FileListMore(props) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const SERICE_API = process.env.REACT_APP_SERVICE_API;
   const [listcategory, setListCategory] = useState([]);
   const imageData = useFetchImageData(listcategory);
 
@@ -77,7 +78,7 @@ function FileListMore(props) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/file/list/category?id=${props.category?.id}`)
+      .get(SERICE_API+`/file/list/category?id=${props.category?.id}`)
       .then((response) => {
         // Handle successful response
         setListCategory(response.data);

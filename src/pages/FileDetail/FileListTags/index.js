@@ -53,6 +53,7 @@ const style = {
 };
 
 function FileListTags(props) {
+  const SERICE_API = process.env.REACT_APP_SERVICE_API;
   const [listtag, setListTag] = useState([]);
   const imageData = useFetchImageData(listtag);
 
@@ -67,7 +68,7 @@ function FileListTags(props) {
   useEffect(() => {
     console.log(props.id);
     axios
-      .get(`http://localhost:8080/file/list/tag?file_id=${props.id}`)
+      .get(SERICE_API+`/file/list/tag?file_id=${props.id}`)
       .then((response) => {
         // Handle successful response
         setListTag(response.data);

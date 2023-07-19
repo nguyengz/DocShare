@@ -154,6 +154,7 @@ const titlePages = [
 export default function Header() {
   const dispatch = useDispatch();
   let navigate = useNavigate();
+  const SERICE_API = process.env.REACT_APP_SERVICE_API;
   const { user: currentUser } = useSelector((state) => state.auth);
   const userAbout = useSelector((state) => state.auth.userAbout);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -201,7 +202,7 @@ export default function Header() {
     // console.log(userAbout);
   }, [currentUser?.id, dispatch, userAbout?.avatar]);
   function loadImage(link) {
-    return fetch(`http://localhost:8080/file/review/${link}`)
+    return fetch(SERICE_API + `/file/review/${link}`)
       .then((response) => response.blob())
       .then((blob) => URL.createObjectURL(blob));
   }

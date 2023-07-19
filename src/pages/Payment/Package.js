@@ -63,12 +63,13 @@ export default function Pricing({ onBack, fileDetail_id, name }) {
   const dispatch = useDispatch();
   // const { id } = useParams();
   const [isUploading, setIsUploading] = useState(false);
+  const SERICE_API = process.env.REACT_APP_SERVICE_API;
   const { user: currentUser } = useSelector((state) => state.auth);
   const [tiers, setTiers] = useState([]);
   // const payLink = useSelector((state) => state.package.data);
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/packages`)
+      .get(SERICE_API+`/packages`)
       .then((response) => {
         const sortedTiers = response.data.sort((a, b) => a.price - b.price);
         setTiers(sortedTiers);

@@ -67,6 +67,7 @@ const PricingCard = styled(Card)(({ theme }) => ({
 function MyOrder() {
   const dispatch = useDispatch();
   // const { id } = useParams();
+  const SERICE_API = process.env.REACT_APP_SERVICE_API;
   const { user: currentUser } = useSelector((state) => state.auth);
   //   const [isUploading, setIsUploading] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -78,7 +79,7 @@ function MyOrder() {
   // let totalOrderPrice = 0;
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/order/list?user_id=${currentUser.id}`)
+      .get(SERICE_API+`/order/list?user_id=${currentUser.id}`)
       .then((response) => {
         // Handle successful response
         setlistOder(response.data);

@@ -83,6 +83,7 @@ function Profile() {
   const navigate = useNavigate();
   const avatarBgColor = useRandomColor();
   // const { userId } = useParams();
+  const SERICE_API = process.env.REACT_APP_SERVICE_API;
   const { user: currentUser } = useSelector((state) => state.auth);
   const userAbout = useSelector((state) => state.auth.userAbout);
   const [imageData, setImageData] = useState("");
@@ -104,7 +105,7 @@ function Profile() {
     if (userAbout && userAbout.files) {
       // add a check for userAbout and userAbout.files
       userAbout.files.forEach((todo) => {
-        fetch(`http://localhost:8080/file/review/${todo.linkImg}`)
+        fetch(SERICE_API+`/file/review/${todo.linkImg}`)
           .then((response) => response.arrayBuffer())
           .then((buffer) =>
             setImageData((prevImageData) => ({
@@ -121,7 +122,7 @@ function Profile() {
     }
   }, [userAbout]);
   function loadImage(link) {
-    return fetch(`http://localhost:8080/file/review/${link}`)
+    return fetch(SERICE_API+`/file/review/${link}`)
       .then((response) => response.blob())
       .then((blob) => URL.createObjectURL(blob));
   }

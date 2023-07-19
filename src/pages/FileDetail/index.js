@@ -35,7 +35,6 @@ import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import ShareRoundedIcon from "@mui/icons-material/ShareRounded";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import FlagIcon from "@mui/icons-material/Flag";
-import randomColor from "randomcolor";
 
 import FileListMore from "./FileList";
 import FileListTags from "./FileListTags";
@@ -81,6 +80,7 @@ const styles = {
 function FileDetail() {
   const dispatch = useDispatch();
   let navigate = useNavigate();
+  const SERICE_API = process.env.REACT_APP_SERVICE_API;
   const avatarBgColor = useRandomColor();
   const location = useLocation();
   const { pathname, search } = location;
@@ -95,7 +95,6 @@ function FileDetail() {
   const [isLoading, setIsLoading] = useState(false);
 
   // const [pdfRendering, setPdfRendering] = React.useState("");
-  const [pageRendering, setPageRendering] = React.useState("");
 
   const { user: currentUser } = useSelector((state) => state.auth);
   const userAbout = useSelector((state) => state.userAbout.userAbout);
@@ -114,12 +113,13 @@ function FileDetail() {
     const user_id = parseInt(currentUser?.id);
     dispatch(fetchFileDetail([file_id, user_id]));
     if (fileDetail && fileDetail?.link) {
-      const pdfUrl = "http://localhost:8080/file/review/" + fileDetail.link;
+      const pdfUrl = SERICE_API + "/file/review/" + fileDetail.link;
       if (pdfUrl && currentPage) {
         renderPage(pdfUrl); // pass currentPage to renderPage function
       }
     }
-  }, [currentUser?.id, dispatch, id, fileDetail.link, currentPage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser?.id, dispatch, id, fileDetail.link]);
   useEffect(() => {
     if (fileDetail?.userId) {
       const user_id = parseInt(currentUser?.id);
@@ -145,7 +145,7 @@ function FileDetail() {
   }, [fileDetail]);
 
   function loadImage(link) {
-    return fetch(`http://localhost:8080/file/review/${link}`)
+    return fetch(SERICE_API + `/file/review/${link}`)
       .then((response) => response.blob())
       .then((blob) => URL.createObjectURL(blob));
   }

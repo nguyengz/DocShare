@@ -61,6 +61,7 @@ function AboutUser() {
   const navigate = useNavigate();
   const avatarBgColor = useRandomColor();
   const { userId } = useParams();
+  const SERICE_API = process.env.REACT_APP_SERVICE_API;
   const userAbout = useSelector((state) => state.userAbout.userAbout);
   const { user: currentUser } = useSelector((state) => state.auth);
   const [imageData, setImageData] = useState("");
@@ -73,7 +74,7 @@ function AboutUser() {
     });
   }, [currentUser?.id, dispatch, userId]);
   function loadImage(link) {
-    return fetch(`http://localhost:8080/file/review/${link}`)
+    return fetch(SERICE_API+`/file/review/${link}`)
       .then((response) => response.blob())
       .then((blob) => URL.createObjectURL(blob));
   }
@@ -124,7 +125,7 @@ function AboutUser() {
     // console.log(userAbout);
   }, [dispatch, userAbout?.avatar]);
   function fetchImage(link) {
-    return fetch(`http://localhost:8080/file/review/${link}`).then((response) =>
+    return fetch(SERICE_API+`/file/review/${link}`).then((response) =>
       response.blob()
     );
   }

@@ -131,6 +131,7 @@ const style = {
 // });
 function AcountSetting() {
   const dispatch = useDispatch();
+  const SERICE_API = process.env.REACT_APP_SERVICE_API;
   const { user: currentUser } = useSelector((state) => state.auth);
   const userAbout = useSelector((state) => state.auth.userAbout);
   const [email, setEmail] = useState(null);
@@ -169,7 +170,7 @@ function AcountSetting() {
     // setNumberPhone(userAbout?.phone);
   }, [userAbout]);
   function loadImage(link) {
-    return fetch(`http://localhost:8080/file/review/${link}`)
+    return fetch(SERICE_API+`/file/review/${link}`)
       .then((response) => response.blob())
       .then((blob) => URL.createObjectURL(blob));
   }

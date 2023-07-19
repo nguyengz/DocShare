@@ -3,7 +3,7 @@ import { useState } from "react";
 
 function useFetchImageData(todoList) {
   const [imageData, setImageData] = useState({});
-
+  const SERICE_API = process.env.REACT_APP_SERVICE_API;
   // useEffect(() => {
   //   todoList.forEach((todo) => {
   //     axios
@@ -24,7 +24,7 @@ function useFetchImageData(todoList) {
   //   });
   // }, [todoList]);
   function fetchImage(link) {
-    return fetch(`http://localhost:8080/file/review/${link}`).then((response) =>
+    return fetch(SERICE_API+`/file/review/${link}`).then((response) =>
       response.blob()
     );
   }
