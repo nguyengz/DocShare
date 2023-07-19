@@ -16,6 +16,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.4.0",
     "date-fns": "^2.30.0",
+    "dotenv": "^16.3.1",
     "file-saver": "^2.0.5",
     "formik": "^2.2.9",
     "material-react-table": "^1.14.0",
@@ -72,6 +73,5 @@
     "babel-plugin-module-resolver": "^5.0.0",
     "customize-cra": "^1.0.0",
     "react-app-rewired": "^2.2.1"
-  },
-  "proxy": "http://localhost:8080"
+  }
 }
