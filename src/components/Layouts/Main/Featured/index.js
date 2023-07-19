@@ -18,7 +18,7 @@ function Featured() {
 
   const getAlldata = () => {
     let datas = [];
-    fileData.map((file) => {
+    fileData?.map((file) => {
       const data = {
         id: file.id,
         userId: file.userId,
