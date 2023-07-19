@@ -13,9 +13,7 @@ function TopView() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(fetchfileTop())
-      .then(() => setIsLoading(false))
-      .catch((error) => console.log(error));
+    dispatch(fetchfileTop()).then(() => setIsLoading(false));
   }, []);
 
   const getAlldata = () => {
