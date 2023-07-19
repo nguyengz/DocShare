@@ -42,23 +42,7 @@ const PricingList = styled("ul")({
   padding: 0,
   listStyle: "none",
 });
-const style = {
-  imageWrapper: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    padding: "0",
-    overflowX: "hidden",
-  },
-  wrapper: {
-    height: "90%",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "1px",
-  },
-};
+
 function Slider() {
   const dispatch = useDispatch();
   // const { id } = useParams();
@@ -76,9 +60,7 @@ function Slider() {
         // Thiết lập giá trị của state tiers
         setTiers(sortedTiers);
       })
-      .catch((error) => {
-        console.error(error);
-      });
+      .catch((error) => {});
   }, [setTiers]);
   const handleClickPackage = () => {
     if (!currentUser?.token) {

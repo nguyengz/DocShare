@@ -63,7 +63,6 @@ export default function Pricing({ onBack, fileDetail_id, name }) {
   const dispatch = useDispatch();
   // const { id } = useParams();
   const [isUploading, setIsUploading] = useState(false);
-  const [isComponentOpen, setIsComponentOpen] = useState(true);
   const { user: currentUser } = useSelector((state) => state.auth);
   const [tiers, setTiers] = useState([]);
   // const payLink = useSelector((state) => state.package.data);
