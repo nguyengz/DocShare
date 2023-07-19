@@ -8,10 +8,10 @@ function Footer() {
     <Box
       sx={{
         backgroundColor: "black",
-        height: "200px",
+        // height: "200px",
         width: "100%",
-        mt: 20,
-        // position: "absolute",
+        mt: 10,
+        position: "static",
         bottom: 0,
         color: "white",
       }}

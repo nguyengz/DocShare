@@ -9,7 +9,6 @@ import TopView from "../Main/TopView";
 
 function DefaultLayout({ children }) {
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.up("sm"));
 
   return (
     <>
@@ -18,7 +17,7 @@ function DefaultLayout({ children }) {
         <Slider />
         {children}
       </Main>
-      {matches ? <Footer /> : null}
+      <Footer />
     </>
   );
 }

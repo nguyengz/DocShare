@@ -23,10 +23,9 @@ function useFetchImageData(todoList) {
   //       );
   //   });
   // }, [todoList]);
-  function fetchImage(link) {
-    return fetch(SERICE_API+`/file/review/${link}`).then((response) =>
-      response.blob()
-    );
+  async function fetchImage(link) {
+    const response = await fetch(SERICE_API+`/file/review/${link}`);
+    return await response.blob();
   }
 
   function loadImageData(todo) {
