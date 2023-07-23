@@ -76,6 +76,7 @@ function ExpoleList() {
     <>
       <Box
         sx={{
+          minHeight: 1000,
           width: "auto",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
