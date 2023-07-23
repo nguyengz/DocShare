@@ -10,7 +10,7 @@ function Home() {
       <Box
         sx={{
           backgroundRepeat: "no-repeat",
-
+          minHeight: 1000,
           backgroundPosition: "center",
           textAlign: "center",
           marginTop: 5,

@@ -1,6 +1,6 @@
 import { Formik, Form, Field } from "formik";
 import { TextField, Button, Box } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
 import { UpdateFile } from "~/slices/auth";

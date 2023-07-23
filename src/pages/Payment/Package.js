@@ -63,12 +63,13 @@ export default function Pricing({ onBack, fileDetail_id, name }) {
   const dispatch = useDispatch();
   // const { id } = useParams();
   const [isUploading, setIsUploading] = useState(false);
+  const SERICE_API = process.env.REACT_APP_SERVICE_API;
   const { user: currentUser } = useSelector((state) => state.auth);
   const [tiers, setTiers] = useState([]);
   // const payLink = useSelector((state) => state.package.data);
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/packages`)
+      .get(SERICE_API+`/packages`)
       .then((response) => {
         const sortedTiers = response.data.sort((a, b) => a.price - b.price);
         setTiers(sortedTiers);
@@ -86,8 +87,8 @@ export default function Pricing({ onBack, fileDetail_id, name }) {
       // <Navigate to="/uploadfile" />;
     } else {
       const data = {
-        user_id: currentUser.id,
-        package_id: tier.id,
+        user_id: currentUser?.id,
+        package_id: tier?.id,
         file_id: parseInt(fileDetail_id) ? parseInt(fileDetail_id) : "",
         name: encodeURIComponent(name),
       };
@@ -143,12 +144,24 @@ export default function Pricing({ onBack, fileDetail_id, name }) {
                     ${tier.price}
                   </Typography>
                   <Typography variant="h6" color="text.secondary">
-                    /mo
+                    {tier?.duration &&
+                      (Number.isInteger(tier?.duration / 365)
+                        ? `/${tier?.duration / 365}year`
+                        : Number.isInteger(tier?.duration / 30)
+                        ? `/${tier?.duration / 30}month`
+                        : Number.isInteger(tier?.duration / 7)
+                        ? `/${tier?.duration / 7}week`
+                        : `/${tier?.duration}day`)}
                   </Typography>
                 </Box>
                 <PricingList>
                   <Typography component="li" variant="subtitle1" align="center">
-                    {tier.dowloads === 0 ? "Unlimit" : tier.dowloads} Download
+                    {tier?.price === 0
+                      ? "1 Upload = 1"
+                      : tier.dowloads === 0
+                      ? "Unlimit"
+                      : tier.dowloads}{" "}
+                    Download
                   </Typography>
                   <Typography component="li" variant="subtitle1" align="center">
                     {tier.storageSize} GB storageSize

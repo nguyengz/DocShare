@@ -11,11 +11,11 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import randomColor from "randomcolor";
 
 import { fetchUser, followUser, unFollowUser } from "~/slices/user";
 import FileList from "./ListComponent/FileList";
 import TagList from "./ListComponent/TagList";
+import { useRandomColor } from "~/utils/ramdomColor";
 
 const Item = styled(Grid)(({ theme }) => ({
   margin: 2,
@@ -59,14 +59,14 @@ const style = {
 function AboutUser() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const avatarBgColor = useRandomColor();
   const { userId } = useParams();
+  const SERICE_API = process.env.REACT_APP_SERVICE_API;
   const userAbout = useSelector((state) => state.userAbout.userAbout);
   const { user: currentUser } = useSelector((state) => state.auth);
   const [imageData, setImageData] = useState("");
   const [avatarUrl, setAvatarUrl] = useState();
 
-  const firstLetter = userAbout?.username.charAt(0).toUpperCase();
   useEffect(() => {
     const user_id = parseInt(currentUser?.id);
     dispatch(fetchUser([user_id, userId])).then((response) => {
@@ -74,7 +74,7 @@ function AboutUser() {
     });
   }, [currentUser?.id, dispatch, userId]);
   function loadImage(link) {
-    return fetch(`http://localhost:8080/file/review/${link}`)
+    return fetch(SERICE_API+`/file/review/${link}`)
       .then((response) => response.blob())
       .then((blob) => URL.createObjectURL(blob));
   }
@@ -125,7 +125,7 @@ function AboutUser() {
     // console.log(userAbout);
   }, [dispatch, userAbout?.avatar]);
   function fetchImage(link) {
-    return fetch(`http://localhost:8080/file/review/${link}`).then((response) =>
+    return fetch(SERICE_API+`/file/review/${link}`).then((response) =>
       response.blob()
     );
   }
@@ -174,7 +174,7 @@ function AboutUser() {
                 ) : (
                   <Avatar
                     style={style.largeAvatar}
-                    sx={{ background: randomColor() }}
+                    sx={{ background: avatarBgColor }}
                   >
                     {currentUser?.name?.charAt(0).toUpperCase()}
                   </Avatar>

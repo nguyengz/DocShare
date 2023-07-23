@@ -8,7 +8,6 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -17,9 +16,8 @@ import { Delete, Edit } from "@mui/icons-material";
 import { useEffect } from "react";
 import { format } from "date-fns";
 import moment from "moment/moment";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setMessage } from "~/slices/message";
-import Swal from "sweetalert2";
 import { deletedFile } from "~/slices/user";
 import FormUpdateFile from "./FormUpdateFile";
 import { Link } from "react-router-dom";
@@ -84,7 +82,7 @@ const Example = (props) => {
     "description",
     "View",
     "likeFile",
-    "Download",
+    "totalDownload",
   ];
   const columns = useMemo(() => [
     {
@@ -121,7 +119,7 @@ const Example = (props) => {
       width: "20%",
     },
     {
-      accessorKey: "Download",
+      accessorKey: "totalDownload",
       header: "Download",
       size: 50,
       width: "20%",

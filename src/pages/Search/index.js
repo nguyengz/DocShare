@@ -41,20 +41,21 @@ const Item = styled(Grid)(({ theme }) => ({
 }));
 function SearchResutlt() {
   const dispatch = useDispatch();
+  const SERICE_API = process.env.REACT_APP_SERVICE_API;
   const [searchResults, setSearchResults] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState("Filter");
   const [searchQuery, setSearchQuery] = useState([]);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const tagName = searchParams.get("tagName");
+
   const categoryData = useSelector((state) => state.category.data);
   const [selectedCategory, setSelectedCategory] = useState("Select a Category");
   const [selectedDateRange, setSelectedDateRange] = useState(null);
   const [nameCategory, setNameCategory] = useState();
   const [resuft, setResuft] = useState();
   useEffect(() => {
-    fetch(`/file/search?tagName=${tagName}`)
+    fetch(SERICE_API + `/file/search?tagName=${tagName}`)
       .then((response) => response.json())
       .then((data) => setSearchResults(data))
       .catch((error) => console.log(error));

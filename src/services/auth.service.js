@@ -1,10 +1,10 @@
 import axios from "axios";
 import Swal from "sweetalert2";
-
+const SERICE_API = process.env.REACT_APP_SERVICE_API;
 const API_URL = "/api/auth/";
 
 const register = (name, username, email, password) => {
-  return axios.post(API_URL + "signup", {
+  return axios.post(SERICE_API + API_URL + "signup", {
     name,
     username,
     email,
@@ -14,7 +14,7 @@ const register = (name, username, email, password) => {
 
 const login = (username, password) => {
   return axios
-    .post(API_URL + "signin", {
+    .post(SERICE_API + API_URL + "signin", {
       username,
       password,
     })
@@ -45,14 +45,14 @@ const logout = () => {
 };
 
 const fetchUserAbout = (user_id) => {
-  return axios.get(API_URL + "user/about?user_id=" + user_id);
+  return axios.get(SERICE_API + API_URL + "user/about?user_id=" + user_id);
 };
 const updateUser = (data) => {
-  return axios.put(`${API_URL}update/profile`, data);
+  return axios.put(`${SERICE_API}${API_URL}update/profile`, data);
 };
 const changePass = (username, password) => {
   return axios
-    .put(API_URL + "user/password", {
+    .put(SERICE_API + API_URL + "user/password", {
       username,
       password,
     })

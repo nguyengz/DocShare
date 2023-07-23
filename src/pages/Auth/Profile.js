@@ -10,8 +10,6 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { makeStyles } from "@mui/styles";
-import randomColor from "randomcolor";
 
 import "swiper/swiper.css";
 import "swiper/css/navigation";
@@ -19,12 +17,11 @@ import "swiper/css/pagination";
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
 
-import { fetchUser } from "~/slices/user";
-import PdfToImage from "~/components/Layouts/pdftoimage";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import FileList from "./ListComponent/FileList";
 import TagList from "./ListComponent/TagList";
 import { fetchUserAbout } from "~/slices/auth";
+import { useRandomColor } from "~/utils/ramdomColor";
 
 const Item = styled(Grid)(({ theme }) => ({
   margin: 2,
@@ -42,17 +39,6 @@ const Item = styled(Grid)(({ theme }) => ({
   },
 }));
 
-const useStyles = makeStyles({
-  largeAvatar: {
-    width: "100px",
-    height: "100px",
-    fontSize: "50px",
-  },
-  gridUser: {
-    margin: "auto",
-    width: "70%",
-  },
-});
 const style = {
   largeAvatar: {
     width: "100px",
@@ -95,8 +81,9 @@ const style = {
 function Profile() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const avatarBgColor = useRandomColor();
   // const { userId } = useParams();
+  const SERICE_API = process.env.REACT_APP_SERVICE_API;
   const { user: currentUser } = useSelector((state) => state.auth);
   const userAbout = useSelector((state) => state.auth.userAbout);
   const [imageData, setImageData] = useState("");
@@ -118,7 +105,7 @@ function Profile() {
     if (userAbout && userAbout.files) {
       // add a check for userAbout and userAbout.files
       userAbout.files.forEach((todo) => {
-        fetch(`http://localhost:8080/file/review/${todo.linkImg}`)
+        fetch(SERICE_API+`/file/review/${todo.linkImg}`)
           .then((response) => response.arrayBuffer())
           .then((buffer) =>
             setImageData((prevImageData) => ({
@@ -135,7 +122,7 @@ function Profile() {
     }
   }, [userAbout]);
   function loadImage(link) {
-    return fetch(`http://localhost:8080/file/review/${link}`)
+    return fetch(SERICE_API+`/file/review/${link}`)
       .then((response) => response.blob())
       .then((blob) => URL.createObjectURL(blob));
   }
@@ -166,7 +153,7 @@ function Profile() {
                 ) : (
                   <Avatar
                     style={style.largeAvatar}
-                    sx={{ background: randomColor() }}
+                    sx={{ background: avatarBgColor }}
                   >
                     {currentUser.name?.charAt(0).toUpperCase()}
                   </Avatar>

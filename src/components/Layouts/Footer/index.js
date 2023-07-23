@@ -1,17 +1,17 @@
 import React from "react";
 
 import { Box, Container, Grid, Link, Typography } from "@mui/material";
-import { Facebook, Instagram, Twitter } from "@mui/icons-material";
+import { Facebook } from "@mui/icons-material";
 
 function Footer() {
   return (
     <Box
       sx={{
         backgroundColor: "black",
-        height: "200px",
+        // height: "200px",
         width: "100%",
-        mt: 20,
-        // position: "absolute",
+        mt: 10,
+        position: "static",
         bottom: 0,
         color: "white",
       }}
@@ -19,16 +19,16 @@ function Footer() {
       {" "}
       <Container maxWidth="lg">
         <Grid container spacing={5}>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={3}>
             <Typography variant="h6" gutterBottom>
               About Us
             </Typography>
             <Typography variant="body2">
-              We are XYZ company, dedicated to providing the best service to our
+              We are DocShare, dedicated to providing the best service to our
               customers.
             </Typography>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={3}>
             <Typography variant="h6" gutterBottom>
               Contact Us
             </Typography>
@@ -36,12 +36,20 @@ function Footer() {
             <Typography variant="body2">Email: info@example.com</Typography>
             <Typography variant="body2">Phone: +1 234 567 8901</Typography>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={3}>
             <Typography variant="h6" gutterBottom>
               Follow Us
             </Typography>
             <Link href="https://www.facebook.com/" color="inherit">
               <Facebook />
+            </Link>
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <Typography variant="h6" gutterBottom>
+              Điều khoản
+            </Typography>
+            <Link href="https://www.facebook.com/" color="inherit">
+              Điều khoản sử dụng
             </Link>
           </Grid>
         </Grid>

@@ -13,7 +13,6 @@ import {
   Avatar,
   CircularProgress,
   Link,
-  IconButton,
 } from "@mui/material";
 // import "./styles.css";
 
@@ -36,7 +35,6 @@ import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import ShareRoundedIcon from "@mui/icons-material/ShareRounded";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import FlagIcon from "@mui/icons-material/Flag";
-import randomColor from "randomcolor";
 
 import FileListMore from "./FileList";
 import FileListTags from "./FileListTags";
@@ -51,6 +49,7 @@ import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 import { format } from "date-fns";
 import moment from "moment/moment";
 import { FacebookShareButton } from "react-share";
+import { useRandomColor } from "~/utils/ramdomColor";
 pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 const styles = {
@@ -81,6 +80,8 @@ const styles = {
 function FileDetail() {
   const dispatch = useDispatch();
   let navigate = useNavigate();
+  const SERICE_API = process.env.REACT_APP_SERVICE_API;
+  const avatarBgColor = useRandomColor();
   const location = useLocation();
   const { pathname, search } = location;
   const { id } = useParams();
@@ -92,38 +93,43 @@ function FileDetail() {
   const [avatarUrl, setAvatarUrl] = useState();
   const [pdf, setPdf] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  // const [pdfRendering, setPdfRendering] = React.useState("");
-  const [pageRendering, setPageRendering] = React.useState("");
 
-  const [isFollowing, setIsFollowing] = useState(false);
+  // const [pdfRendering, setPdfRendering] = React.useState("");
 
   const { user: currentUser } = useSelector((state) => state.auth);
   const userAbout = useSelector((state) => state.userAbout.userAbout);
   const showPricing = useSelector((state) => state.download.showPricing);
   const fileDetail = useSelector((state) => state.file.detailList);
-  const uploadDate = new Date(fileDetail.uploadDate);
 
   const formatDate = (dateString) => {
     const date = moment.utc(dateString).toDate();
     return format(date, "dd/MM/yy HH:mm");
   };
-  const buttonColor = isFollowing ? "paleturquoise" : "primary";
+
   const [tags, setTags] = useState([]);
   const firstLetter = userAbout?.username.charAt(0).toUpperCase();
   useEffect(() => {
     const file_id = id;
     const user_id = parseInt(currentUser?.id);
     dispatch(fetchFileDetail([file_id, user_id]));
-  }, [currentUser?.id, dispatch, id]);
-
+    if (fileDetail && fileDetail?.link) {
+      const pdfUrl = SERICE_API + "/file/review/" + fileDetail.link;
+      if (pdfUrl && currentPage) {
+        renderPage(pdfUrl); // pass currentPage to renderPage function
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser?.id, dispatch, id, fileDetail.link]);
   useEffect(() => {
-    const user_id = parseInt(currentUser?.id);
-    const friend_id = fileDetail?.userId;
-    dispatch(fetchUser([user_id, friend_id]));
-    if (userAbout?.avatar) {
-      loadImage(userAbout?.avatar).then((url) => {
-        setAvatarUrl(url);
-      });
+    if (fileDetail?.userId) {
+      const user_id = parseInt(currentUser?.id);
+      const friend_id = fileDetail?.userId;
+      dispatch(fetchUser([user_id, friend_id]));
+      if (userAbout?.avatar) {
+        loadImage(userAbout?.avatar).then((url) => {
+          setAvatarUrl(url);
+        });
+      }
     }
   }, [currentUser?.id, dispatch, fileDetail?.userId, userAbout?.avatar]);
   useEffect(() => {
@@ -137,21 +143,13 @@ function FileDetail() {
       setTags(tagsArr);
     }
   }, [fileDetail]);
-  useEffect(() => {
-    console.log("link: " + fileDetail.link);
-    const pdfUrl = "http://localhost:8080/file/review/" + fileDetail.link;
-    console.log(pdfUrl);
-    if (pdfUrl && currentPage) {
-      renderPage(pdfUrl, currentPage); // pass currentPage to renderPage function
-    }
-  }, [fileDetail.link, fileDetail.userId, fileDetail.id]);
+
   function loadImage(link) {
-    return fetch(`http://localhost:8080/file/review/${link}`)
+    return fetch(SERICE_API + `/file/review/${link}`)
       .then((response) => response.blob())
       .then((blob) => URL.createObjectURL(blob));
   }
-  async function renderPage(pdfUrl, pageNumber) {
-    setPageRendering(true);
+  async function renderPage(pdfUrl) {
     setIsLoading(true);
     const _pdf = await pdfjs.getDocument(pdfUrl).promise;
     setPdf(_pdf);
@@ -159,14 +157,12 @@ function FileDetail() {
     const canvas = document.createElement("canvas");
     canvas.className = "canv";
     const context = canvas.getContext("2d");
-
     let maxPagesToRender;
     if (_pdf.numPages > 30) {
       maxPagesToRender = 15; // Giới hạn số trang render là 15 nếu tài liệu có hơn 30 trang
     } else {
       maxPagesToRender = Math.ceil(_pdf.numPages * 0.3); // Giới hạn số trang render là 30% nếu tài liệu có ít hơn hoặc bằng 30 trang
     }
-
     for (let i = 1; i <= maxPagesToRender; i++) {
       const page = await _pdf.getPage(i);
       const viewport = page.getViewport({ scale: 1 });
@@ -180,7 +176,6 @@ function FileDetail() {
       imagesList.push(img);
     }
     setImages(imagesList);
-    setPageRendering(false);
     setIsLoading(false); // set isLoading to false when pages are rendered
   }
   function handleSlideChange(swiper) {
@@ -343,62 +338,60 @@ function FileDetail() {
                 {" "}
                 {isLoading ? (
                   <CircularProgress /> // show CircularProgress when isLoading is true
-                ) : images && images.length > 0 ? (
-                  pdf && (
-                    <>
-                      <Swiper
-                        spaceBetween={30}
-                        hashNavigation={{
-                          watchState: true,
+                ) : pdf && images.length > 0 ? (
+                  <>
+                    <Swiper
+                      spaceBetween={30}
+                      hashNavigation={{
+                        watchState: true,
+                      }}
+                      pagination={{
+                        clickable: true,
+                      }}
+                      navigation={true}
+                      modules={[Pagination, Navigation, HashNavigation]}
+                      className="mySwiper"
+                      style={styles.wrapper}
+                      onSlideChange={handleSlideChange}
+                    >
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          bottom: "5px",
+                          right: "20px",
+                          zIndex: 1,
+                          // backgroundColor: "rgba(255, 255, 255, 0.8)",
+                          // boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.4)",
+                          borderRadius: "4px",
+                          padding: "8px",
                         }}
-                        pagination={{
-                          clickable: true,
-                        }}
-                        navigation={true}
-                        modules={[Pagination, Navigation, HashNavigation]}
-                        className="mySwiper"
-                        style={styles.wrapper}
-                        onSlideChange={handleSlideChange}
                       >
-                        <Box
-                          sx={{
-                            position: "absolute",
-                            bottom: "5px",
-                            right: "20px",
-                            zIndex: 1,
-                            // backgroundColor: "rgba(255, 255, 255, 0.8)",
-                            // boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.4)",
-                            borderRadius: "4px",
-                            padding: "8px",
-                          }}
-                        >
-                          <Typography variant="body1" color="initial">
-                            {currentPage}/{pdf.numPages}
-                          </Typography>
-                        </Box>
-                        {images.map((image, idx) => (
-                          <SwiperSlide key={idx} style={styles.imageWrapper}>
-                            <img
-                              id="image-generated"
-                              src={image}
-                              alt="pdfImage"
-                              style={{
-                                display: "block",
-                                width: width,
-                                height: height,
-                                border: "2px ridge  ",
-                                margin: "5px auto",
-                                boxShadow: "0px 4px 5px 5px rgb(194 219 246)",
-                              }}
-                            />
-                          </SwiperSlide>
-                        ))}
-                      </Swiper>
-                    </>
-                  )
+                        <Typography variant="body1" color="initial">
+                          {currentPage}/{pdf.numPages}
+                        </Typography>
+                      </Box>
+                      {images.map((image, idx) => (
+                        <SwiperSlide key={idx} style={styles.imageWrapper}>
+                          <img
+                            id="image-generated"
+                            src={image}
+                            alt="pdfImage"
+                            style={{
+                              display: "block",
+                              width: width,
+                              height: height,
+                              border: "2px ridge  ",
+                              margin: "5px auto",
+                              boxShadow: "0px 4px 5px 5px rgb(194 219 246)",
+                            }}
+                          />
+                        </SwiperSlide>
+                      ))}
+                    </Swiper>
+                  </>
                 ) : (
                   <Typography variant="h1" color="initial">
-                    None
+                    {fileDetail?.fileName}
                   </Typography>
                 )}
               </Grid>
@@ -546,7 +539,7 @@ function FileDetail() {
                         sx={{
                           width: "50px",
                           height: "50px",
-                          background: randomColor(),
+                          background: avatarBgColor,
                         }}
                       >
                         {firstLetter}
@@ -581,7 +574,6 @@ function FileDetail() {
                       sx={{
                         margin: "0",
                         fontSize: "10px",
-                        backgroundColor: buttonColor,
                         height: "20px",
                         padding: "6px 12px",
                         borderRadius: "15px",

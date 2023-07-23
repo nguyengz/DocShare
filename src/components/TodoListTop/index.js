@@ -203,7 +203,8 @@ function TodoListTop({ ...props }) {
                         display="flex"
                         alignItems="center"
                       >
-                        {todo.likeFile} <FavoriteIcon sx={{ color: "red" }} />
+                        {todo.likeFile}{" "}
+                        <FavoriteIcon sx={{ color: "#ff6666" }} />
                       </Typography>
                       <Typography
                         variant="caption"

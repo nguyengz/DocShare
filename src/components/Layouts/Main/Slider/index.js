@@ -42,23 +42,7 @@ const PricingList = styled("ul")({
   padding: 0,
   listStyle: "none",
 });
-const style = {
-  imageWrapper: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    padding: "0",
-    overflowX: "hidden",
-  },
-  wrapper: {
-    height: "90%",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "1px",
-  },
-};
+
 function Slider() {
   const dispatch = useDispatch();
   // const { id } = useParams();
@@ -76,40 +60,50 @@ function Slider() {
         // Thiết lập giá trị của state tiers
         setTiers(sortedTiers);
       })
-      .catch((error) => {
-        console.error(error);
-      });
+      .catch((error) => {});
   }, [setTiers]);
   const handleClickPackage = () => {
-    setShowForm(true); // show the form when the button is clicked
-  };
-  const handleResgisterPackage = async (tier) => {
     if (!currentUser?.token) {
       Swal.fire({
         icon: "error",
         title: "Please Sign in !",
         text: "You can't download the file right now.",
         confirmButtonText: "OK",
+      }).then(() => {
+        setShowForm(true);
       });
     } else {
-      const data = {
-        user_id: currentUser.id,
-        package_id: tier.id,
-        file_id: "",
-        name: encodeURIComponent(currentUser.name),
-      };
-
-      try {
-        // dispatch the uploadfile action
-        const response = await dispatch(registerPackage(data));
-        const payLink = response.payload;
-        console.log(data);
-        window.location.href = payLink;
-      } catch (error) {
-        console.log(error);
-      }
+      setShowForm(true);
     }
+    // show the form when the button is clicked
   };
+  // const handleResgisterPackage = async (tier) => {
+  //   if (!currentUser?.token) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Please Sign in !",
+  //       text: "You can't download the file right now.",
+  //       confirmButtonText: "OK",
+  //     });
+  //   } else {
+  //     const data = {
+  //       user_id: currentUser.id,
+  //       package_id: tier.id,
+  //       file_id: "",
+  //       name: encodeURIComponent(currentUser.name),
+  //     };
+
+  //     try {
+  //       // dispatch the uploadfile action
+  //       const response = await dispatch(registerPackage(data));
+  //       const payLink = response.payload;
+  //       console.log(data);
+  //       window.location.href = payLink;
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  // };
 
   return (
     <>

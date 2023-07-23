@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/static/css/main.b625e7c6.css",
+    "main.js": "/static/js/main.82a654bf.js",
+    "static/media/nganhang.jpg": "/static/media/nganhang.80ac4fb96543fe69f53c.jpg",
+    "static/media/khoahoctunhien.jpg": "/static/media/khoahoctunhien.4849679cea3a33a44c77.jpg",
+    "index.html": "/index.html",
+    "main.b625e7c6.css.map": "/static/css/main.b625e7c6.css.map",
+    "main.82a654bf.js.map": "/static/js/main.82a654bf.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b625e7c6.css",
+    "static/js/main.82a654bf.js"
+  ]
+}

@@ -13,29 +13,29 @@ function TopView() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(fetchfileTop())
-      .then(() => setIsLoading(false))
-      .catch((error) => console.log(error));
+    dispatch(fetchfileTop()).then(() => setIsLoading(false));
   }, []);
 
   const getAlldata = () => {
     let datas = [];
-    fileData.map((file) => {
-      const data = {
-        id: file.id,
-        userId: file.userId,
-        name: file.fileName,
-        price: file.description,
-        linkImg: file.linkImg,
-        link: file.link,
-        view: file.view,
-        userName: file.userName,
-        likeFile: file.likeFile,
-        totalDownload: file.totalDownload,
-        uploadDate: file.uploadDate,
-      };
-      datas = [...datas, data];
-    });
+    if (fileData) {
+      fileData.map((file) => {
+        const data = {
+          id: file.id,
+          userId: file.userId,
+          name: file.fileName,
+          price: file.description,
+          linkImg: file.linkImg,
+          link: file.link,
+          view: file.view,
+          userName: file.userName,
+          likeFile: file.likeFile,
+          totalDownload: file.totalDownload,
+          uploadDate: file.uploadDate,
+        };
+        datas = [...datas, data];
+      });
+    }
     return datas;
   };
 

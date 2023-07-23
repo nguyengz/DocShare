@@ -7,20 +7,20 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import Table from "./Table";
 function MyPackage() {
-  const { user: currentUser } = useSelector((state) => state.auth);
-  const [listOder, setlistOder] = useState([]);
-  useEffect(() => {
-    axios
-      .get(`http://localhost:8080/order/access/list?user_id=${currentUser.id}`)
-      .then((response) => {
-        // Handle successful response
-        setlistOder(response.data);
-      })
-      .catch((error) => {
-        // Handle error
-        console.error(error);
-      });
-  }, [currentUser.id]);
+  const myPackage = useSelector((state) => state.order.data);
+  // const [listOder, setlistOder] = useState([]);
+  // useEffect(() => {
+  //   axios
+  //     .get(`http://localhost:8080/order/access/list?user_id=${currentUser.id}`)
+  //     .then((response) => {
+  //       // Handle successful response
+  //       setlistOder(response.data);
+  //     })
+  //     .catch((error) => {
+  //       // Handle error
+  //       console.error(error);
+  //     });
+  // }, [currentUser.id]);
 
   return (
     <>
@@ -33,7 +33,7 @@ function MyPackage() {
           //   position: "fixed",
         }}
       >
-        <Table data={listOder} />
+        <Table data={myPackage} />
       </Box>
     </>
   );
