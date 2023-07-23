@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
-import PdfToImage from "../../../pdftoimage";
 import useFetchImageData from "~/utils/useEffectIamge";
 
 const styles = {

@@ -15,6 +15,7 @@ import {
   useTheme,
   IconButton,
   Stack,
+  Pagination,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import useFetchImageData from "~/utils/useEffectIamge";
@@ -25,6 +26,7 @@ import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import moment from "moment/moment";
 import { format } from "date-fns";
 import { FacebookShareButton } from "react-share";
+import usePagination from "~/utils/PaginatedList";
 const data = [];
 const formatDate = (dateString) => {
   const date = moment.utc(dateString).toDate();
@@ -39,7 +41,7 @@ const styles = {
   },
 };
 function TodoListTop({ ...props }) {
-  const { todoList, number } = props;
+  const { todoList, number, pages } = props;
 
   const navigate = useNavigate();
 
@@ -48,7 +50,11 @@ function TodoListTop({ ...props }) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("sm"));
   const imageData = useFetchImageData(todoList);
-
+  let [page, setPage] = useState(1);
+  const PER_PAGE = 12;
+  const count = Math.ceil(todoList.length / PER_PAGE);
+  const _DATA = usePagination(todoList, PER_PAGE);
+  const height = pages ? 1000 : 0;
   const handleClickProduct = (todo) => {
     // console.log(todo.link);
     // const state = { link: todo.link };
@@ -56,6 +62,10 @@ function TodoListTop({ ...props }) {
     // const url = `/fileDetail/${todo.link}`;
     // window.history.pushState(state, title, url);
     navigate(`/fileDetail/${todo.id}`);
+  };
+  const handleChange = (e, p) => {
+    setPage(p);
+    _DATA.jump(p);
   };
   // useEffect(() => {
   //   todoList.forEach((todo) => {
@@ -77,16 +87,12 @@ function TodoListTop({ ...props }) {
   const handleListProducts = () => {
     // eslint-disable-next-line no-lone-blocks
     {
-      // eslint-disable-next-line array-callback-return
-      todoList.some((todo, index) => {
-        if (index === number[2]) {
-          return true;
-        }
+      _DATA?.currentData().map((todoList, index) =>
         result.push(
           <Grid
             item
             xs={matches ? (index > 2 ? 3 : number[0]) : number[1]}
-            key={todo.id}
+            key={todoList.id}
             padding={1}
             textAlign="center"
           >
@@ -97,17 +103,17 @@ function TodoListTop({ ...props }) {
                 boxShadow: "0 0 20px rgb(126 162 247 / 42%)",
               }}
             >
-              <CardActionArea onClick={() => handleClickProduct(todo)}>
+              <CardActionArea onClick={() => handleClickProduct(todoList)}>
                 <Box
                   height={200}
                   // sx={{
-                  //   backgroundImage: `url(${imageData[todo.id]})`,
+                  //   backgroundImage: `url(${imageData[todoList.id]})`,
                   //   // filter: "blur(10px)",
                   // }}
                 >
                   <CardMedia
                     component="img"
-                    image={imageData[todo.id] || ""}
+                    image={imageData[todoList.id] || ""}
                     alt="green iguana"
                     height={200}
                     sx={{
@@ -115,7 +121,7 @@ function TodoListTop({ ...props }) {
                       objectPosition: "center",
                       background: "gainsboro",
                       position: "absolute",
-                      // backgroundImage: `url(${imageData[todo.id]})`,
+                      // backgroundImage: `url(${imageData[todoList.id]})`,
                     }}
                   />
                 </Box>
@@ -129,12 +135,12 @@ function TodoListTop({ ...props }) {
                   }}
                 >
                   <Typography style={styles.todoName} gutterBottom variant="h6">
-                    {todo.name}
+                    {todoList.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {todo.name.length > 50
-                      ? todo.name.slice(0, 50) + "..."
-                      : todo.name}
+                    {todoList.name.length > 50
+                      ? todoList.name.slice(0, 50) + "..."
+                      : todoList.name}
                   </Typography>
                 </CardContent>
               </CardActionArea>
@@ -159,8 +165,7 @@ function TodoListTop({ ...props }) {
                         textDecoration: "none",
                         color: "#1976d2",
                       }}
-                      to={`/About/${todo.userId}`}
-                      key={index}
+                      to={`/About/${todoList.userId}`}
                       onMouseEnter={(e) => {
                         e.target.style.color = "blue";
                       }}
@@ -168,7 +173,7 @@ function TodoListTop({ ...props }) {
                         e.target.style.color = "1976d2";
                       }}
                     >
-                      {todo.userName}
+                      {todoList.userName}
                     </Typography>
                   </Stack>
                   <Stack
@@ -183,7 +188,7 @@ function TodoListTop({ ...props }) {
                         display="flex"
                         alignItems="center"
                       >
-                        {formatDate(todo.uploadDate)}
+                        {formatDate(todoList.uploadDate)}
                       </Typography>
                     </Stack>
                     <Stack
@@ -196,14 +201,14 @@ function TodoListTop({ ...props }) {
                         display="flex"
                         alignItems="center"
                       >
-                        {todo.view} <RemoveRedEyeOutlinedIcon />
+                        {todoList.view} <RemoveRedEyeOutlinedIcon />
                       </Typography>
                       <Typography
                         variant="caption"
                         display="flex"
                         alignItems="center"
                       >
-                        {todo.likeFile}{" "}
+                        {todoList.likeFile}{" "}
                         <FavoriteIcon sx={{ color: "#ff6666" }} />
                       </Typography>
                       <Typography
@@ -211,14 +216,14 @@ function TodoListTop({ ...props }) {
                         display="flex"
                         alignItems="center"
                       >
-                        {todo.totalDownload} <DownloadIcon />
+                        {todoList.totalDownload} <DownloadIcon />
                       </Typography>
                       <IconButton aria-label="">
                         <FacebookShareButton
-                          url={`http://localhost:3000/fileDetail/${todo.id}`}
-                          quote={todo.name}
+                          url={`http://localhost:3000/fileDetail/${todoList.id}`}
+                          quote={todoList.name}
                           hashtag={"#DocShare"}
-                          description={todo.name}
+                          description={todoList.name}
                           className="Demo__some-network__share-button"
                         >
                           <ShareIcon />
@@ -230,18 +235,43 @@ function TodoListTop({ ...props }) {
               </CardActions>
             </Card>
           </Grid>
-        );
-      });
+        )
+      );
+
+      // eslint-disable-next-line array-callback-return
+      // todoListList.some((todo, index) => {
+
+      // });
     }
   };
   return (
     <>
-      <Box sx={{ flexGrow: 1 }}>
+      <Box sx={{ flexGrow: 1, minHeight: height }}>
         <Grid container sx={{ width: "100%", margin: "auto" }}>
           {handleListProducts()}
           {result.map((item) => item)}
         </Grid>
       </Box>
+      {pages && (
+        <Grid
+          sm={12}
+          mt={2}
+          width="100%"
+          justifyContent="center"
+          justifyItems="center"
+        >
+          <Stack my="auto" alignItems="center">
+            <Pagination
+              count={count}
+              size="large"
+              page={page}
+              variant="outlined"
+              onChange={handleChange}
+              color="primary"
+            />
+          </Stack>
+        </Grid>
+      )}
     </>
   );
 }

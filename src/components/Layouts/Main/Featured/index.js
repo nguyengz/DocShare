@@ -1,9 +1,8 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import Todo from "./TodoF";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchfile, fetchfileFeatured } from "~/slices/file";
+import { fetchfileFeatured } from "~/slices/file";
 
 function Featured() {
   const dispatch = useDispatch();

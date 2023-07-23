@@ -1,7 +1,6 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import TodoListTop from "../TodoTop";
-import { Padding } from "@mui/icons-material";
 
 function TodoT({ ...props }) {
   const { todoList, number } = props;

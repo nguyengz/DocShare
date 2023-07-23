@@ -8,164 +8,139 @@ import {
   CardActionArea,
   CardActions,
   CardContent,
+  CardHeader,
   CardMedia,
   Grid,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { styled } from "@mui/system";
 import { Link, useNavigate } from "react-router-dom";
 import useFetchImageData from "~/utils/useEffectIamge";
+import StarIcon from "@mui/icons-material/StarBorder";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Navigation } from "swiper";
+import "swiper/swiper.css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/free-mode";
+import "swiper/css/scrollbar";
 
-const data = [];
-
-const styles = {
-  todoName: {
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    maxWidth: "300px",
+const PricingCard = styled(Card)(({ theme }) => ({
+  backgroundColor:
+    theme && theme.palette && theme.palette.grey && theme.palette.grey[200]
+      ? theme.palette.grey[200]
+      : "#f5f5f5",
+  transition: "box-shadow 0.3s",
+  "&:hover": {
+    boxShadow: `0px 0px 15px 5px`,
   },
-};
+  boxShadow:
+    "rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset",
+}));
+const PricingList = styled("ul")({
+  margin: 0,
+  padding: 0,
+  listStyle: "none",
+});
 function TodoListTop({ ...props }) {
-  const { todoList, number } = props;
-
-  const navigate = useNavigate();
-
-  const result = [];
-
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.up("sm"));
-  const imageData = useFetchImageData(todoList);
-
-  const handleClickProduct = (todo) => {
-    // console.log(todo.link);
-    // const state = { link: todo.link };
-    // const title = "";
-    // const url = `/fileDetail/${todo.link}`;
-    // window.history.pushState(state, title, url);
-    navigate(`/fileDetail/${todo.id}`);
-  };
-  // useEffect(() => {
-  //   todoList.forEach((todo) => {
-  //     fetch(`http://localhost:8080/file/review/${todo.image}`)
-  //       .then((response) => response.arrayBuffer())
-  //       .then((buffer) =>
-  //         setImageData((prevImageData) => ({
-  //           ...prevImageData,
-  //           [todo.id]: `data:image/jpeg;base64,${btoa(
-  //             new Uint8Array(buffer).reduce(
-  //               (data, byte) => data + String.fromCharCode(byte),
-  //               ""
-  //             )
-  //           )}`,
-  //         }))
-  //       );
-  //   });
-  // }, [todoList]);
-  const handleListProducts = () => {
-    // eslint-disable-next-line no-lone-blocks
-    {
-      // eslint-disable-next-line array-callback-return
-      todoList.some((todo, index) => {
-        if (index === number[2]) {
-          return true;
-        }
-        result.push(
-          <Grid
-            item
-            xs={matches ? number[0] : number[1]}
-            key={todo.id}
-            padding={1}
-          >
-            <Card
-              elevation={0}
-              sx={{ height: "100%", boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)" }}
-            >
-              <CardActionArea onClick={() => handleClickProduct(todo)}>
-                <Box
-                  height={200}
-                  // sx={{
-                  //   backgroundImage: `url(${imageData[todo.id]})`,
-                  //   // filter: "blur(10px)",
-                  // }}
-                >
-                  <CardMedia
-                    component="img"
-                    image={imageData[todo.id] || ""}
-                    alt="green iguana"
-                    height={200}
-                    sx={{
-                      objectFit: "contain",
-                      objectPosition: "center",
-                      background: "gainsboro",
-                      position: "absolute",
-                      // backgroundImage: `url(${imageData[todo.id]})`,
-                    }}
-                  />
-                </Box>
-
-                <CardContent sx={{ height: "100px", background: "#f8f8f8" }}>
-                  <Typography style={styles.todoName} gutterBottom variant="h6">
-                    {todo.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    <Typography>
-                      {todo.name.length > 50
-                        ? todo.name.slice(0, 50) + "..."
-                        : todo.name}
-                    </Typography>
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-              <CardActions
-                style={{
-                  display: "flex",
-                  margin: "0px 1px",
-                  justifyContent: "space-between",
-                  background: "#f8f8f8",
-                }}
-              >
-                <Typography
-                  component={Link}
-                  style={{
-                    marginRight: "auto",
-                    textDecoration: "none",
-                    color: "#1976d2",
-                  }}
-                  onClick={() => {
-                    // setidlink(page.id);
-                    // alert(page.title);
-                  }}
-                  // href={`/About/${todo.name}`}
-                  to={`/About/${todo.userId}`}
-                  key={index}
-                  onMouseEnter={(e) => {
-                    e.target.style.color = "blue";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.color = "1976d2";
-                  }}
-                >
-                  {todo.userName}
-                </Typography>
-                <Typography variant="caption">{todo.view} views</Typography>
-                <Button size="small" color="primary">
-                  Share
-                </Button>
-              </CardActions>
-            </Card>
-          </Grid>
-        );
-      });
-    }
-  };
+  const { todoList, number, handleClickPackage } = props;
   return (
     <>
       <Box sx={{ flexGrow: 1 }}>
-        <Grid container sx={{ width: "100%", margin: "auto" }}>
-          {handleListProducts()}
-          {result.map((item) => item)}
+        <Grid
+          container
+          spacing={5}
+          sm={6}
+          alignItems="flex-end"
+          sx={{
+            justifyContent: "center",
+            alignItems: "center",
+            margin: "10px auto",
+            boxShadow:
+              "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
+          }}
+          onClick={handleClickPackage}
+        >
+          <Swiper
+            spaceBetween={30}
+            slidesPerView={3}
+            slidesPerGroup={1}
+            pagination={{
+              clickable: true,
+            }}
+            modules={[Pagination, Navigation]}
+            initialSlide={0}
+            // onSlideChange={handleSlideChange}
+          >
+            {todoList.map((tier) => (
+              <SwiperSlide key={tier} style={{ width: 200 }}>
+                <Grid item key={tier.id}>
+                  <PricingCard>
+                    <CardHeader
+                      title={tier.name}
+                      // subheader={tier.name}
+                      titleTypographyProps={{ align: "center" }}
+                      action={tier.name === "Vip" ? <StarIcon /> : null}
+                      // subheaderTypographyProps={{
+                      //   align: "center",
+                      // }}
+                    />
+                    <CardContent>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "baseline",
+                          mb: 2,
+                        }}
+                      >
+                        <Typography
+                          component="h2"
+                          variant="h3"
+                          color="text.primary"
+                        >
+                          ${tier.price}
+                        </Typography>
+                        <Typography variant="h6" color="text.secondary">
+                          {tier?.duration &&
+                            (Number.isInteger(tier?.duration / 365)
+                              ? `/${tier?.duration / 365}year`
+                              : Number.isInteger(tier?.duration / 30)
+                              ? `/${tier?.duration / 30}month`
+                              : Number.isInteger(tier?.duration / 7)
+                              ? `/${tier?.duration / 7}week`
+                              : `/${tier?.duration}day`)}
+                        </Typography>
+                      </Box>
+                      <PricingList>
+                        <Typography
+                          component="li"
+                          variant="subtitle1"
+                          align="center"
+                        >
+                          {tier?.price === 0
+                            ? "1 Upload = 1"
+                            : tier.dowloads === 0
+                            ? "Unlimit"
+                            : tier.dowloads}{" "}
+                          Download
+                        </Typography>
+                        <Typography
+                          component="li"
+                          variant="subtitle1"
+                          align="center"
+                        >
+                          {tier.storageSize} GB storageSize
+                        </Typography>
+                      </PricingList>
+                    </CardContent>
+                  </PricingCard>
+                </Grid>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </Grid>
       </Box>
     </>

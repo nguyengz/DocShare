@@ -55,6 +55,7 @@ function SearchCatory() {
   const [selectedDateRange, setSelectedDateRange] = useState(null);
   const [nameCategory, setNameCategory] = useState(name);
   const [resuft, setResuft] = useState();
+  const pages = true;
   useEffect(() => {
     dispatch(fetchfile());
     dispatch(fetchCategory());
@@ -202,20 +203,21 @@ function SearchCatory() {
               <MenuItem value="Select a Category" disabled>
                 Select a Category
               </MenuItem>
+              <MenuItem value="Select a Category">All</MenuItem>
               {categoryData.map((category) => (
                 <MenuItem key={category.id} value={category.categoryName}>
                   {category.categoryName}
                 </MenuItem>
               ))}
             </Select>
-            <Button
+            {/* <Button
               variant="contained"
               color="secondary"
               size="small"
               onClick={() => setSelectedCategory("Select a Category")}
             >
               Clear
-            </Button>
+            </Button> */}
           </Grid>
           <Grid item xs={8} direction="row">
             <Stack
@@ -265,7 +267,11 @@ function SearchCatory() {
               spacing={2}
               sx={{ display: "flex", flexWrap: "wrap" }}
             >
-              <TodoSearch todoList={todoList} number={numberProduct} />
+              <TodoSearch
+                todoList={todoList}
+                number={numberProduct}
+                pages={pages}
+              />
             </Grid>
           </Grid>
         </Grid>

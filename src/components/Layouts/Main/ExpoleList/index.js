@@ -21,7 +21,6 @@ import khac from "~/assets/images/khac.jpg";
 
 // import {cntt } from
 function ExpoleList() {
-  const [posts, setPosts] = useState([]);
   const dispatch = useDispatch();
   const category = useSelector((state) => state.category.data);
   const [isLoading, setIsLoading] = useState(true);
@@ -76,7 +75,7 @@ function ExpoleList() {
     <>
       <Box
         sx={{
-          minHeight: 1000,
+          minHeight: 800,
           width: "auto",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",

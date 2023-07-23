@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 import ExpoleList from "~/components/Layouts/Main/ExpoleList";
 const { Box, Typography, Grid, Divider } = require("@mui/material");
@@ -49,7 +49,7 @@ function Expole() {
                 sx={{}}
                 light={true}
               >
-               Category
+                Category
               </Divider>
             </Typography>
             <Typography

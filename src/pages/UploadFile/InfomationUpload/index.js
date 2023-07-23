@@ -144,27 +144,24 @@ function InfomationUpload(props) {
 
   const [selectedCategory, setSelectedCategory] = useState("Select a Category");
   const [tags, setSelectedTags] = useState([]);
-  const [alignment, setAlignment] = useState("true");
+
   const [title, setTitle] = useState(props.nameFile);
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
-  // const [numPages, setNumPages] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const [images, setImages] = useState([]);
   const [firstImage, setfirstImage] = useState(null);
-  // const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSubmit, setIsSubmit] = useState(false);
   const [isTagsInputValid, setIsTagsInputValid] = useState(false);
+  const [isTagsInputLenght, setIsTagsInputLenght] = useState(false);
   const [isCategoryInputValid, setIsCategoryInputValid] = useState(false);
   const [progress, setProgress] = useState(0);
   const [buffer, setBuffer] = React.useState(10);
 
-  // const [pdfRendering, setPdfRendering] = useState("");
   const [pageRendering, setPageRendering] = useState("");
   const progressRef = useRef(() => {});
-  const canvasRef = useRef(null);
 
   const pdf = props.pdf;
   useEffect(() => {
@@ -190,13 +187,13 @@ function InfomationUpload(props) {
     };
   }, []);
 
-  const handleDelete = (tag) => {
-    const newTags = tags.filter((t) => t !== tag);
-    setSelectedTags(newTags);
-  };
-  const handleChangePrivacy = (event, newAlignment) => {
-    setAlignment(newAlignment);
-  };
+  // const handleDelete = (tag) => {
+  //   const newTags = tags.filter((t) => t !== tag);
+  //   setSelectedTags(newTags);
+  // };
+  // const handleChangePrivacy = (event, newAlignment) => {
+  //   setAlignment(newAlignment);
+  // };
   function dataURLtoBlob(dataURL) {
     var arr = dataURL.split(",");
     var mime = arr[0].match(/:(.*?);/)[1];
@@ -249,7 +246,7 @@ function InfomationUpload(props) {
     setIsUploading(true);
     const data = {
       filePath: currentUser.name,
-      shared: alignment,
+      shared: true,
       title: title,
       description: description,
       category: selectedCategory,
@@ -280,10 +277,15 @@ function InfomationUpload(props) {
     }
   };
   function handleChangeTag(tags) {
-    if (tags.length >= 1 && tags.length <= 20) {
+    if (tags.length >= 3 && tags.length <= 20) {
       setSelectedTags(tags);
+      setIsTagsInputLenght(true);
+      setIsSubmit(true);
       setError("");
     } else {
+      setIsTagsInputLenght(false);
+      setIsSubmit(false);
+      setIsTagsInputValid(false);
       setError("Tags must have between 1 and 20 elements");
     }
   }
@@ -613,34 +615,41 @@ function InfomationUpload(props) {
                                   error={Boolean(touched.tags && errors.tags)}
                                   value={tags}
                                   onChange={(tags) => {
-                                    console.log(tags); // add this line to check the tags state
+                                    // console.log(tags); // add this line to check the tags state
                                     // handleChange(tags);
-                                    // handleChange(tags);
+                                    handleChangeTag(tags);
                                     setSelectedTags(tags);
                                     setIsTagsInputValid(tags !== "");
                                   }}
                                   placeHolder="enter tags"
                                   required
                                 />
-                                {touched.tags &&
-                                  ((errors.tags && (
-                                    <FormHelperText
-                                      error
-                                      id="standard-weight-helper-text-email-login"
-                                    >
-                                      {errors.tags}
-                                    </FormHelperText>
-                                  )) ||
-                                    !isTagsInputValid) && (
+                                {(touched.tags && errors.tags && (
+                                  <FormHelperText
+                                    error
+                                    id="standard-weight-helper-text-email-login"
+                                  >
+                                    {errors.tags}
+                                  </FormHelperText>
+                                )) ||
+                                  (!isTagsInputValid && (
                                     <FormHelperText
                                       error
                                       id="standard-weight-helper-text-email-login"
                                     >
                                       The "tags" field is required.
                                     </FormHelperText>
-                                  )}
+                                  )) ||
+                                  (!isTagsInputLenght && (
+                                    <FormHelperText
+                                      error
+                                      id="standard-weight-helper-text-email-login"
+                                    >
+                                      {error}
+                                    </FormHelperText>
+                                  ))}
                               </Item>
-                              <Item>
+                              {/* <Item>
                                 <InputLabel htmlFor="Privacy">
                                   Privacy
                                 </InputLabel>
@@ -659,7 +668,7 @@ function InfomationUpload(props) {
                                     Private
                                   </ToggleButton>
                                 </ToggleButtonGroup>
-                              </Item>
+                              </Item> */}
                             </Stack>
                           </Stack>
                         </Grid>
@@ -693,7 +702,7 @@ function InfomationUpload(props) {
                               type="submit"
                               variant="contained"
                               color="primary"
-                              disabled={!isValid || isSubmitting}
+                              disabled={!isValid || isSubmitting || !isSubmit}
                             >
                               Publish
                             </Button>

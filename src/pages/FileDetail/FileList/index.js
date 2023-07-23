@@ -56,16 +56,11 @@ const style = {
 };
 
 function FileListMore(props) {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const SERICE_API = process.env.REACT_APP_SERVICE_API;
   const [listcategory, setListCategory] = useState([]);
   const imageData = useFetchImageData(listcategory);
 
-  const [matches] = useState(false);
-  const number = [4, 2];
-
-  // const result = [];
   const formatDate = (dateString) => {
     const date = moment.utc(dateString).toDate();
     return format(date, "dd/MM/yy HH:mm");

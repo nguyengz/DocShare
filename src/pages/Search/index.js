@@ -54,6 +54,7 @@ function SearchResutlt() {
   const [selectedDateRange, setSelectedDateRange] = useState(null);
   const [nameCategory, setNameCategory] = useState();
   const [resuft, setResuft] = useState();
+  const pages = true;
   useEffect(() => {
     fetch(SERICE_API + `/file/search?tagName=${tagName}`)
       .then((response) => response.json())
@@ -205,21 +206,13 @@ function SearchResutlt() {
               <MenuItem value="Select a Category" disabled>
                 Select a Category
               </MenuItem>
+              <MenuItem value="Select a Category">All</MenuItem>
               {categoryData.map((category) => (
                 <MenuItem key={category.id} value={category.categoryName}>
                   {category.categoryName}
                 </MenuItem>
               ))}
             </Select>
-            <Button
-              marginLeft="5px"
-              variant="contained"
-              backgroundColor="#0d91fe"
-              size="small"
-              onClick={() => setSelectedCategory("Select a Category")}
-            >
-              Clear
-            </Button>
           </Grid>
           <Grid item xs={8} direction="row">
             <Stack
@@ -266,7 +259,11 @@ function SearchResutlt() {
               spacing={2}
               sx={{ display: "flex", flexWrap: "wrap" }}
             >
-              <TodoSearch todoList={todoList} number={numberProduct} />
+              <TodoSearch
+                todoList={todoList}
+                number={numberProduct}
+                pages={pages}
+              />
             </Grid>
           </Grid>
         </Grid>
