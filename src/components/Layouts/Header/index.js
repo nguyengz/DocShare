@@ -37,6 +37,7 @@ import { unstable_HistoryRouter, useNavigate } from "react-router-dom";
 import SearchResutlt from "~/pages/Search";
 import Swal from "sweetalert2";
 import randomColor from "randomcolor";
+import docshare from "~/assets/images/logo/docshare1.svg";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: "20px",
@@ -284,9 +285,8 @@ export default function Header() {
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static" color="default">
           <Toolbar>
-            <Typography variant="h6" noWrap component="div" sx={{ mr: 4 }}>
-              DocShare
-            </Typography>
+            <img src={docshare} alt="" width="3%" height="3%" />
+
             <List sx={{ display: "flex" }}>
               <ListItem>
                 {titlePages.map((page, index) => {
