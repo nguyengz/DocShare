@@ -12,6 +12,7 @@ import {
   CardMedia,
   Grid,
   Typography,
+  createTheme,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -27,6 +28,17 @@ import "swiper/css/pagination";
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
 
+const theme = createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 960,
+      lg: 1280,
+      xl: 1920,
+    },
+  },
+});
 const PricingCard = styled(Card)(({ theme }) => ({
   backgroundColor:
     theme && theme.palette && theme.palette.grey && theme.palette.grey[200]
@@ -36,14 +48,41 @@ const PricingCard = styled(Card)(({ theme }) => ({
   "&:hover": {
     boxShadow: `0px 0px 15px 5px`,
   },
+  height: "230px",
   boxShadow:
     "rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset",
+  [theme.breakpoints.down("md")]: {
+    height: "300px",
+    margin: 0,
+  },
+  [theme.breakpoints.down("sm")]: {
+    height: "200px",
+    margin: 0,
+  },
 }));
 const PricingList = styled("ul")({
   margin: 0,
   padding: 0,
   listStyle: "none",
+  [theme.breakpoints.down("sm")]: {
+    fontSize: "10px",
+    margin: 0,
+  },
 });
+const style = {
+  p1: {
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "15px",
+      margin: 0,
+    },
+  },
+  p2: {
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "10px",
+      margin: 0,
+    },
+  },
+};
 function TodoListTop({ ...props }) {
   const { todoList, number, handleClickPackage } = props;
   return (
@@ -51,7 +90,7 @@ function TodoListTop({ ...props }) {
       <Box sx={{ flexGrow: 1 }}>
         <Grid
           container
-          spacing={5}
+          // spacing={5}
           sm={6}
           alignItems="flex-end"
           sx={{
@@ -100,10 +139,16 @@ function TodoListTop({ ...props }) {
                           component="h2"
                           variant="h3"
                           color="text.primary"
+                          sx={style.p1}
                         >
                           ${tier.price}
                         </Typography>
-                        <Typography variant="h6" color="text.secondary">
+                        <Typography
+                          component="h6"
+                          variant="h6"
+                          color="text.secondary"
+                          sx={style.p1}
+                        >
                           {tier?.duration &&
                             (Number.isInteger(tier?.duration / 365)
                               ? `/${tier?.duration / 365}year`
@@ -119,6 +164,7 @@ function TodoListTop({ ...props }) {
                           component="li"
                           variant="subtitle1"
                           align="center"
+                          sx={style.p2}
                         >
                           {tier?.price === 0
                             ? "1 Upload = 1"
@@ -131,6 +177,7 @@ function TodoListTop({ ...props }) {
                           component="li"
                           variant="subtitle1"
                           align="center"
+                          sx={style.p2}
                         >
                           {tier.storageSize} GB storageSize
                         </Typography>

@@ -27,8 +27,6 @@ import {
 } from "@mui/material";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { ToastContainer, toast } from "react-toastify";
-import { Window } from "@mui/icons-material";
-import FormChangePass from "./FormChangePass";
 import FormChangePassLogin from "./FormChangePassLogin";
 const Login = () => {
   let navigate = useNavigate();
@@ -84,7 +82,6 @@ const Login = () => {
   };
   return (
     <>
-      {" "}
       <Snackbar
         open={isError && message}
         autoHideDuration={6000}
@@ -92,7 +89,7 @@ const Login = () => {
         message={message}
         severity="error"
       />
-      <Container maxWidth="xs">
+      <Container maxWidth="xs" sx={{ minHeight: 1000 }}>
         <Grid
           container
           spacing={2}
@@ -213,7 +210,7 @@ const Login = () => {
                         alignItems="center"
                         spacing={1}
                       >
-                        <FormControlLabel
+                        {/* <FormControlLabel
                           control={
                             <Checkbox
                               checked={checked}
@@ -230,7 +227,7 @@ const Login = () => {
                               Keep me sign in
                             </Typography>
                           }
-                        />
+                        /> */}
                         <Link
                           variant="h6"
                           component={RouterLink}

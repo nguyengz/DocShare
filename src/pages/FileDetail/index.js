@@ -323,12 +323,12 @@ function FileDetail() {
             margin: "5px ",
           }}
         >
-          <Grid xs={12} sm={12} container direction="row" height={900}>
+          <Grid xs={12} sm={12} container direction="row" height={{ sm: 900 }}>
             <Grid xs={12} sm={8} direction="column">
               <Grid
                 item
                 sx={{
-                  height: 500,
+                  height: { xs: 250, sm: 300, md: 400, lg: 400 },
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -378,10 +378,10 @@ function FileDetail() {
                             alt="pdfImage"
                             style={{
                               display: "block",
-                              width: width,
-                              height: height,
+                              maxWidth: "100%",
+                              height: "auto",
                               border: "2px ridge  ",
-                              margin: "5px auto",
+                              margin: "auto",
                               boxShadow: "0px 4px 5px 5px rgb(194 219 246)",
                             }}
                           />
@@ -410,8 +410,17 @@ function FileDetail() {
                   direction="row"
                   spacing={1}
                   justifyContent="space-between"
+                  sx={{
+                    "@media (max-width: 600px)": {
+                      flexDirection: "column",
+                    },
+                  }}
                 >
-                  <Stack sm={4} item sx={{ width: "80%", marginLeft: "5px" }}>
+                  <Stack
+                    sm={4}
+                    item
+                    sx={{ width: { xs: "100%", sm: "80%" }, marginLeft: "5px" }}
+                  >
                     <Typography
                       variant="h2"
                       sx={{
@@ -437,12 +446,15 @@ function FileDetail() {
                       <DownloadIcon />
                     </Typography>
                   </Stack>
-                  <Stack item>
+                  <Stack item alignItems="center">
                     <Button
                       variant="contained"
                       color="primary"
                       onClick={handleDownload}
                       height="50px"
+                      sx={{
+                        fontSize: { sm: "10px" },
+                      }}
                     >
                       <DownloadIcon />
                       Download Now
@@ -455,7 +467,10 @@ function FileDetail() {
 
                     {/* {status === "loading" && <span>Downloading...</span>}
                     {status === "failed" && <span>Error: {error}</span>} */}
-                    <Typography variant="caption" sx={{ fontSize: "15px" }}>
+                    <Typography
+                      variant="caption"
+                      sx={{ fontSize: { sm: "10px" } }}
+                    >
                       Download to read offline
                     </Typography>
                   </Stack>

@@ -20,6 +20,8 @@ import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
+import HomeIcon from "@mui/icons-material/Home";
+import CategoryIcon from "@mui/icons-material/Category";
 import {
   Avatar,
   Button,
@@ -30,11 +32,9 @@ import {
   Tooltip,
 } from "@mui/material";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
-
 import { fetchUserAbout, logout } from "~/slices/auth";
 import EventBus from "~/common/EventBus";
-import { unstable_HistoryRouter, useNavigate } from "react-router-dom";
-import SearchResutlt from "~/pages/Search";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import randomColor from "randomcolor";
 import docshare from "~/assets/images/logo/docshare1.svg";
@@ -97,6 +97,18 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
   },
 }));
+const styles = {
+  icon: {
+    // Match [sm, md)
+    //       [600px, 900px)
+    "@media (max-width: 600px)": {
+      display: "none",
+      height: "auto",
+      margin: 0,
+    },
+  },
+};
+
 const mobileMenuId = "search-account-menu-mobile";
 // const renderMobileMenu = (
 // //   <Menu
@@ -149,8 +161,8 @@ const mobileMenuId = "search-account-menu-mobile";
 // //   </Menu>
 // );
 const titlePages = [
-  { id: "", title: "Home" },
-  { id: "expole", title: "Category" },
+  { id: "", title: "Home", icon: <HomeIcon /> },
+  { id: "expole", title: "Category", icon: <CategoryIcon /> },
 ];
 export default function Header() {
   const dispatch = useDispatch();
@@ -285,32 +297,58 @@ export default function Header() {
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static" color="default">
           <Toolbar>
-            <img src={docshare} alt="" width="3%" height="3%" />
-
+            <img
+              src={docshare}
+              alt=""
+              width="3%"
+              height="3%"
+              style={{ margin: 5 }}
+            />
             <List sx={{ display: "flex" }}>
               <ListItem>
                 {titlePages.map((page, index) => {
                   return (
-                    <Typography
-                      component={Link}
-                      variant="h7"
-                      sx={{
-                        mr: 2,
-                        textDecoration: "none",
-                        // color: idlink === page.id ? "red" : "white",
-                        ":hover": { color: "blue" },
-                      }}
-                      onClick={() => {
-                        // setidlink(page.id);
-                        // alert(page.title);
-                      }}
-                      // underline="none"
-                      href={`/${page.id}`}
-                      value={page.id}
-                      key={index}
-                    >
-                      {page.title}
-                    </Typography>
+                    <>
+                      <Typography
+                        component={Link}
+                        variant="h7"
+                        sx={{
+                          mr: 2,
+                          textDecoration: "none",
+                          // color: idlink === page.id ? "red" : "white",
+                          ":hover": { color: "blue" },
+                          "@media (max-width: 600px)": {
+                            display: "none",
+                            height: "auto",
+                            margin: 0,
+                          },
+                        }}
+                        onClick={() => {
+                          // setidlink(page.id);
+                          // alert(page.title);
+                        }}
+                        href={`/${page.id}`}
+                        value={page.id}
+                        key={index}
+                      >
+                        {page.title}
+                      </Typography>
+                      <IconButton
+                        aria-label=""
+                        sx={{
+                          "@media (min-width: 600px)": {
+                            display: "none",
+                            height: "auto",
+                            margin: 0,
+                          },
+                          color: "#0898de",
+                        }}
+                        href={`/${page.id}`}
+                        key={index}
+                      >
+                        {page.icon}
+                      </IconButton>
+                    </>
                   );
                 })}
               </ListItem>
@@ -345,7 +383,18 @@ export default function Header() {
               >
                 {" "}
                 <FileUploadIcon />
-                <Typography variant="caption">Upload</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    "@media (max-width: 600px)": {
+                      display: "none",
+                      height: "auto",
+                      margin: 0,
+                    },
+                  }}
+                >
+                  Upload
+                </Typography>
               </Button>
 
               {currentUser && currentUser.name ? (

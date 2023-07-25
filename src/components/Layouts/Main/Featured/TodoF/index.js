@@ -18,22 +18,12 @@ function Todo({ ...props }) {
         }}
       >
         <Grid container display={"flex"}>
-          <Grid xs={3} item>
+          <Grid xs={12} item>
             <Typography variant="h5" color={"black"}>
               Top Likes DocShare
             </Typography>
           </Grid>
-          <Grid xs={6} item></Grid>
-          <Grid xs={3} item>
-            <Typography
-              variant="subtitle2"
-              color={"black"}
-              display="block"
-              sx={{ marginRight: "-10px" }}
-            ></Typography>
-          </Grid>
         </Grid>
-
         <TodoListTop todoList={todoList} number={number} />
       </Box>
     </>
