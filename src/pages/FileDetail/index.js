@@ -112,14 +112,7 @@ function FileDetail() {
     const file_id = id;
     const user_id = parseInt(currentUser?.id);
     dispatch(fetchFileDetail([file_id, user_id]));
-    if (fileDetail && fileDetail?.link) {
-      const pdfUrl = SERICE_API + "/file/review/" + fileDetail.link;
-      if (pdfUrl && currentPage) {
-        renderPage(pdfUrl); // pass currentPage to renderPage function
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser?.id, dispatch, id, fileDetail.link]);
+  }, [dispatch, id, currentUser?.id]);
   useEffect(() => {
     if (fileDetail?.userId) {
       const user_id = parseInt(currentUser?.id);
@@ -131,7 +124,15 @@ function FileDetail() {
         });
       }
     }
-  }, [currentUser?.id, dispatch, fileDetail?.userId, userAbout?.avatar]);
+  }, [currentUser?.id, dispatch]);
+  useEffect(() => {
+    if (fileDetail && fileDetail?.link) {
+      const pdfUrl = SERICE_API + "/file/review/" + fileDetail.link;
+      if (pdfUrl && currentPage) {
+        renderPage(pdfUrl); // pass currentPage to renderPage function
+      }
+    }
+  }, [dispatch, fileDetail.link]);
   useEffect(() => {
     if (fileDetail && fileDetail.tags) {
       const tagsArr = fileDetail.tags.reduce((accumulator, tag) => {
@@ -142,12 +143,12 @@ function FileDetail() {
       }, []);
       setTags(tagsArr);
     }
-  }, [fileDetail]);
+  }, [dispatch, fileDetail?.tags]);
 
-  function loadImage(link) {
-    return fetch(SERICE_API + `/file/review/${link}`)
-      .then((response) => response.blob())
-      .then((blob) => URL.createObjectURL(blob));
+  async function loadImage(link) {
+    const response = await fetch(SERICE_API + `/file/review/${link}`);
+    const blob = await response.blob();
+    return URL.createObjectURL(blob);
   }
   async function renderPage(pdfUrl) {
     setIsLoading(true);
@@ -323,12 +324,12 @@ function FileDetail() {
             margin: "5px ",
           }}
         >
-          <Grid xs={12} sm={12} container direction="row" height={{ sm: 900 }}>
+          <Grid xs={12} sm={12} container direction="row">
             <Grid xs={12} sm={8} direction="column">
               <Grid
                 item
                 sx={{
-                  height: { xs: 250, sm: 300, md: 400, lg: 400 },
+                  height: { xs: 250, sm: 400, md: 400, lg: 400 },
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -390,7 +391,16 @@ function FileDetail() {
                     </Swiper>
                   </>
                 ) : (
-                  <Typography variant="h1" color="initial">
+                  <Typography
+                    variant="h1"
+                    color="initial"
+                    sx={{
+                      fontSize: 20,
+                      "@media (max-width: 600px)": {
+                        fontSize: 15,
+                      },
+                    }}
+                  >
                     {fileDetail?.fileName}
                   </Typography>
                 )}
@@ -400,7 +410,7 @@ function FileDetail() {
                 sm={8}
                 item
                 sx={{
-                  height: 300,
+                  height: { sm: 400, md: 300 },
                   marginTop: 2,
                 }}
                 spacing={4}
@@ -446,7 +456,7 @@ function FileDetail() {
                       <DownloadIcon />
                     </Typography>
                   </Stack>
-                  <Stack item alignItems="center">
+                  <Stack item>
                     <Button
                       variant="contained"
                       color="primary"
@@ -469,7 +479,7 @@ function FileDetail() {
                     {status === "failed" && <span>Error: {error}</span>} */}
                     <Typography
                       variant="caption"
-                      sx={{ fontSize: { sm: "10px" } }}
+                      sx={{ fontSize: { sm: "10px" }, marginX: "auto" }}
                     >
                       Download to read offline
                     </Typography>
@@ -501,31 +511,30 @@ function FileDetail() {
 
                   <FlagIcon />
                 </Stack>
-                <Stack
-                  direction="row"
-                  sm={6}
-                  spacing={2}
-                  sx={{ margin: "10px" }}
-                >
-                  {tags &&
-                    tags.slice(0, 6).map((tag, index) => (
-                      <Button
-                        key={index}
-                        component={Link}
-                        href={`/Search?tagName=${tag.tagName}`}
-                        sx={{
-                          border: "1px solid",
-                          borderRadius: "56px",
-                          background: "",
-                          padding: "0 16px",
-                          lineHeight: "24px",
-                          whiteSpace: "nowrap", // add this CSS property
-                        }}
-                        label={tag.tagName}
-                      >
-                        {tag.tagName}
-                      </Button>
-                    ))}
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+                    {tags &&
+                      tags.slice(0, 6).map((tag, index) => (
+                        <Button
+                          key={index}
+                          component={Link}
+                          href={`/Search?tagName=${tag.tagName}`}
+                          sx={{
+                            border: "1px solid",
+                            borderRadius: "56px",
+                            background: "",
+                            padding: "0 16px",
+                            lineHeight: "24px",
+                            whiteSpace: "nowrap", // add this CSS property
+                            fontSize: { xs: "10px", sm: "10px" },
+                            margin: "5px",
+                          }}
+                          label={tag.tagName}
+                        >
+                          {tag.tagName}
+                        </Button>
+                      ))}
+                  </Box>
                 </Stack>
                 <Stack direction="row" spacing={2} sx={{ margin: "10px" }}>
                   <Typography>{fileDetail?.category?.categoryName}</Typography>
@@ -534,11 +543,7 @@ function FileDetail() {
                 <Stack direction="row" spacing={2} sx={{ margin: "10px" }}>
                   <Typography>{fileDetail?.description}</Typography>
                 </Stack>
-                <Stack
-                  direction="row"
-                  spacing={2}
-                  sx={{ margin: "10px 10px", height: "200px" }}
-                >
+                <Stack direction="row" spacing={2} sx={{ margin: "10px 10px" }}>
                   <Stack item>
                     {" "}
                     {avatarUrl ? (
@@ -616,8 +621,12 @@ function FileDetail() {
               // xs={12}
               sm={4}
               sx={{
-                height: 700,
+                height: 650,
                 // background: "whitesmoke",
+                marginX: "auto",
+                "@media (max-width: 1000px)": {
+                  height: 750,
+                },
               }}
             >
               <Typography
@@ -631,7 +640,7 @@ function FileDetail() {
               >
                 List of similar tags
               </Typography>
-              <FileListTags id={fileDetail.id} />
+              <FileListTags tagid={id} />
             </Grid>
           </Grid>
         </Card>

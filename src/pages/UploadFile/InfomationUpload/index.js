@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Card,
-  Checkbox,
   CircularProgress,
   Container,
   FormHelperText,
@@ -17,8 +16,6 @@ import {
   Select,
   Stack,
   TextareaAutosize,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
 import { Form, Formik } from "formik";
@@ -41,7 +38,6 @@ import "swiper/css/scrollbar";
 import { fetchCategory } from "~/slices/category";
 import { uploadfile } from "~/slices/file";
 import { useNavigate } from "react-router-dom";
-import LinearProgressWithLabel from "~/utils/LinearProgressWithLabel";
 const Item = styled(Grid)(({ theme }) => ({
   ...theme.typography.body2,
   margin: 1,
@@ -302,7 +298,8 @@ function InfomationUpload(props) {
         <Box
           container
           sx={{
-            width: "700px",
+            // width: "700px",
+            width: { sm: "auto", md: "700px" },
             minHeight: "100vh",
             margin: "40px auto ",
             alignItems: "center",
@@ -549,7 +546,11 @@ function InfomationUpload(props) {
                                 </Typography>
                               </Item> */}
                             </Stack>
-                            <Stack direction="column" spacing={4}>
+                            <Stack
+                              direction="column"
+                              spacing={4}
+                              marginX="auto"
+                            >
                               <Item>
                                 <InputLabel>Category</InputLabel>
                                 <Select

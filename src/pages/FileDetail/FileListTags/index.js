@@ -25,7 +25,7 @@ import "swiper/css/pagination";
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import useFetchImageData from "~/utils/useEffectIamge";
 
 const style = {
@@ -66,9 +66,9 @@ function FileListTags(props) {
     window.location.href = `/fileDetail/${todo.id}`;
   };
   useEffect(() => {
-    console.log(props.id);
+    console.log(props.tagid);
     axios
-      .get(SERICE_API+`/file/list/tag?file_id=${props.id}`)
+      .get(SERICE_API + `/file/list/tag?file_id=${props.tagid}`)
       .then((response) => {
         // Handle successful response
         setListTag(response.data);
@@ -78,12 +78,12 @@ function FileListTags(props) {
         // Handle error
         console.error(error);
       });
-  }, [props.id]);
+  }, []);
   const result =
     Array.isArray(listtag) && listtag.length > 0
       ? listtag.slice(1, 6)?.map((todo, index) => {
           return (
-            <Grid item sm={12} key={todo.id} sx={{ width: "450px" }}>
+            <Grid item sm={12} key={todo.id} sx={{ marginX: "auto" }}>
               {/* <LazyLoad height={200} once> */}
               <Card
                 sx={{
@@ -102,6 +102,12 @@ function FileListTags(props) {
                     objectFit: "contain",
                     objectPosition: "center",
                     background: "gainsboro",
+                    "@media (max-width: 1280px)": {
+                      width: "100px",
+                    },
+                    "@media (max-width: 600px)": {
+                      width: "150px",
+                    },
                     // height: "100%",
                   }}
                   onClick={() => handleClickFile(todo)}
@@ -111,6 +117,20 @@ function FileListTags(props) {
                     display: "flex",
                     flexDirection: "column",
                     width: "250px",
+
+                    "@media (max-width: 1280px)": {
+                      width: "230px",
+                    },
+                    "@media (max-width: 1024px)": {
+                      width: "200px",
+                      fontSize: "15px",
+                    },
+                    "@media (max-width: 600px)": {
+                      width: "250px",
+                    },
+                    "@media (max-width: 400px)": {
+                      width: "200px",
+                    },
                   }}
                 >
                   <CardContent sx={{ height: "90%" }}>
@@ -149,12 +169,23 @@ function FileListTags(props) {
                       display: "flex",
                       alignItems: "center",
                       pl: 1,
+                      "@media (max-width: 1024px)": {
+                        flexWrap: "wrap",
+                        fontSize: "15px",
+                      },
                     }}
                   >
                     <CardActions
-                      style={{
-                        // display: "",
+                      sx={{
                         margin: "0px",
+                        display: "flex",
+                        alignItems: "center",
+                        pl: 1,
+                        "@media (max-width: 1024px)": {
+                          flexWrap: "wrap",
+                          fontSize: "15px",
+                          justifyContent: "center",
+                        },
                       }}
                     >
                       <Typography
@@ -208,10 +239,6 @@ function FileListTags(props) {
           mousewheel={true}
           modules={[Mousewheel, Pagination]}
           style={style.wrapper}
-          lazy={{
-            loadPrevNext: true,
-            loadPrevNextAmount: 3,
-          }}
         >
           {result?.map((item, idx) => (
             <SwiperSlide key={idx} style={style.imageWrapper}>

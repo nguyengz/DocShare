@@ -23,8 +23,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
-import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import useFetchImageData from "~/utils/useEffectIamge";
 import axios from "axios";
 const style = {
@@ -56,7 +55,6 @@ const style = {
 };
 
 function FileListMore(props) {
-  const navigate = useNavigate();
   const SERICE_API = process.env.REACT_APP_SERVICE_API;
   const [listcategory, setListCategory] = useState([]);
   const imageData = useFetchImageData(listcategory);
@@ -67,13 +65,12 @@ function FileListMore(props) {
   };
   const handleClickFile = (todo) => {
     // Define the handleClickFile function here
-    navigate(`/fileDetail/${todo.id}`);
-    window.location.reload();
+    window.location.href = `/fileDetail/${todo.id}`;
   };
 
   useEffect(() => {
     axios
-      .get(SERICE_API+`/file/list/category?id=${props.category?.id}`)
+      .get(SERICE_API + `/file/list/category?id=${props.category?.id}`)
       .then((response) => {
         // Handle successful response
         setListCategory(response.data);
@@ -96,7 +93,7 @@ function FileListMore(props) {
                 }}
               >
                 <CardActionArea
-                  sx={{ height: "100%" }}
+                  sx={{ height: "100%", textAlign: "center" }}
                   onClick={() => handleClickFile(todo)}
                 >
                   <CardMedia
@@ -110,7 +107,7 @@ function FileListMore(props) {
                       background: "gainsboro",
                     }}
                   />
-                  <CardContent sx={{ height: "50px" }}>
+                  <CardContent sx={{ height: "50px", alignContent: "center" }}>
                     <Typography
                       style={style.todoName}
                       gutterBottom
@@ -196,7 +193,9 @@ function FileListMore(props) {
     <>
       {listcategory && (
         <Swiper
-          slidesPerView={6}
+          slidesPerView={
+            window.innerWidth > 1024 ? 5 : window.innerWidth >= 900 ? 3 : 1
+          }
           slidesPerGroup={3}
           navigation={true}
           modules={[Pagination, Navigation]}

@@ -300,9 +300,15 @@ export default function Header() {
             <img
               src={docshare}
               alt=""
-              width="3%"
-              height="3%"
-              style={{ margin: 5 }}
+              style={{
+                width: "3%",
+                height: "3%",
+                margin: "auto 2",
+                "@media (max-width: 600px)": {
+                  width: "10%",
+                  height: "10%",
+                },
+              }}
             />
             <List sx={{ display: "flex" }}>
               <ListItem>
@@ -378,7 +384,18 @@ export default function Header() {
             <Box sx={{ display: "flex" }}>
               <Button
                 variant="contained"
-                sx={{ height: "20%", margin: "auto 20px" }}
+                sx={{
+                  height: "20%",
+                  margin: "auto 20px",
+                  "@media (max-width: 600px)": {
+                    margin: "auto 10px",
+                    width: 10,
+                  },
+                  "@media (max-width: 400px)": {
+                    margin: "auto 10px",
+                    minWidth: 10,
+                  },
+                }}
                 onClick={checkUpload}
               >
                 {" "}

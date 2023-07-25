@@ -45,9 +45,9 @@ export const uploadfile = createAsyncThunk(
     try {
       const response = await fileService.uploadFile(formdata);
       thunkAPI.dispatch(setMessage(response.data.message));
-      thunkAPI.dispatch(
-        fileSlice.actions.setSuccessMessage("File uploaded successfully")
-      );
+      // thunkAPI.dispatch(
+      //   fileSlice.actions.setSuccessMessage("File uploaded successfully")
+      // );
       Swal.fire({
         icon: "success",
         title: "File uploaded successfully",

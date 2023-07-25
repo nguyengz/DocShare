@@ -23,8 +23,16 @@ function useFetchImageData(todoList) {
   //       );
   //   });
   // }, [todoList]);
+
+  useEffect(() => {
+    if (todoList) {
+      todoList.forEach((todo) => {
+        loadImageData(todo);
+      });
+    }
+  }, [todoList]);
   async function fetchImage(link) {
-    const response = await fetch(SERICE_API+`/file/review/${link}`);
+    const response = await fetch(SERICE_API + `/file/review/${link}`);
     return await response.blob();
   }
 
@@ -37,15 +45,6 @@ function useFetchImageData(todoList) {
       }));
     });
   }
-
-  useEffect(() => {
-    if (todoList) {
-      todoList.forEach((todo) => {
-        loadImageData(todo);
-      });
-    }
-  }, [todoList]);
-
   return imageData;
 }
 
