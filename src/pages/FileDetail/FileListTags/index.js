@@ -78,7 +78,7 @@ function FileListTags(props) {
         // Handle error
         console.error(error);
       });
-  }, []);
+  }, [props?.tagid]);
   const result =
     Array.isArray(listtag) && listtag.length > 0
       ? listtag.slice(1, 6)?.map((todo, index) => {
