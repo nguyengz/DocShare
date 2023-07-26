@@ -155,6 +155,9 @@ function SearchCatory() {
         link: file.link,
         view: file.view,
         userName: file.userName,
+        likeFile: file.likeFile,
+        totalDownload: file.totalDownload,
+        uploadDate: file.uploadDate,
       };
       datas = [...datas, data];
     });

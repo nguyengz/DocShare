@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { saveAs } from "file-saver";
 import Swal from "sweetalert2";
 import fileService from "~/services/file.service";
+import { setMessage } from "./message";
 
 const initialState = {
   status: "",
@@ -28,11 +29,18 @@ export const downloadFile = createAsyncThunk(
     } catch (error) {
       const errorResponse = error.response
         ? error.response.data
-        : "Unknown error";
+        : error.response.data.message;
       const errorMessage = errorResponse.message
         ? errorResponse.message
         : "Unknown error";
       const errorStatus = errorResponse.status ? errorResponse.status : null;
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString("");
+      thunkAPI.dispatch(setMessage(message));
       if (errorStatus === 403 && errorMessage === "Forbidden") {
         Swal.fire({
           icon: "error",
@@ -43,7 +51,7 @@ export const downloadFile = createAsyncThunk(
         Swal.fire({
           icon: "error",
           title: "Download failed!",
-          text: "An error occurred while downloading the file.",
+          text: message,
         }).then(() => {
           thunkAPI.dispatch(setShowPricing(true));
         });

@@ -116,7 +116,7 @@ function MyUpload() {
               }}
             >
               <CloudUploadIcon sx={{ marginRight: "5px" }} /> SizeCloud:
-              {totalDownloads}
+              {storageSizes}
             </Typography>
             <Typography
               variant="body"

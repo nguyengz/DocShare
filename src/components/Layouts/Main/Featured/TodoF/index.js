@@ -18,7 +18,7 @@ function Todo({ ...props }) {
         }}
       >
         <Grid container display={"flex"}>
-          <Grid xs={12} item>
+          <Grid xs={12} item textAlign="left">
             <Typography variant="h5" color={"black"}>
               Top Likes DocShare
             </Typography>
