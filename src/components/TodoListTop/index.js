@@ -220,8 +220,8 @@ function TodoListTop({ ...props }) {
                       </Typography>
                       <IconButton aria-label="">
                         <FacebookShareButton
-                          url={`http://localhost:3000/fileDetail/${todoList.id}`}
-                          quote={todoList.name}
+                          url={`https://docsharevn.vercel.app/fileDetail/${todoList.id}`}
+                          quote={todoList.id}
                           hashtag={"#DocShare"}
                           description={todoList.name}
                           className="Demo__some-network__share-button"

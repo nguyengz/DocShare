@@ -282,7 +282,7 @@ function InfomationUpload(props) {
       setIsTagsInputLenght(false);
       setIsSubmit(false);
       setIsTagsInputValid(false);
-      setError("Tags must have between 1 and 20 elements");
+      setError("Tags must have between 3 and 20 elements");
     }
   }
   function formatBytes(bytes) {
@@ -577,7 +577,7 @@ function InfomationUpload(props) {
                                   <MenuItem value="Select a Category" disabled>
                                     Select a Category
                                   </MenuItem>
-                                  {categoryData.map((category) => (
+                                  {categoryData?.map((category) => (
                                     <MenuItem
                                       sx={{}}
                                       key={category.id}
