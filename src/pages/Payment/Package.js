@@ -69,7 +69,7 @@ export default function Pricing({ onBack, fileDetail_id, name }) {
   // const payLink = useSelector((state) => state.package.data);
   useEffect(() => {
     axios
-      .get(SERICE_API+`/packages`)
+      .get(SERICE_API + `/packages`)
       .then((response) => {
         const sortedTiers = response.data.sort((a, b) => a.price - b.price);
         setTiers(sortedTiers);
@@ -164,7 +164,10 @@ export default function Pricing({ onBack, fileDetail_id, name }) {
                     Download
                   </Typography>
                   <Typography component="li" variant="subtitle1" align="center">
-                    {tier.storageSize} GB storageSize
+                    {tier?.storageSize > 1024 && tier?.storageSize === 1024
+                      ? tier.storageSize / 1024 + "GB"
+                      : tier?.storageSize + "MB"}{" "}
+                    storageSize
                   </Typography>
                 </PricingList>
               </CardContent>

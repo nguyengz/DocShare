@@ -1,24 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import React from "react";
 import {
-  Avatar,
   Box,
-  Button,
   Card,
-  CardActionArea,
-  CardActions,
   CardContent,
   CardHeader,
-  CardMedia,
   Grid,
   Typography,
   createTheme,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { Link, useNavigate } from "react-router-dom";
-import useFetchImageData from "~/utils/useEffectIamge";
+// import { Link, useNavigate } from "react-router-dom";
+// import useFetchImageData from "~/utils/useEffectIamge";
 import StarIcon from "@mui/icons-material/StarBorder";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper";
@@ -179,7 +171,11 @@ function TodoListTop({ ...props }) {
                           align="center"
                           sx={style.p2}
                         >
-                          {tier.storageSize} GB storageSize
+                          {tier?.storageSize > 1024 &&
+                          tier?.storageSize === 1024
+                            ? tier.storageSize / 1024 + "GB"
+                            : tier?.storageSize + "MB"}{" "}
+                          storageSize
                         </Typography>
                       </PricingList>
                     </CardContent>

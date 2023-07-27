@@ -33,7 +33,7 @@ export const downloadFile = createAsyncThunk(
       const errorMessage = errorResponse.message
         ? errorResponse.message
         : "Unknown error";
-      const errorStatus = errorResponse.status ? errorResponse.status : null;
+      const errorStatus = error.response.status ? error.response.status : null;
       const message =
         (error.response &&
           error.response.data &&
@@ -41,21 +41,28 @@ export const downloadFile = createAsyncThunk(
         error.message ||
         error.toString("");
       thunkAPI.dispatch(setMessage(message));
-      if (errorStatus === 403 && errorMessage === "Forbidden") {
-        Swal.fire({
+      if (errorStatus === 500) {
+        await Swal.fire({
+          icon: "error",
+          title: "Download failed!",
+          text: "Your account has been disabled!",
+        });
+      } else if (errorStatus === 403 || errorStatus === 401) {
+        await Swal.fire({
           icon: "error",
           title: "Download failed!",
           text: "You do not have permission to access this file.",
-        });
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Download failed!",
-          text: message,
         }).then(() => {
           thunkAPI.dispatch(setShowPricing(true));
         });
+      } else {
+        await Swal.fire({
+          icon: "error",
+          title: "Download failed!",
+          text: "An error occurred while downloading the file.",
+        });
       }
+
       return thunkAPI.rejectWithValue(errorMessage);
     }
   },

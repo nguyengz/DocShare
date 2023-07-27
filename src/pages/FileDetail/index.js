@@ -93,6 +93,7 @@ function FileDetail() {
   const [avatarUrl, setAvatarUrl] = useState();
   const [pdf, setPdf] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubmit, setIsSubmit] = useState(false);
 
   // const [pdfRendering, setPdfRendering] = React.useState("");
 
@@ -204,7 +205,8 @@ function FileDetail() {
       });
     }
   }
-  const handleDownload = () => {
+  const handleDownload = async () => {
+    setIsSubmit(true);
     const userLc = JSON.parse(localStorage.getItem("user"));
     // Check if the user has an active subscription
     if (!userLc) {
@@ -231,11 +233,12 @@ function FileDetail() {
       const fileName = fileDetail.fileName;
       const fileUrl = `${fileDetail?.link}/${currentUser?.id}/${fileDetail?.id}`;
       console.log(fileUrl);
-      dispatch(downloadFile({ link: fileUrl, fileName }));
+      await dispatch(downloadFile({ link: fileUrl, fileName }));
       setShowPricing(false);
     } else {
       dispatch(setShowPricing(true));
     }
+    setIsSubmit(false);
   };
 
   const handleUnLikeFile = () => {
@@ -466,7 +469,17 @@ function FileDetail() {
                         fontSize: { sm: "10px" },
                       }}
                     >
-                      <DownloadIcon />
+                      {isSubmit ? (
+                        <CircularProgress
+                          color="inherit"
+                          size={25}
+                          sx={{
+                            mr: 1,
+                          }}
+                        />
+                      ) : (
+                        <DownloadIcon />
+                      )}{" "}
                       Download Now
                     </Button>
                     {/* {downloadUrl && (

@@ -30,14 +30,14 @@ export const fetchFileDetail = createAsyncThunk(
   }
 );
 
-export const downLoadFile = createAsyncThunk(
-  "file/downLoadFile",
-  async (link, thunkAPI) => {
-    const response = await fileService.downLoadFile(link);
-    thunkAPI.dispatch(setMessage(response.data.message));
-    return response.data;
-  }
-);
+// export const downLoadFile = createAsyncThunk(
+//   "file/downLoadFile",
+//   async (link, thunkAPI) => {
+//     const response = await fileService.downLoadFile(link);
+//     thunkAPI.dispatch(setMessage(response.data.message));
+//     return response.data;
+//   }
+// );
 
 export const uploadfile = createAsyncThunk(
   "file/uploadFile",
@@ -189,17 +189,17 @@ const fileSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message;
       })
-      .addCase(downLoadFile.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(downLoadFile.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.data = action.payload;
-      })
-      .addCase(downLoadFile.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
-      })
+      // .addCase(downLoadFile.pending, (state) => {
+      //   state.status = "loading";
+      // })
+      // .addCase(downLoadFile.fulfilled, (state, action) => {
+      //   state.status = "succeeded";
+      //   state.data = action.payload;
+      // })
+      // .addCase(downLoadFile.rejected, (state, action) => {
+      //   state.status = "failed";
+      //   state.error = action.error.message;
+      // })
 
       .addCase(uploadfile.pending, (state) => {
         state.status = "loading";

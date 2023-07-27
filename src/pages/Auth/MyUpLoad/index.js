@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Example from "./Table";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
+import DownloadIcon from "@mui/icons-material/Download";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import MyPackage from "../MyPackage";
@@ -28,12 +29,15 @@ function MyUpload() {
   const [showPackage, setShowPackage] = useState(false);
 
   let totalDownloads = 0;
+  let totalDownloadsUnli = "";
   let storageSizes = 0;
   for (let i = 0; i < myPackage.length; i++) {
     const item = myPackage[i];
     const downloads = item.dowloads;
     const storageSize = item.storageSize;
-
+    if (downloads === 0) {
+      totalDownloadsUnli = "Unlimit";
+    }
     totalDownloads += downloads;
     storageSizes += storageSize;
   }
@@ -115,8 +119,10 @@ function MyUpload() {
                 alignItems: "center", //Thêm thuộc tính align-items vào đây
               }}
             >
-              <CloudUploadIcon sx={{ marginRight: "5px" }} /> SizeCloud:
-              {storageSizes}
+              <CloudUploadIcon sx={{ marginRight: "5px" }} /> SizeCloud:{" "}
+              {storageSizes > 1024 && storageSizes === 1024
+                ? storageSizes / 1024 + " GB"
+                : storageSizes + " MB"}
             </Typography>
             <Typography
               variant="body"
@@ -131,6 +137,22 @@ function MyUpload() {
             >
               <FileUploadIcon sx={{ marginRight: "5px" }} /> FileUpload:
               {userAbout?.files?.length}
+            </Typography>
+            <Typography
+              variant="body"
+              color="initial"
+              fontSize={15}
+              fontWeight={50}
+              padding="0"
+              sx={{
+                display: "flex",
+                alignItems: "center", //Thêm thuộc tính align-items vào đây
+              }}
+            >
+              <DownloadIcon sx={{ marginRight: "5px" }} /> Downloads:{" "}
+              {totalDownloadsUnli === "Unlimit"
+                ? totalDownloadsUnli
+                : totalDownloads}
             </Typography>
             <Button
               onClick={showPackage ? handlClickFileuploadTb : handlClickPackage}

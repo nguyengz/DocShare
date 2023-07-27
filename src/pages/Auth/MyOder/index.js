@@ -16,6 +16,8 @@ import CircleIcon from "@mui/icons-material/Circle";
 import usePagination from "~/utils/PaginatedList";
 import Pricing from "~/pages/Payment/Package";
 import { setShowPricing } from "~/slices/download";
+import { format } from "date-fns";
+import moment from "moment/moment";
 // import { addPackage, fetchPackages } from "store/reducers/slices/package";
 // import { useDispatch, useSelector } from 'react-redux';
 // import { registerPackage } from '~/slices/paypal';
@@ -76,10 +78,14 @@ function MyOrder() {
   const PER_PAGE = 10;
   const count = Math.ceil(listOder.length / PER_PAGE);
   const _DATA = usePagination(listOder, PER_PAGE);
+  const formatDate = (dateString) => {
+    const date = moment.utc(dateString).toDate();
+    return format(date, "dd/MM/yyyy HH:mm:ss");
+  };
   // let totalOrderPrice = 0;
   useEffect(() => {
     axios
-      .get(SERICE_API+`/order/list?user_id=${currentUser.id}`)
+      .get(SERICE_API + `/order/list?user_id=${currentUser.id}`)
       .then((response) => {
         // Handle successful response
         setlistOder(response.data);
@@ -243,7 +249,10 @@ function MyOrder() {
                         variant="subtitle1"
                         align="center"
                       >
-                        {listOder.packages.storageSize} GB storageSize
+                        {listOder?.packages?.storageSize > 1024 &&
+                        listOder?.packages?.storageSize === 1024
+                          ? listOder?.packages?.storageSize / 1024 + "GB"
+                          : listOder?.packages?.storageSize + "MB"}{" "}
                       </Typography>
                     </PricingList>
                   </CardContent>
@@ -251,10 +260,10 @@ function MyOrder() {
 
                 <Grid item xs={12} sm={6} ml={5} sx={{ paddingTop: "1px" }}>
                   <Typography>
-                    Start_date: {listOder.orderDetail.start_date}
+                    Start_date: {formatDate(listOder.orderDetail.start_date)}
                   </Typography>
                   <Typography>
-                    End_date: {listOder.orderDetail.end_date}
+                    End_date: {formatDate(listOder.orderDetail.end_date)}
                   </Typography>
                   <Typography> OrderCode: {listOder.orderCode} </Typography>
                   <Typography>

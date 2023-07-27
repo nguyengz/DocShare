@@ -70,16 +70,21 @@ const Table = (props) => {
     },
     {
       accessorKey: "numOfAccess",
-      header: "NumOfAccess",
+      header: "Download",
       size: 50,
       Cell: ({ row }) =>
-        row.original?.numOfAccess + "/" + row.original?.dowloads,
+        row.original?.dowloads === 0
+          ? "Unlimit"
+          : row.original?.numOfAccess + "/" + row.original?.dowloads,
     },
     {
       accessorKey: "storageSize",
       header: "StorageSize",
       size: 50,
-      Cell: ({ row }) => row.original?.storageSize,
+      Cell: ({ row }) =>
+        row.original?.storageSize > 1024 && row.original?.storageSize === 1024
+          ? row.original?.storageSize / 1024 + " GB"
+          : row.original?.storageSize + " MB",
     },
     {
       accessorKey: "createdAt",
