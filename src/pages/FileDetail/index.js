@@ -413,7 +413,7 @@ function FileDetail() {
                 sm={8}
                 item
                 sx={{
-                  height: { sm: 400, md: 300 },
+                  height: { sm: 400, md: 300, lg: 350 },
                   marginTop: 2,
                 }}
                 spacing={4}
