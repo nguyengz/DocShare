@@ -34,11 +34,12 @@ function MyUpload() {
   for (let i = 0; i < myPackage.length; i++) {
     const item = myPackage[i];
     const downloads = item.dowloads;
+    const numOfAccess = item.numOfAccess;
     const storageSize = item.storageSize;
     if (downloads === 0) {
       totalDownloadsUnli = "Unlimit";
     }
-    totalDownloads += downloads;
+    totalDownloads += numOfAccess;
     storageSizes += storageSize;
   }
   useEffect(() => {
