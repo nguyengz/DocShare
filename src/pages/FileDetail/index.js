@@ -125,7 +125,7 @@ function FileDetail() {
         });
       }
     }
-  }, [currentUser?.id, dispatch]);
+  }, [currentUser?.id, dispatch, fileDetail?.userId]);
   useEffect(() => {
     if (fileDetail && fileDetail?.link) {
       const pdfUrl = SERICE_API + "/file/review/" + fileDetail.link;
@@ -513,7 +513,7 @@ function FileDetail() {
                   />
 
                   <FacebookShareButton
-                    url={`http://localhost:3000/fileDetail/${fileDetail?.id}`}
+                    url={`https://docsharevn.vercel.app/fileDetail/${fileDetail?.id}`}
                     quote={fileDetail?.name}
                     hashtag={"#DocShare"}
                     description={fileDetail?.description}
