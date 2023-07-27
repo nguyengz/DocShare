@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Card,
+  Checkbox,
   CircularProgress,
   Container,
   FormHelperText,
@@ -38,6 +39,7 @@ import "swiper/css/scrollbar";
 import { fetchCategory } from "~/slices/category";
 import { uploadfile } from "~/slices/file";
 import { useNavigate } from "react-router-dom";
+import Rules from "~/pages/Rules";
 const Item = styled(Grid)(({ theme }) => ({
   ...theme.typography.body2,
   margin: 1,
@@ -155,7 +157,7 @@ function InfomationUpload(props) {
   const [isCategoryInputValid, setIsCategoryInputValid] = useState(false);
   const [progress, setProgress] = useState(0);
   const [buffer, setBuffer] = React.useState(10);
-
+  const [rulesOpen, setRulesOpen] = useState(false);
   const [pageRendering, setPageRendering] = useState("");
   const progressRef = useRef(() => {});
 
@@ -292,6 +294,13 @@ function InfomationUpload(props) {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   }
+  const handleRulesOpen = () => {
+    setRulesOpen(true);
+  };
+
+  const handleRulesClose = () => {
+    setRulesOpen(false);
+  };
   return (
     <>
       <Container minHeight="1000px">
@@ -362,6 +371,7 @@ function InfomationUpload(props) {
                     description: "",
                     category: "",
                     tags: [],
+                    acceptTerms: false,
                   }}
                   validationSchema={Yup.object().shape({
                     title: Yup.string()
@@ -375,6 +385,10 @@ function InfomationUpload(props) {
                     tags: Yup.array().of(Yup.string()),
                     selectedCategory: Yup.string().required(
                       "Please select a category"
+                    ),
+                    acceptTerms: Yup.bool().oneOf(
+                      [true],
+                      "Please accept the terms and conditions"
                     ),
                     // .min(1, "At least one tag is required")
                     // .max(5, "You can add up to 5 tags"),
@@ -533,18 +547,41 @@ function InfomationUpload(props) {
                                   </FormHelperText>
                                 )}
                               </Item>
-                              {/* <Item>
+                              <Item sx={{ mt: "1px" }}>
                                 <Checkbox
+                                  id="acceptTerms"
+                                  name="acceptTerms"
+                                  onBlur={handleBlur}
                                   // checked={checked}
-                                  onChange={handleChange}
                                   inputProps={{ "aria-label": "controlled" }}
-
+                                  error={Boolean(
+                                    touched.acceptTerms && errors.acceptTerms
+                                  )}
+                                  value={values.acceptTerms}
+                                  onChange={handleChange}
                                 />
-                                <Typography variant="body2" color="initial">
-                                  Bạn chắc chắn đã đọc và chấp thuận những điều
-                                  khoản của chúng tôi?{" "}
-                                </Typography>
-                              </Item> */}
+                                Have you read and accepted{" "}
+                                <Typography
+                                  variant="button"
+                                  color="initial"
+                                  onClick={handleRulesOpen}
+                                >
+                                  our terms
+                                </Typography>{" "}
+                                and conditions?
+                                {touched.acceptTerms && errors.acceptTerms && (
+                                  <FormHelperText
+                                    error
+                                    id="standard-weight-helper-text-email-login"
+                                  >
+                                    {errors.acceptTerms}
+                                  </FormHelperText>
+                                )}
+                              </Item>
+                              <Rules
+                                open={rulesOpen}
+                                onClose={handleRulesClose}
+                              />
                             </Stack>
                             <Stack
                               direction="column"

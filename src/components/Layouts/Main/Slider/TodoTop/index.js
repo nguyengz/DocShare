@@ -171,10 +171,10 @@ function TodoListTop({ ...props }) {
                           align="center"
                           sx={style.p2}
                         >
-                          {tier?.storageSize > 1024 &&
+                          {tier?.storageSize > 1024 ||
                           tier?.storageSize === 1024
-                            ? tier.storageSize / 1024 + "GB"
-                            : tier?.storageSize + "MB"}{" "}
+                            ? tier.storageSize / 1024 + " GB"
+                            : tier?.storageSize + " MB"}{" "}
                           storageSize
                         </Typography>
                       </PricingList>
