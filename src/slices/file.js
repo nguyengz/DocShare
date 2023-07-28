@@ -52,6 +52,10 @@ export const uploadfile = createAsyncThunk(
         icon: "success",
         title: "File uploaded successfully",
       });
+      const user = JSON.parse(localStorage.getItem("user"));
+      // const user = { ...currentUser }; // Lấy thông tin user từ Redux store
+      user.roles = [{ authority: "USER" }];
+      localStorage.setItem("user", JSON.stringify(user));
       return response.data;
     } catch (error) {
       const message =

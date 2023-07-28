@@ -277,7 +277,7 @@ function FileDetail() {
       searchParams.delete("status");
       const newUrl = `${pathname}?${searchParams.toString()}`;
       window.history.replaceState(null, "", newUrl);
-      console.log(currentUser);
+      // console.log(currentUser);
       const user = JSON.parse(localStorage.getItem("user"));
       // const user = { ...currentUser }; // Lấy thông tin user từ Redux store
       user.roles = [{ authority: "USER" }];
