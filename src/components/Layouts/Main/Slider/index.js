@@ -28,10 +28,10 @@ function Slider() {
       Swal.fire({
         icon: "error",
         title: "Please Sign in !",
-        text: "You can't download the file right now.",
+        text: "You can't register package right now.",
         confirmButtonText: "OK",
       }).then(() => {
-        setShowForm(true);
+        setShowForm(false);
       });
     } else {
       setShowForm(true);
