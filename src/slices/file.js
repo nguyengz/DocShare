@@ -65,6 +65,11 @@ export const uploadfile = createAsyncThunk(
         error.message ||
         error.toString("");
       thunkAPI.dispatch(setMessage(message));
+      Swal.fire({
+        icon: "error",
+        title: "Upload error!",
+        text: error.response.data,
+      });
       return thunkAPI.rejectWithValue();
     }
   }
